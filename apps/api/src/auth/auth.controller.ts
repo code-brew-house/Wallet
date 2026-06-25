@@ -1,5 +1,6 @@
 import { Body, Controller, Get, HttpCode, Inject, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { createValidationPipe } from '../app.config';
 import { env } from '../config/env';
 import { CurrentUserParam } from './current-user';
 import type { CurrentUser } from './current-user';
@@ -15,7 +16,10 @@ export class AuthController {
   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() dto: SignupDto, @Res({ passthrough: true }) response: Response): Promise<AuthResponse> {
+  async signup(
+    @Body(createValidationPipe(SignupDto)) dto: SignupDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResponse> {
     const authResponse = await this.authService.signup(dto);
     await this.setRefreshCookie(response, authResponse.user);
     return authResponse;
@@ -23,7 +27,10 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
-  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response): Promise<AuthResponse> {
+  async login(
+    @Body(createValidationPipe(LoginDto)) dto: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResponse> {
     const authResponse = await this.authService.login(dto);
     await this.setRefreshCookie(response, authResponse.user);
     return authResponse;
@@ -71,16 +78,6 @@ export class AuthController {
 
   private readRefreshToken(request: Request): string | undefined {
     const parsedCookie = request.cookies?.[refreshCookieName];
-    if (typeof parsedCookie === 'string') {
-      return parsedCookie;
-    }
-
-    const cookieHeader = request.headers.cookie;
-    const cookieText = Array.isArray(cookieHeader) ? cookieHeader.join(';') : cookieHeader;
-    return cookieText
-      ?.split(';')
-      .map((entry) => entry.trim())
-      .find((entry) => entry.startsWith(`${refreshCookieName}=`))
-      ?.slice(refreshCookieName.length + 1);
+    return typeof parsedCookie === 'string' ? parsedCookie : undefined;
   }
 }

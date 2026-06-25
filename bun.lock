@@ -32,6 +32,7 @@
       "devDependencies": {
         "@nestjs/testing": "latest",
         "@types/cookie-parser": "latest",
+        "@types/express": "^5.0.6",
         "@types/pg": "latest",
         "@types/supertest": "latest",
         "prisma": "latest",
