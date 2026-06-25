@@ -15,6 +15,7 @@ In scope for the MVP:
 - Shared dashboard, envelope list, activity feed, reports, and settings.
 - Installable PWA with offline read-only cached screens.
 - Coolify deployment with PostgreSQL.
+- Bun as the package manager, script runner, test runner, and default JavaScript runtime.
 
 Out of scope for the MVP:
 
@@ -32,6 +33,8 @@ Wallet will use two services:
 2. **Backend:** NestJS REST API backed by PostgreSQL.
 
 The frontend does not connect directly to PostgreSQL. It calls the NestJS API for all product data. The API owns authorization, validation, balance rules, and database transactions. This keeps the future React Native path clean: mobile can use the same REST API instead of depending on Next.js server actions or web-only internals.
+
+Source code should be organized as a Bun workspace so the frontend and backend share one lockfile, shared TypeScript configuration, and common scripts. Bun is the default tool for dependency installation, local development, tests, builds, and container start commands. Frontend Next.js scripts should use Bun's Next.js guidance, e.g. `bun --bun next dev`, `bun --bun next build`, and `bun --bun next start`. Backend NestJS scripts should run through Bun-compatible commands, with implementation choices constrained to dependencies that work under Bun.
 
 Coolify runs separate services for:
 
@@ -201,6 +204,7 @@ Deployment smoke tests verify:
 - API reaches PostgreSQL using configured database URL.
 - API health endpoint reports readiness.
 - Database migrations run before serving traffic.
+- Bun scripts run frontend tests, backend tests, and build commands consistently in local and Coolify environments.
 
 ## Deployment
 
@@ -220,6 +224,8 @@ Required configuration:
 - PostgreSQL backup policy.
 
 The API exposes a health endpoint for Coolify checks. The database migration command runs during deployment before the API accepts traffic.
+
+Both application services should install dependencies with `bun install --frozen-lockfile`. Dockerfiles or Coolify build commands should use Bun for builds and start commands rather than npm, pnpm, or yarn.
 
 ## Future React Native Path
 
