@@ -1,0 +1,8 @@
+node_modules
+.bun-install-cache
+.git
+.superpowers
+.next
+coverage
+.env
+.env.*

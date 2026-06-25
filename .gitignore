@@ -1,2 +1,12 @@
+node_modules/
+.bun-install-cache/
+.next/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
 .superpowers/
 .worktrees/
+.DS_Store
+apps/api/prisma/migrations/dev.db

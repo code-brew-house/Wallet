@@ -1,0 +1,19 @@
+{
+  "name": "wallet",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "build": "bun run --filter '*' build",
+    "test": "bun test",
+    "typecheck": "bun run --filter '*' typecheck",
+    "db:migrate": "bun --cwd apps/api prisma migrate dev",
+    "db:deploy": "bun --cwd apps/api prisma migrate deploy"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bun-types": "latest",
+    "typescript": "latest"
+  }
+}
