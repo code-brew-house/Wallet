@@ -14,14 +14,19 @@
     "@nestjs/common": "latest",
     "@nestjs/core": "latest",
     "@nestjs/platform-express": "latest",
+    "@prisma/adapter-pg": "latest",
+    "@prisma/client": "latest",
     "@wallet/shared": "workspace:*",
+    "pg": "latest",
     "reflect-metadata": "latest",
     "rxjs": "latest",
     "zod": "latest"
   },
   "devDependencies": {
     "@nestjs/testing": "latest",
+    "@types/pg": "latest",
     "@types/supertest": "latest",
+    "prisma": "latest",
     "supertest": "latest",
     "typescript": "latest"
   }

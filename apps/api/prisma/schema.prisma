@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MembershipRole {
+  owner
+  admin
+  member
+}
+
+enum InviteStatus {
+  active
+  revoked
+  accepted
+  expired
+}
+
+enum RecurringFrequency {
+  weekly
+  monthly
+  yearly
+}
+
+model User {
+  id             String            @id @default(uuid())
+  email          String            @unique
+  passwordHash   String
+  displayName    String
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  memberships    Membership[]
+  createdGroups  Group[]           @relation("CreatedGroups")
+  fundingEntries EnvelopeFunding[]
+  expenses       Expense[]
+}
+
+model Group {
+  id              String             @id @default(uuid())
+  name            String
+  currency        String
+  createdById     String
+  createdBy       User               @relation("CreatedGroups", fields: [createdById], references: [id])
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  memberships     Membership[]
+  invites         Invite[]
+  envelopes       Envelope[]
+  fundingEntries  EnvelopeFunding[]
+  transfers       EnvelopeTransfer[]
+  expenses        Expense[]
+  recurring       RecurringExpense[]
+
+  @@index([createdById])
+}
+
+model Membership {
+  id        String         @id @default(uuid())
+  groupId   String
+  userId    String
+  role      MembershipRole
+  createdAt DateTime       @default(now())
+  group     Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model Invite {
+  id           String       @id @default(uuid())
+  tokenHash    String       @unique
+  groupId      String
+  createdById  String
+  status       InviteStatus @default(active)
+  expiresAt    DateTime
+  acceptedById String?
+  acceptedAt   DateTime?
+  revokedAt    DateTime?
+  createdAt    DateTime     @default(now())
+  group        Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, status])
+  @@index([expiresAt])
+}
+
+model Envelope {
+  id         String             @id @default(uuid())
+  groupId    String
+  name       String
+  archivedAt DateTime?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  group      Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  funding    EnvelopeFunding[]
+  incoming   EnvelopeTransfer[] @relation("TransferToEnvelope")
+  outgoing   EnvelopeTransfer[] @relation("TransferFromEnvelope")
+  expenses   Expense[]
+  recurring  RecurringExpense[]
+
+  @@unique([groupId, name])
+  @@index([groupId, archivedAt])
+}
+
+model EnvelopeFunding {
+  id          String    @id @default(uuid())
+  groupId     String
+  envelopeId  String
+  amountMinor Int
+  note        String?
+  createdById String
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  envelope    Envelope  @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
+  createdBy   User      @relation(fields: [createdById], references: [id])
+
+  @@index([groupId, envelopeId, deletedAt])
+}
+
+model EnvelopeTransfer {
+  id             String   @id @default(uuid())
+  groupId        String
+  fromEnvelopeId String
+  toEnvelopeId   String
+  amountMinor    Int
+  note           String?
+  createdById    String
+  deletedAt      DateTime?
+  createdAt      DateTime @default(now())
+  group          Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  fromEnvelope   Envelope @relation("TransferFromEnvelope", fields: [fromEnvelopeId], references: [id])
+  toEnvelope     Envelope @relation("TransferToEnvelope", fields: [toEnvelopeId], references: [id])
+
+  @@index([groupId, fromEnvelopeId, deletedAt])
+  @@index([groupId, toEnvelopeId, deletedAt])
+}
+
+model Expense {
+  id          String    @id @default(uuid())
+  groupId     String
+  envelopeId  String
+  amountMinor Int
+  spentAt     DateTime
+  title       String
+  note        String?
+  createdById String
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  envelope    Envelope  @relation(fields: [envelopeId], references: [id])
+  createdBy   User      @relation(fields: [createdById], references: [id])
+
+  @@index([groupId, spentAt])
+  @@index([groupId, envelopeId, deletedAt])
+}
+
+model RecurringExpense {
+  id          String             @id @default(uuid())
+  groupId     String
+  envelopeId  String
+  amountMinor Int
+  title       String
+  frequency   RecurringFrequency
+  nextDueAt   DateTime
+  note        String?
+  active      Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  group       Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  envelope    Envelope           @relation(fields: [envelopeId], references: [id])
+
+  @@index([groupId, nextDueAt, active])
+}
