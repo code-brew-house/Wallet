@@ -4,11 +4,12 @@ import { Button, Card, Group, Select, SimpleGrid, Stack, Tabs, Text, TextInput, 
 import { useForm } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
 import type { EnvelopeSummary } from '../dashboard/types';
-
 type RecurringFrequency = 'weekly' | 'monthly' | 'yearly';
 
 export interface EnvelopeFormsProps {
   envelopes: EnvelopeSummary[];
+  selectedForm: FormKind;
+  onSelectedFormChange(form: FormKind): void;
   currency: string;
   onAddExpense(values: { envelopeId: string; amountMinor: number; spentAt: string; title: string; note?: string }): Promise<void>;
   onFundEnvelope(values: { envelopeId: string; amountMinor: number; note?: string }): Promise<void>;
@@ -53,7 +54,7 @@ interface RecurringFormValues {
   note: string;
 }
 
-type FormKind = 'expense' | 'funding' | 'transfer' | 'recurring';
+export type FormKind = 'expense' | 'funding' | 'transfer' | 'recurring';
 
 function todayDateValue() {
   return new Date().toISOString().slice(0, 10);
@@ -77,7 +78,7 @@ function notePayload(note: string): { note?: string } {
   return trimmed.length > 0 ? { note: trimmed } : {};
 }
 
-export function EnvelopeForms({ envelopes, currency, onAddExpense, onFundEnvelope, onTransfer, onCreateRecurring }: EnvelopeFormsProps) {
+export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFormChange, onAddExpense, onFundEnvelope, onTransfer, onCreateRecurring }: EnvelopeFormsProps) {
   const activeEnvelopes = useMemo(() => envelopes.filter((envelope) => !envelope.archivedAt), [envelopes]);
   const envelopeOptions = useMemo(
     () => activeEnvelopes.map((envelope) => ({ value: envelope.id, label: envelope.name })),
@@ -208,7 +209,7 @@ export function EnvelopeForms({ envelopes, currency, onAddExpense, onFundEnvelop
           <Text size="sm" c="dimmed">Amounts are entered in {currency} and saved in minor units.</Text>
         </div>
         {!hasEnvelopes ? <Text c="dimmed">Create an envelope before adding expenses, funding, transfers, or recurring plans.</Text> : null}
-        <Tabs defaultValue="expense" keepMounted={false}>
+        <Tabs value={selectedForm} onChange={(value) => { if (value) onSelectedFormChange(value as FormKind); }} keepMounted={false}>
           <Tabs.List grow>
             <Tabs.Tab value="expense">Add expense</Tabs.Tab>
             <Tabs.Tab value="funding">Fund envelope</Tabs.Tab>

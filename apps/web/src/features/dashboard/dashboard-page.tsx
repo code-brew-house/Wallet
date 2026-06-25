@@ -4,7 +4,7 @@ import { Alert, Badge, Button, Card, Container, Divider, Group, Loader, SimpleGr
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { EnvelopeCard } from '../envelopes/envelope-card';
-import { EnvelopeForms } from '../envelopes/envelope-forms';
+import { EnvelopeForms, type FormKind } from '../envelopes/envelope-forms';
 import type { ActivityItem, DashboardSummary, EnvelopeSummary } from './types';
 
 interface DashboardPageProps {
@@ -16,6 +16,13 @@ interface InviteResponse {
   token?: string;
 }
 
+
+const dashboardFormIds: Record<FormKind, string> = {
+  expense: 'expense-form',
+  funding: 'funding-form',
+  transfer: 'transfer-form',
+  recurring: 'recurring-form',
+};
 export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +30,8 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [selectedForm, setSelectedForm] = useState<FormKind>('expense');
+  const [pendingFocusForm, setPendingFocusForm] = useState<FormKind | null>(null);
   const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency }), [currency]);
 
   const loadDashboard = useCallback(async () => {
@@ -51,6 +60,17 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
       cancelled = true;
     };
   }, [loadDashboard]);
+
+  useEffect(() => {
+    if (!pendingFocusForm || selectedForm !== pendingFocusForm) return;
+
+    const form = document.getElementById(dashboardFormIds[pendingFocusForm]);
+    if (!form) return;
+
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    form.querySelector<HTMLElement>('input:not([type="hidden"]), textarea, button, [tabindex]:not([tabindex="-1"])')?.focus({ preventScroll: true });
+    setPendingFocusForm(null);
+  }, [pendingFocusForm, selectedForm]);
 
   async function refetchDashboard() {
     const nextDashboard = await loadDashboard();
@@ -84,6 +104,11 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
     }, 'Invite link created');
   }
 
+  function focusDashboardForm(form: FormKind) {
+    setSelectedForm(form);
+    setPendingFocusForm(form);
+  }
+
   const lowBalanceEnvelopes = dashboard?.envelopes.filter((envelope) => envelope.balanceMinor >= 0 && envelope.balanceMinor < 1000) ?? [];
 
   return (
@@ -112,14 +137,16 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
             </SimpleGrid>
 
             <Group gap="sm">
-              <Button component="a" href="#expense-form">Add expense</Button>
-              <Button component="a" href="#funding-form" variant="light">Fund envelope</Button>
-              <Button component="a" href="#transfer-form" variant="light">Transfer</Button>
+              <Button onClick={() => focusDashboardForm('expense')}>Add expense</Button>
+              <Button onClick={() => focusDashboardForm('funding')} variant="light">Fund envelope</Button>
+              <Button onClick={() => focusDashboardForm('transfer')} variant="light">Transfer</Button>
             </Group>
 
             <EnvelopeForms
               envelopes={dashboard.envelopes}
               currency={currency}
+              selectedForm={selectedForm}
+              onSelectedFormChange={setSelectedForm}
               onAddExpense={(values) => runMutation(
                 async () => {
                   await apiClient.request<unknown>(`/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(values) });
