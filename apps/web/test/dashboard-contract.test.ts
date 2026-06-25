@@ -18,6 +18,7 @@ describe('dashboard UI contract', () => {
     expect(dashboardSource).toContain("onClick={() => focusDashboardForm('expense')}");
     expect(dashboardSource).toContain("onClick={() => focusDashboardForm('funding')}");
     expect(dashboardSource).toContain("onClick={() => focusDashboardForm('transfer')}");
+    expect(dashboardSource).toContain("onClick={() => focusDashboardForm('recurring')}");
     expect(dashboardSource).toContain('selectedForm={selectedForm}');
     expect(dashboardSource).toContain('onSelectedFormChange={setSelectedForm}');
     expect(envelopeFormsSource).toContain('selectedForm: FormKind;');

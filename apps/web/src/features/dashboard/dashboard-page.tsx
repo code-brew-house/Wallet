@@ -140,6 +140,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               <Button onClick={() => focusDashboardForm('expense')}>Add expense</Button>
               <Button onClick={() => focusDashboardForm('funding')} variant="light">Fund envelope</Button>
               <Button onClick={() => focusDashboardForm('transfer')} variant="light">Transfer</Button>
+              <Button onClick={() => focusDashboardForm('recurring')} variant="light">Create recurring</Button>
             </Group>
 
             <EnvelopeForms
