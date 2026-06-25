@@ -31,6 +31,32 @@ async function createEnvelope(app: INestApplication, token: string, groupId: str
   return response.body as { id: string; name: string; balanceMinor: number };
 }
 
+async function createInvite(app: INestApplication, token: string, groupId: string) {
+  const response = await request(app.getHttpServer())
+    .post(`/groups/${groupId}/invites`)
+    .set('Authorization', `Bearer ${token}`)
+    .send({ expiresInHours: 24 })
+    .expect(201);
+  return response.body as { id: string; token: string; groupId: string; status: string };
+}
+
+async function acceptInvite(app: INestApplication, token: string, inviteToken: string) {
+  await request(app.getHttpServer()).post(`/invites/${inviteToken}/accept`).set('Authorization', `Bearer ${token}`).expect(201);
+}
+
+async function createExpense(app: INestApplication, token: string, groupId: string, envelopeId: string, title = 'Vegetables') {
+  const response = await request(app.getHttpServer())
+    .post(`/groups/${groupId}/expenses`)
+    .set('Authorization', `Bearer ${token}`)
+    .send({ envelopeId, amountMinor: 2500, spentAt: '2026-06-25T12:00:00.000Z', title })
+    .expect(201);
+  return response.body as { expense: { id: string; createdById: string }; summary: { balanceMinor: number } };
+}
+
+function expectErrorCode(body: { code?: string; response?: { code?: string } }, code: string) {
+  expect(body.code ?? body.response?.code).toBe(code);
+}
+
 describe('expenses and recurring expenses', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -100,6 +126,101 @@ describe('expenses and recurring expenses', () => {
 
     const storedExpense = await prisma.expense.findUniqueOrThrow({ where: { id: addExpense.body.expense.id } });
     expect(storedExpense.deletedAt).toBeInstanceOf(Date);
+  });
+
+  test('rejects non-members from reading, creating, or deleting group expenses', async () => {
+    const ownerToken = await signup(app, 'owner@example.com');
+    const outsiderToken = await signup(app, 'outsider@example.com');
+    const group = await createGroup(app, ownerToken, 'Family Wallet');
+    const envelope = await createEnvelope(app, ownerToken, group.id, 'Groceries');
+    const expense = await createExpense(app, ownerToken, group.id, envelope.id);
+
+    await request(app.getHttpServer())
+      .get(`/groups/${group.id}/expenses`)
+      .set('Authorization', `Bearer ${outsiderToken}`)
+      .expect(404)
+      .expect(({ body }) => expectErrorCode(body, 'NOT_FOUND'));
+
+    await request(app.getHttpServer())
+      .post(`/groups/${group.id}/expenses`)
+      .set('Authorization', `Bearer ${outsiderToken}`)
+      .send({ envelopeId: envelope.id, amountMinor: 1200, spentAt: '2026-06-25T12:00:00.000Z', title: 'Snacks' })
+      .expect(404)
+      .expect(({ body }) => expectErrorCode(body, 'NOT_FOUND'));
+
+    await request(app.getHttpServer())
+      .delete(`/groups/${group.id}/expenses/${expense.expense.id}`)
+      .set('Authorization', `Bearer ${outsiderToken}`)
+      .expect(404)
+      .expect(({ body }) => expectErrorCode(body, 'NOT_FOUND'));
+  });
+
+  test('members can delete expenses they created', async () => {
+    const ownerToken = await signup(app, 'owner@example.com');
+    const memberToken = await signup(app, 'member@example.com');
+    const group = await createGroup(app, ownerToken, 'Family Wallet');
+    const invite = await createInvite(app, ownerToken, group.id);
+    await acceptInvite(app, memberToken, invite.token);
+    const envelope = await createEnvelope(app, ownerToken, group.id, 'Groceries');
+    const expense = await createExpense(app, memberToken, group.id, envelope.id);
+
+    const deleted = await request(app.getHttpServer())
+      .delete(`/groups/${group.id}/expenses/${expense.expense.id}`)
+      .set('Authorization', `Bearer ${memberToken}`)
+      .expect(200);
+
+    expect(deleted.body.deleted).toBe(true);
+    expect(deleted.body.summary.balanceMinor).toBe(0);
+  });
+
+  test('members cannot delete another members expense', async () => {
+    const ownerToken = await signup(app, 'owner@example.com');
+    const firstMemberToken = await signup(app, 'first.member@example.com');
+    const secondMemberToken = await signup(app, 'second.member@example.com');
+    const group = await createGroup(app, ownerToken, 'Family Wallet');
+    await acceptInvite(app, firstMemberToken, (await createInvite(app, ownerToken, group.id)).token);
+    await acceptInvite(app, secondMemberToken, (await createInvite(app, ownerToken, group.id)).token);
+    const envelope = await createEnvelope(app, ownerToken, group.id, 'Groceries');
+    const expense = await createExpense(app, firstMemberToken, group.id, envelope.id);
+
+    await request(app.getHttpServer())
+      .delete(`/groups/${group.id}/expenses/${expense.expense.id}`)
+      .set('Authorization', `Bearer ${secondMemberToken}`)
+      .expect(403)
+      .expect(({ body }) => expectErrorCode(body, 'FORBIDDEN'));
+
+    const storedExpense = await prisma.expense.findUniqueOrThrow({ where: { id: expense.expense.id } });
+    expect(storedExpense.deletedAt).toBeNull();
+  });
+
+  test('owners and admins can delete another members expense', async () => {
+    const ownerToken = await signup(app, 'owner@example.com');
+    const adminToken = await signup(app, 'admin@example.com');
+    const memberToken = await signup(app, 'member@example.com');
+    const group = await createGroup(app, ownerToken, 'Family Wallet');
+    await acceptInvite(app, adminToken, (await createInvite(app, ownerToken, group.id)).token);
+    await acceptInvite(app, memberToken, (await createInvite(app, ownerToken, group.id)).token);
+    const admin = await prisma.user.findUniqueOrThrow({ where: { email: 'admin@example.com' } });
+    await request(app.getHttpServer())
+      .patch(`/groups/${group.id}/members/${admin.id}/role`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ role: 'admin' })
+      .expect(200);
+    const envelope = await createEnvelope(app, ownerToken, group.id, 'Groceries');
+
+    const ownerDeletedExpense = await createExpense(app, memberToken, group.id, envelope.id, 'Owner delete target');
+    await request(app.getHttpServer())
+      .delete(`/groups/${group.id}/expenses/${ownerDeletedExpense.expense.id}`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200)
+      .expect(({ body }) => expect(body.deleted).toBe(true));
+
+    const adminDeletedExpense = await createExpense(app, memberToken, group.id, envelope.id, 'Admin delete target');
+    await request(app.getHttpServer())
+      .delete(`/groups/${group.id}/expenses/${adminDeletedExpense.expense.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200)
+      .expect(({ body }) => expect(body.deleted).toBe(true));
   });
 
   test('creates upcoming recurring expenses and confirms one into an expense', async () => {
