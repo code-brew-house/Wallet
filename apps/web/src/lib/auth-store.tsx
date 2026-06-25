@@ -10,8 +10,12 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState | null>(null);
 
+function readStoredAccessToken(): string | null {
+  return typeof window === 'undefined' ? null : window.sessionStorage.getItem('wallet_access_token');
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [accessToken, setAccessTokenState] = useState<string | null>(null);
+  const [accessToken, setAccessTokenState] = useState<string | null>(() => readStoredAccessToken());
 
   const setAccessToken = useCallback((token: string | null) => {
     setAccessTokenState(token);

@@ -3,7 +3,7 @@
 import { Alert, Anchor, Button, Container, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-store';
@@ -15,6 +15,8 @@ interface AuthResponse {
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get('next');
   const { setAccessToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +38,7 @@ export default function SignupPage() {
         body: JSON.stringify({ displayName: values.displayName, email: values.email, password: values.password }),
       });
       setAccessToken(response.accessToken);
-      router.push('/groups/new');
+      router.push(nextPath?.startsWith('/') ? nextPath : '/groups/new');
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Unable to sign up');
     } finally {
