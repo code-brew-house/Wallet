@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-store';
+import { getSafeNextPath } from '../../lib/next-path';
 
 interface AuthResponse {
   accessToken: string;
@@ -38,7 +39,7 @@ export default function SignupPage() {
         body: JSON.stringify({ displayName: values.displayName, email: values.email, password: values.password }),
       });
       setAccessToken(response.accessToken);
-      router.push(nextPath?.startsWith('/') ? nextPath : '/groups/new');
+      router.push(getSafeNextPath(nextPath));
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Unable to sign up');
     } finally {

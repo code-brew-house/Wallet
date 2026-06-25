@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { createApiClient } from '../src/lib/api-client';
+import { getSafeNextPath } from '../src/lib/next-path';
 
 describe('api client', () => {
   test('prefixes configured API base URL and attaches bearer token', async () => {
@@ -33,5 +34,18 @@ describe('invite acceptance auth gate', () => {
     expect(acceptCallIndex).toBeGreaterThan(authGuardIndex);
     expect(page).toContain('href={`/login?next=${encodeURIComponent(invitePath)}`}');
     expect(page).toContain('href={`/signup?next=${encodeURIComponent(invitePath)}`}');
+  });
+});
+
+describe('auth next path redirect safety', () => {
+  test('rejects protocol-relative next paths for login and signup redirects', () => {
+    expect(getSafeNextPath('//evil.example')).toBe('/groups/new');
+    expect(getSafeNextPath('/invites/abc')).toBe('/invites/abc');
+
+    const loginPage = readFileSync(new URL('../src/app/login/page.tsx', import.meta.url), 'utf8');
+    const signupPage = readFileSync(new URL('../src/app/signup/page.tsx', import.meta.url), 'utf8');
+
+    expect(loginPage).toContain('getSafeNextPath(nextPath)');
+    expect(signupPage).toContain('getSafeNextPath(nextPath)');
   });
 });
