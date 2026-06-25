@@ -29,12 +29,16 @@ export class InvitesService {
   async acceptInvite(userId: string, token: string) {
     const invite = await this.findActiveInviteByToken(token);
     return this.prisma.$transaction(async (tx) => {
-      const updated = await tx.invite.updateMany({
+      const activeInvite = await tx.invite.findFirst({
         where: { id: invite.id, status: 'active', expiresAt: { gt: new Date() } },
-        data: { status: 'accepted', acceptedById: userId, acceptedAt: new Date() },
       });
-      if (updated.count === 0) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Invite not found' });
-      return tx.membership.create({ data: { groupId: invite.groupId, userId, role: 'member' } });
+      if (!activeInvite) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Invite not found' });
+
+      return tx.membership.upsert({
+        where: { groupId_userId: { groupId: activeInvite.groupId, userId } },
+        update: {},
+        create: { groupId: activeInvite.groupId, userId, role: 'member' },
+      });
     });
   }
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { ChangeRoleDto, CreateGroupDto } from './dto';
 import { MembershipService } from '../memberships/membership.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -39,6 +39,9 @@ export class GroupsService {
     await this.memberships.requireRole(userId, groupId, ['owner', 'admin']);
     const membership = await this.prisma.membership.findUnique({ where: { groupId_userId: { groupId, userId: memberUserId } } });
     if (!membership) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Membership not found' });
+    if (membership.role === 'owner') {
+      throw new ForbiddenException({ code: 'FORBIDDEN', message: 'Owner role cannot be changed' });
+    }
     return this.prisma.membership.update({
       where: { groupId_userId: { groupId, userId: memberUserId } },
       data: { role: dto.role },
