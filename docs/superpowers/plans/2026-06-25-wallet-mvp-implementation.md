@@ -166,6 +166,7 @@ coverage/
 .env.*
 !.env.example
 .superpowers/
+.worktrees/
 .DS_Store
 apps/api/prisma/migrations/dev.db
 ```
