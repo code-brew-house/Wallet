@@ -192,6 +192,9 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   memberships?: Prisma.MembershipListRelationFilter
   createdGroups?: Prisma.GroupListRelationFilter
+  createdInvites?: Prisma.InviteListRelationFilter
+  acceptedInvites?: Prisma.InviteListRelationFilter
+  createdTransfers?: Prisma.EnvelopeTransferListRelationFilter
   fundingEntries?: Prisma.EnvelopeFundingListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
 }
@@ -205,6 +208,9 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   memberships?: Prisma.MembershipOrderByRelationAggregateInput
   createdGroups?: Prisma.GroupOrderByRelationAggregateInput
+  createdInvites?: Prisma.InviteOrderByRelationAggregateInput
+  acceptedInvites?: Prisma.InviteOrderByRelationAggregateInput
+  createdTransfers?: Prisma.EnvelopeTransferOrderByRelationAggregateInput
   fundingEntries?: Prisma.EnvelopeFundingOrderByRelationAggregateInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
 }
@@ -221,6 +227,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   memberships?: Prisma.MembershipListRelationFilter
   createdGroups?: Prisma.GroupListRelationFilter
+  createdInvites?: Prisma.InviteListRelationFilter
+  acceptedInvites?: Prisma.InviteListRelationFilter
+  createdTransfers?: Prisma.EnvelopeTransferListRelationFilter
   fundingEntries?: Prisma.EnvelopeFundingListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
 }, "id" | "email">
@@ -258,6 +267,9 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
 }
@@ -271,6 +283,9 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -284,6 +299,9 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
 }
@@ -297,6 +315,9 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -360,6 +381,11 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -396,6 +422,36 @@ export type UserUpdateOneRequiredWithoutMembershipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMembershipsInput, Prisma.UserUpdateWithoutMembershipsInput>, Prisma.UserUncheckedUpdateWithoutMembershipsInput>
 }
 
+export type UserCreateNestedOneWithoutCreatedInvitesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitesInput, Prisma.UserUncheckedCreateWithoutCreatedInvitesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedInvitesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutAcceptedInvitesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitesInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAcceptedInvitesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCreatedInvitesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitesInput, Prisma.UserUncheckedCreateWithoutCreatedInvitesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedInvitesInput
+  upsert?: Prisma.UserUpsertWithoutCreatedInvitesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedInvitesInput, Prisma.UserUpdateWithoutCreatedInvitesInput>, Prisma.UserUncheckedUpdateWithoutCreatedInvitesInput>
+}
+
+export type UserUpdateOneWithoutAcceptedInvitesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitesInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAcceptedInvitesInput
+  upsert?: Prisma.UserUpsertWithoutAcceptedInvitesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAcceptedInvitesInput, Prisma.UserUpdateWithoutAcceptedInvitesInput>, Prisma.UserUncheckedUpdateWithoutAcceptedInvitesInput>
+}
+
 export type UserCreateNestedOneWithoutFundingEntriesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutFundingEntriesInput, Prisma.UserUncheckedCreateWithoutFundingEntriesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutFundingEntriesInput
@@ -408,6 +464,20 @@ export type UserUpdateOneRequiredWithoutFundingEntriesNestedInput = {
   upsert?: Prisma.UserUpsertWithoutFundingEntriesInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFundingEntriesInput, Prisma.UserUpdateWithoutFundingEntriesInput>, Prisma.UserUncheckedUpdateWithoutFundingEntriesInput>
+}
+
+export type UserCreateNestedOneWithoutCreatedTransfersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransfersInput, Prisma.UserUncheckedCreateWithoutCreatedTransfersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTransfersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCreatedTransfersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransfersInput, Prisma.UserUncheckedCreateWithoutCreatedTransfersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTransfersInput
+  upsert?: Prisma.UserUpsertWithoutCreatedTransfersInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedTransfersInput, Prisma.UserUpdateWithoutCreatedTransfersInput>, Prisma.UserUncheckedUpdateWithoutCreatedTransfersInput>
 }
 
 export type UserCreateNestedOneWithoutExpensesInput = {
@@ -432,6 +502,9 @@ export type UserCreateWithoutCreatedGroupsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
 }
@@ -444,6 +517,9 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -472,6 +548,9 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
 }
@@ -484,6 +563,9 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -496,6 +578,9 @@ export type UserCreateWithoutMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
 }
@@ -508,6 +593,9 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -536,6 +624,9 @@ export type UserUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
 }
@@ -548,6 +639,161 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
+  fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedInvitesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  displayName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
+  fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedInvitesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  displayName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
+  fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedInvitesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitesInput, Prisma.UserUncheckedCreateWithoutCreatedInvitesInput>
+}
+
+export type UserCreateWithoutAcceptedInvitesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  displayName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
+  fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutAcceptedInvitesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  displayName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
+  fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutAcceptedInvitesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitesInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitesInput>
+}
+
+export type UserUpsertWithoutCreatedInvitesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedInvitesInput, Prisma.UserUncheckedUpdateWithoutCreatedInvitesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedInvitesInput, Prisma.UserUncheckedCreateWithoutCreatedInvitesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedInvitesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedInvitesInput, Prisma.UserUncheckedUpdateWithoutCreatedInvitesInput>
+}
+
+export type UserUpdateWithoutCreatedInvitesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
+  fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedInvitesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
+  fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithoutAcceptedInvitesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAcceptedInvitesInput, Prisma.UserUncheckedUpdateWithoutAcceptedInvitesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAcceptedInvitesInput, Prisma.UserUncheckedCreateWithoutAcceptedInvitesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAcceptedInvitesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAcceptedInvitesInput, Prisma.UserUncheckedUpdateWithoutAcceptedInvitesInput>
+}
+
+export type UserUpdateWithoutAcceptedInvitesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
+  fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAcceptedInvitesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -561,6 +807,9 @@ export type UserCreateWithoutFundingEntriesInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
 }
 
@@ -573,6 +822,9 @@ export type UserUncheckedCreateWithoutFundingEntriesInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -601,6 +853,9 @@ export type UserUpdateWithoutFundingEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -613,6 +868,85 @@ export type UserUncheckedUpdateWithoutFundingEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedTransfersInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  displayName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedTransfersInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  displayName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedTransfersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransfersInput, Prisma.UserUncheckedCreateWithoutCreatedTransfersInput>
+}
+
+export type UserUpsertWithoutCreatedTransfersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTransfersInput, Prisma.UserUncheckedUpdateWithoutCreatedTransfersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTransfersInput, Prisma.UserUncheckedCreateWithoutCreatedTransfersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedTransfersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTransfersInput, Prisma.UserUncheckedUpdateWithoutCreatedTransfersInput>
+}
+
+export type UserUpdateWithoutCreatedTransfersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedTransfersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -625,6 +959,9 @@ export type UserCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingCreateNestedManyWithoutCreatedByInput
 }
 
@@ -637,6 +974,9 @@ export type UserUncheckedCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatedByInput
+  createdInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutCreatedByInput
+  acceptedInvites?: Prisma.InviteUncheckedCreateNestedManyWithoutAcceptedByInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -665,6 +1005,9 @@ export type UserUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -677,6 +1020,9 @@ export type UserUncheckedUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdInvites?: Prisma.InviteUncheckedUpdateManyWithoutCreatedByNestedInput
+  acceptedInvites?: Prisma.InviteUncheckedUpdateManyWithoutAcceptedByNestedInput
+  createdTransfers?: Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput
   fundingEntries?: Prisma.EnvelopeFundingUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -688,6 +1034,9 @@ export type UserUncheckedUpdateWithoutExpensesInput = {
 export type UserCountOutputType = {
   memberships: number
   createdGroups: number
+  createdInvites: number
+  acceptedInvites: number
+  createdTransfers: number
   fundingEntries: number
   expenses: number
 }
@@ -695,6 +1044,9 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | UserCountOutputTypeCountMembershipsArgs
   createdGroups?: boolean | UserCountOutputTypeCountCreatedGroupsArgs
+  createdInvites?: boolean | UserCountOutputTypeCountCreatedInvitesArgs
+  acceptedInvites?: boolean | UserCountOutputTypeCountAcceptedInvitesArgs
+  createdTransfers?: boolean | UserCountOutputTypeCountCreatedTransfersArgs
   fundingEntries?: boolean | UserCountOutputTypeCountFundingEntriesArgs
   expenses?: boolean | UserCountOutputTypeCountExpensesArgs
 }
@@ -726,6 +1078,27 @@ export type UserCountOutputTypeCountCreatedGroupsArgs<ExtArgs extends runtime.Ty
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountCreatedInvitesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InviteWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAcceptedInvitesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InviteWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EnvelopeTransferWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountFundingEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EnvelopeFundingWhereInput
 }
@@ -747,6 +1120,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
+  createdInvites?: boolean | Prisma.User$createdInvitesArgs<ExtArgs>
+  acceptedInvites?: boolean | Prisma.User$acceptedInvitesArgs<ExtArgs>
+  createdTransfers?: boolean | Prisma.User$createdTransfersArgs<ExtArgs>
   fundingEntries?: boolean | Prisma.User$fundingEntriesArgs<ExtArgs>
   expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -783,6 +1159,9 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.User$membershipsArgs<ExtArgs>
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
+  createdInvites?: boolean | Prisma.User$createdInvitesArgs<ExtArgs>
+  acceptedInvites?: boolean | Prisma.User$acceptedInvitesArgs<ExtArgs>
+  createdTransfers?: boolean | Prisma.User$createdTransfersArgs<ExtArgs>
   fundingEntries?: boolean | Prisma.User$fundingEntriesArgs<ExtArgs>
   expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -795,6 +1174,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     memberships: Prisma.$MembershipPayload<ExtArgs>[]
     createdGroups: Prisma.$GroupPayload<ExtArgs>[]
+    createdInvites: Prisma.$InvitePayload<ExtArgs>[]
+    acceptedInvites: Prisma.$InvitePayload<ExtArgs>[]
+    createdTransfers: Prisma.$EnvelopeTransferPayload<ExtArgs>[]
     fundingEntries: Prisma.$EnvelopeFundingPayload<ExtArgs>[]
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
   }
@@ -1201,6 +1583,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   memberships<T extends Prisma.User$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdGroups<T extends Prisma.User$createdGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdInvites<T extends Prisma.User$createdInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  acceptedInvites<T extends Prisma.User$acceptedInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$acceptedInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdTransfers<T extends Prisma.User$createdTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnvelopeTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   fundingEntries<T extends Prisma.User$fundingEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fundingEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnvelopeFundingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   expenses<T extends Prisma.User$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1676,6 +2061,78 @@ export type User$createdGroupsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.GroupScalarFieldEnum | Prisma.GroupScalarFieldEnum[]
+}
+
+/**
+ * User.createdInvites
+ */
+export type User$createdInvitesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invite
+   */
+  select?: Prisma.InviteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invite
+   */
+  omit?: Prisma.InviteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InviteInclude<ExtArgs> | null
+  where?: Prisma.InviteWhereInput
+  orderBy?: Prisma.InviteOrderByWithRelationInput | Prisma.InviteOrderByWithRelationInput[]
+  cursor?: Prisma.InviteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InviteScalarFieldEnum | Prisma.InviteScalarFieldEnum[]
+}
+
+/**
+ * User.acceptedInvites
+ */
+export type User$acceptedInvitesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invite
+   */
+  select?: Prisma.InviteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invite
+   */
+  omit?: Prisma.InviteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InviteInclude<ExtArgs> | null
+  where?: Prisma.InviteWhereInput
+  orderBy?: Prisma.InviteOrderByWithRelationInput | Prisma.InviteOrderByWithRelationInput[]
+  cursor?: Prisma.InviteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InviteScalarFieldEnum | Prisma.InviteScalarFieldEnum[]
+}
+
+/**
+ * User.createdTransfers
+ */
+export type User$createdTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EnvelopeTransfer
+   */
+  select?: Prisma.EnvelopeTransferSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EnvelopeTransfer
+   */
+  omit?: Prisma.EnvelopeTransferOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EnvelopeTransferInclude<ExtArgs> | null
+  where?: Prisma.EnvelopeTransferWhereInput
+  orderBy?: Prisma.EnvelopeTransferOrderByWithRelationInput | Prisma.EnvelopeTransferOrderByWithRelationInput[]
+  cursor?: Prisma.EnvelopeTransferWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EnvelopeTransferScalarFieldEnum | Prisma.EnvelopeTransferScalarFieldEnum[]
 }
 
 /**

@@ -23,4 +23,13 @@ describe('Prisma schema', () => {
     expect(schema).not.toContain('Float');
     expect(schema).not.toContain('Decimal');
   });
+
+  test('enforces user foreign keys for invite and transfer audit fields', () => {
+    expect(schema).toMatch(/createdInvites\s+Invite\[\]\s+@relation\("InviteCreatedBy"\)/);
+    expect(schema).toMatch(/acceptedInvites\s+Invite\[\]\s+@relation\("InviteAcceptedBy"\)/);
+    expect(schema).toMatch(/createdTransfers\s+EnvelopeTransfer\[\]\s+@relation\("EnvelopeTransferCreatedBy"\)/);
+    expect(schema).toMatch(/createdBy\s+User\s+@relation\("InviteCreatedBy", fields: \[createdById\], references: \[id\]\)/);
+    expect(schema).toMatch(/acceptedBy\s+User\?\s+@relation\("InviteAcceptedBy", fields: \[acceptedById\], references: \[id\]\)/);
+    expect(schema).toMatch(/createdBy\s+User\s+@relation\("EnvelopeTransferCreatedBy", fields: \[createdById\], references: \[id\]\)/);
+  });
 });

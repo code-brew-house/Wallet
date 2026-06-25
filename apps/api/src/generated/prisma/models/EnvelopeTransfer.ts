@@ -251,6 +251,7 @@ export type EnvelopeTransferWhereInput = {
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   fromEnvelope?: Prisma.XOR<Prisma.EnvelopeScalarRelationFilter, Prisma.EnvelopeWhereInput>
   toEnvelope?: Prisma.XOR<Prisma.EnvelopeScalarRelationFilter, Prisma.EnvelopeWhereInput>
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type EnvelopeTransferOrderByWithRelationInput = {
@@ -266,6 +267,7 @@ export type EnvelopeTransferOrderByWithRelationInput = {
   group?: Prisma.GroupOrderByWithRelationInput
   fromEnvelope?: Prisma.EnvelopeOrderByWithRelationInput
   toEnvelope?: Prisma.EnvelopeOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type EnvelopeTransferWhereUniqueInput = Prisma.AtLeast<{
@@ -284,6 +286,7 @@ export type EnvelopeTransferWhereUniqueInput = Prisma.AtLeast<{
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   fromEnvelope?: Prisma.XOR<Prisma.EnvelopeScalarRelationFilter, Prisma.EnvelopeWhereInput>
   toEnvelope?: Prisma.XOR<Prisma.EnvelopeScalarRelationFilter, Prisma.EnvelopeWhereInput>
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type EnvelopeTransferOrderByWithAggregationInput = {
@@ -322,12 +325,12 @@ export type EnvelopeTransferCreateInput = {
   id?: string
   amountMinor: number
   note?: string | null
-  createdById: string
   deletedAt?: Date | string | null
   createdAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutTransfersInput
   fromEnvelope: Prisma.EnvelopeCreateNestedOneWithoutOutgoingInput
   toEnvelope: Prisma.EnvelopeCreateNestedOneWithoutIncomingInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedTransfersInput
 }
 
 export type EnvelopeTransferUncheckedCreateInput = {
@@ -346,12 +349,12 @@ export type EnvelopeTransferUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutTransfersNestedInput
   fromEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutOutgoingNestedInput
   toEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutIncomingNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTransfersNestedInput
 }
 
 export type EnvelopeTransferUncheckedUpdateInput = {
@@ -382,7 +385,6 @@ export type EnvelopeTransferUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -451,6 +453,48 @@ export type EnvelopeTransferMinOrderByAggregateInput = {
 
 export type EnvelopeTransferSumOrderByAggregateInput = {
   amountMinor?: Prisma.SortOrder
+}
+
+export type EnvelopeTransferCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.EnvelopeTransferCreateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput> | Prisma.EnvelopeTransferCreateWithoutCreatedByInput[] | Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput | Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.EnvelopeTransferCreateManyCreatedByInputEnvelope
+  connect?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+}
+
+export type EnvelopeTransferUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.EnvelopeTransferCreateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput> | Prisma.EnvelopeTransferCreateWithoutCreatedByInput[] | Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput | Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.EnvelopeTransferCreateManyCreatedByInputEnvelope
+  connect?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+}
+
+export type EnvelopeTransferUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.EnvelopeTransferCreateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput> | Prisma.EnvelopeTransferCreateWithoutCreatedByInput[] | Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput | Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.EnvelopeTransferUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.EnvelopeTransferUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.EnvelopeTransferCreateManyCreatedByInputEnvelope
+  set?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  disconnect?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  delete?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  connect?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  update?: Prisma.EnvelopeTransferUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.EnvelopeTransferUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.EnvelopeTransferUpdateManyWithWhereWithoutCreatedByInput | Prisma.EnvelopeTransferUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
+}
+
+export type EnvelopeTransferUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.EnvelopeTransferCreateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput> | Prisma.EnvelopeTransferCreateWithoutCreatedByInput[] | Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput | Prisma.EnvelopeTransferCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.EnvelopeTransferUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.EnvelopeTransferUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.EnvelopeTransferCreateManyCreatedByInputEnvelope
+  set?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  disconnect?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  delete?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  connect?: Prisma.EnvelopeTransferWhereUniqueInput | Prisma.EnvelopeTransferWhereUniqueInput[]
+  update?: Prisma.EnvelopeTransferUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.EnvelopeTransferUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.EnvelopeTransferUpdateManyWithWhereWithoutCreatedByInput | Prisma.EnvelopeTransferUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
 }
 
 export type EnvelopeTransferCreateNestedManyWithoutGroupInput = {
@@ -579,15 +623,78 @@ export type EnvelopeTransferUncheckedUpdateManyWithoutFromEnvelopeNestedInput = 
   deleteMany?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
 }
 
+export type EnvelopeTransferCreateWithoutCreatedByInput = {
+  id?: string
+  amountMinor: number
+  note?: string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutTransfersInput
+  fromEnvelope: Prisma.EnvelopeCreateNestedOneWithoutOutgoingInput
+  toEnvelope: Prisma.EnvelopeCreateNestedOneWithoutIncomingInput
+}
+
+export type EnvelopeTransferUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  groupId: string
+  fromEnvelopeId: string
+  toEnvelopeId: string
+  amountMinor: number
+  note?: string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type EnvelopeTransferCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.EnvelopeTransferWhereUniqueInput
+  create: Prisma.XOR<Prisma.EnvelopeTransferCreateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput>
+}
+
+export type EnvelopeTransferCreateManyCreatedByInputEnvelope = {
+  data: Prisma.EnvelopeTransferCreateManyCreatedByInput | Prisma.EnvelopeTransferCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type EnvelopeTransferUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.EnvelopeTransferWhereUniqueInput
+  update: Prisma.XOR<Prisma.EnvelopeTransferUpdateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.EnvelopeTransferCreateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedCreateWithoutCreatedByInput>
+}
+
+export type EnvelopeTransferUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.EnvelopeTransferWhereUniqueInput
+  data: Prisma.XOR<Prisma.EnvelopeTransferUpdateWithoutCreatedByInput, Prisma.EnvelopeTransferUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type EnvelopeTransferUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.EnvelopeTransferScalarWhereInput
+  data: Prisma.XOR<Prisma.EnvelopeTransferUpdateManyMutationInput, Prisma.EnvelopeTransferUncheckedUpdateManyWithoutCreatedByInput>
+}
+
+export type EnvelopeTransferScalarWhereInput = {
+  AND?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
+  OR?: Prisma.EnvelopeTransferScalarWhereInput[]
+  NOT?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
+  id?: Prisma.StringFilter<"EnvelopeTransfer"> | string
+  groupId?: Prisma.StringFilter<"EnvelopeTransfer"> | string
+  fromEnvelopeId?: Prisma.StringFilter<"EnvelopeTransfer"> | string
+  toEnvelopeId?: Prisma.StringFilter<"EnvelopeTransfer"> | string
+  amountMinor?: Prisma.IntFilter<"EnvelopeTransfer"> | number
+  note?: Prisma.StringNullableFilter<"EnvelopeTransfer"> | string | null
+  createdById?: Prisma.StringFilter<"EnvelopeTransfer"> | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"EnvelopeTransfer"> | Date | string | null
+  createdAt?: Prisma.DateTimeFilter<"EnvelopeTransfer"> | Date | string
+}
+
 export type EnvelopeTransferCreateWithoutGroupInput = {
   id?: string
   amountMinor: number
   note?: string | null
-  createdById: string
   deletedAt?: Date | string | null
   createdAt?: Date | string
   fromEnvelope: Prisma.EnvelopeCreateNestedOneWithoutOutgoingInput
   toEnvelope: Prisma.EnvelopeCreateNestedOneWithoutIncomingInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedTransfersInput
 }
 
 export type EnvelopeTransferUncheckedCreateWithoutGroupInput = {
@@ -627,30 +734,15 @@ export type EnvelopeTransferUpdateManyWithWhereWithoutGroupInput = {
   data: Prisma.XOR<Prisma.EnvelopeTransferUpdateManyMutationInput, Prisma.EnvelopeTransferUncheckedUpdateManyWithoutGroupInput>
 }
 
-export type EnvelopeTransferScalarWhereInput = {
-  AND?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
-  OR?: Prisma.EnvelopeTransferScalarWhereInput[]
-  NOT?: Prisma.EnvelopeTransferScalarWhereInput | Prisma.EnvelopeTransferScalarWhereInput[]
-  id?: Prisma.StringFilter<"EnvelopeTransfer"> | string
-  groupId?: Prisma.StringFilter<"EnvelopeTransfer"> | string
-  fromEnvelopeId?: Prisma.StringFilter<"EnvelopeTransfer"> | string
-  toEnvelopeId?: Prisma.StringFilter<"EnvelopeTransfer"> | string
-  amountMinor?: Prisma.IntFilter<"EnvelopeTransfer"> | number
-  note?: Prisma.StringNullableFilter<"EnvelopeTransfer"> | string | null
-  createdById?: Prisma.StringFilter<"EnvelopeTransfer"> | string
-  deletedAt?: Prisma.DateTimeNullableFilter<"EnvelopeTransfer"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"EnvelopeTransfer"> | Date | string
-}
-
 export type EnvelopeTransferCreateWithoutToEnvelopeInput = {
   id?: string
   amountMinor: number
   note?: string | null
-  createdById: string
   deletedAt?: Date | string | null
   createdAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutTransfersInput
   fromEnvelope: Prisma.EnvelopeCreateNestedOneWithoutOutgoingInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedTransfersInput
 }
 
 export type EnvelopeTransferUncheckedCreateWithoutToEnvelopeInput = {
@@ -678,11 +770,11 @@ export type EnvelopeTransferCreateWithoutFromEnvelopeInput = {
   id?: string
   amountMinor: number
   note?: string | null
-  createdById: string
   deletedAt?: Date | string | null
   createdAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutTransfersInput
   toEnvelope: Prisma.EnvelopeCreateNestedOneWithoutIncomingInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedTransfersInput
 }
 
 export type EnvelopeTransferUncheckedCreateWithoutFromEnvelopeInput = {
@@ -738,6 +830,50 @@ export type EnvelopeTransferUpdateManyWithWhereWithoutFromEnvelopeInput = {
   data: Prisma.XOR<Prisma.EnvelopeTransferUpdateManyMutationInput, Prisma.EnvelopeTransferUncheckedUpdateManyWithoutFromEnvelopeInput>
 }
 
+export type EnvelopeTransferCreateManyCreatedByInput = {
+  id?: string
+  groupId: string
+  fromEnvelopeId: string
+  toEnvelopeId: string
+  amountMinor: number
+  note?: string | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type EnvelopeTransferUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutTransfersNestedInput
+  fromEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutOutgoingNestedInput
+  toEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutIncomingNestedInput
+}
+
+export type EnvelopeTransferUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromEnvelopeId?: Prisma.StringFieldUpdateOperationsInput | string
+  toEnvelopeId?: Prisma.StringFieldUpdateOperationsInput | string
+  amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EnvelopeTransferUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  fromEnvelopeId?: Prisma.StringFieldUpdateOperationsInput | string
+  toEnvelopeId?: Prisma.StringFieldUpdateOperationsInput | string
+  amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type EnvelopeTransferCreateManyGroupInput = {
   id?: string
   fromEnvelopeId: string
@@ -753,11 +889,11 @@ export type EnvelopeTransferUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fromEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutOutgoingNestedInput
   toEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutIncomingNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTransfersNestedInput
 }
 
 export type EnvelopeTransferUncheckedUpdateWithoutGroupInput = {
@@ -808,11 +944,11 @@ export type EnvelopeTransferUpdateWithoutToEnvelopeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutTransfersNestedInput
   fromEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutOutgoingNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTransfersNestedInput
 }
 
 export type EnvelopeTransferUncheckedUpdateWithoutToEnvelopeInput = {
@@ -841,11 +977,11 @@ export type EnvelopeTransferUpdateWithoutFromEnvelopeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutTransfersNestedInput
   toEnvelope?: Prisma.EnvelopeUpdateOneRequiredWithoutIncomingNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedTransfersNestedInput
 }
 
 export type EnvelopeTransferUncheckedUpdateWithoutFromEnvelopeInput = {
@@ -885,6 +1021,7 @@ export type EnvelopeTransferSelect<ExtArgs extends runtime.Types.Extensions.Inte
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   fromEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
   toEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["envelopeTransfer"]>
 
 export type EnvelopeTransferSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -900,6 +1037,7 @@ export type EnvelopeTransferSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   fromEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
   toEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["envelopeTransfer"]>
 
 export type EnvelopeTransferSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -915,6 +1053,7 @@ export type EnvelopeTransferSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   fromEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
   toEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["envelopeTransfer"]>
 
 export type EnvelopeTransferSelectScalar = {
@@ -934,16 +1073,19 @@ export type EnvelopeTransferInclude<ExtArgs extends runtime.Types.Extensions.Int
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   fromEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
   toEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type EnvelopeTransferIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   fromEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
   toEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type EnvelopeTransferIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   fromEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
   toEnvelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $EnvelopeTransferPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -952,6 +1094,7 @@ export type $EnvelopeTransferPayload<ExtArgs extends runtime.Types.Extensions.In
     group: Prisma.$GroupPayload<ExtArgs>
     fromEnvelope: Prisma.$EnvelopePayload<ExtArgs>
     toEnvelope: Prisma.$EnvelopePayload<ExtArgs>
+    createdBy: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1360,6 +1503,7 @@ export interface Prisma__EnvelopeTransferClient<T, Null = never, ExtArgs extends
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   fromEnvelope<T extends Prisma.EnvelopeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EnvelopeDefaultArgs<ExtArgs>>): Prisma.Prisma__EnvelopeClient<runtime.Types.Result.GetResult<Prisma.$EnvelopePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   toEnvelope<T extends Prisma.EnvelopeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EnvelopeDefaultArgs<ExtArgs>>): Prisma.Prisma__EnvelopeClient<runtime.Types.Result.GetResult<Prisma.$EnvelopePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
