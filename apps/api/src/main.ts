@@ -1,12 +1,14 @@
 import 'reflect-metadata';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
 import type { ApiErrorBody } from '@wallet/shared';
 import { env } from './config/env';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   app.enableCors({ origin: env.WEB_PUBLIC_URL, credentials: true });
   app.useGlobalPipes(
     new ValidationPipe({
