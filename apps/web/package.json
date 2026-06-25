@@ -1,0 +1,30 @@
+{
+  "name": "@wallet/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "test": "bun test test/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mantine/core": "latest",
+    "@mantine/dates": "latest",
+    "@mantine/form": "latest",
+    "@mantine/hooks": "latest",
+    "@mantine/notifications": "latest",
+    "@wallet/shared": "workspace:*",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "workbox-window": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
