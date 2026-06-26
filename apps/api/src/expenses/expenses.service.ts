@@ -55,7 +55,7 @@ export class ExpensesService {
         amountMinor: dto.amountMinor,
         spentAt: new Date(dto.spentAt),
         title: dto.title,
-        note: dto.note ?? null,
+        note: dto.note || null,
         createdById: userId,
       },
     });

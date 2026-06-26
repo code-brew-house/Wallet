@@ -52,6 +52,9 @@ export class EnvelopesService {
     dto: TransferEnvelopeDto,
   ): Promise<{ from: EnvelopeSummary; to: EnvelopeSummary }> {
     await this.memberships.requireRole(userId, groupId, MANAGER_ROLES);
+    if (dto.fromEnvelopeId === dto.toEnvelopeId) {
+      throw new BadRequestException({ code: 'INVALID_INPUT', message: 'Transfer envelopes must be different' });
+    }
     return this.runSerializableTransfer(async () =>
       this.prisma.$transaction(
         async (tx) => {

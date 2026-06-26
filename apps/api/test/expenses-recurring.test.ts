@@ -102,11 +102,12 @@ describe('expenses and recurring expenses', () => {
     const addExpense = await request(app.getHttpServer())
       .post(`/groups/${group.id}/expenses`)
       .set('Authorization', `Bearer ${ownerToken}`)
-      .send({ envelopeId: envelope.id, amountMinor: 2500, spentAt: '2026-06-25T12:00:00.000Z', title: 'Vegetables' })
+      .send({ envelopeId: envelope.id, amountMinor: 2500, spentAt: '2026-06-25T12:00:00.000Z', title: 'Vegetables', note: '' })
       .expect(201);
 
     expect(addExpense.body.summary.balanceMinor).toBe(-2500);
     expect(addExpense.body.expense.title).toBe('Vegetables');
+    expect(addExpense.body.expense.note).toBeNull();
 
     await request(app.getHttpServer())
       .get(`/groups/${group.id}/expenses`)
@@ -238,8 +239,10 @@ describe('expenses and recurring expenses', () => {
         title: 'Rent',
         frequency: 'monthly',
         nextDueAt: '2026-07-01T00:00:00.000Z',
+        note: '',
       })
       .expect(201);
+    expect(recurring.body.note).toBeNull();
 
     const upcoming = await request(app.getHttpServer())
       .get(`/groups/${group.id}/recurring-expenses/upcoming`)

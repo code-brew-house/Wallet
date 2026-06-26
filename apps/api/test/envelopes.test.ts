@@ -203,6 +203,24 @@ describe('envelope ledger', () => {
       });
   });
 
+  test('rejects transfers within the same envelope', async () => {
+    const ownerToken = await signup(app, 'owner@example.com');
+    const group = await createGroup(app, ownerToken, 'Family Wallet');
+
+    const envelope = await request(app.getHttpServer())
+      .post(`/groups/${group.id}/envelopes`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Groceries' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/groups/${group.id}/transfers`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ fromEnvelopeId: envelope.body.id, toEnvelopeId: envelope.body.id, amountMinor: 100 })
+      .expect(400)
+      .expect(({ body }) => expectErrorCode(body, 'INVALID_INPUT'));
+  });
+
   test('non-members cannot read or mutate group envelopes', async () => {
     const ownerToken = await signup(app, 'owner@example.com');
     const outsiderToken = await signup(app, 'outsider@example.com');
