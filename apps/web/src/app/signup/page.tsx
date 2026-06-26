@@ -4,7 +4,7 @@ import { Alert, Anchor, Button, Container, PasswordInput, Stack, Text, TextInput
 import { useForm } from '@mantine/form';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-store';
 import { getSafeNextPath } from '../../lib/next-path';
@@ -15,6 +15,14 @@ interface AuthResponse {
 }
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get('next');

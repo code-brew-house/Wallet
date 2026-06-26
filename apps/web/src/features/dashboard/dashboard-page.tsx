@@ -3,6 +3,7 @@
 import { Alert, Badge, Button, Card, Container, Divider, Group, Loader, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
+import { StaleDataBanner } from '../../components/stale-data-banner';
 import { EnvelopeCard } from '../envelopes/envelope-card';
 import { EnvelopeForms, type FormKind } from '../envelopes/envelope-forms';
 import type { ActivityItem, DashboardSummary, EnvelopeSummary } from './types';
@@ -114,6 +115,8 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   return (
     <Container size="lg" py="xl">
       <Stack gap="xl">
+        {dashboard ? <StaleDataBanner generatedAt={dashboard.generatedAt} /> : <StaleDataBanner />}
+
         <Group justify="space-between" align="start">
           <div>
             <Badge color="teal" variant="light">Envelope-first</Badge>
