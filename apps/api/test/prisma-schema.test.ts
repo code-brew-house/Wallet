@@ -31,5 +31,8 @@ describe('Prisma schema', () => {
     expect(schema).toMatch(/createdBy\s+User\s+@relation\("InviteCreatedBy", fields: \[createdById\], references: \[id\]\)/);
     expect(schema).toMatch(/acceptedBy\s+User\?\s+@relation\("InviteAcceptedBy", fields: \[acceptedById\], references: \[id\]\)/);
     expect(schema).toMatch(/createdBy\s+User\s+@relation\("EnvelopeTransferCreatedBy", fields: \[createdById\], references: \[id\]\)/);
+    expect(schema).toContain('tokenLookupHash String    @unique');
+    expect(schema).toMatch(/createdRecurring\s+RecurringExpense\[\]\s+@relation\("RecurringExpenseCreatedBy"\)/);
+    expect(schema).toMatch(/createdBy\s+User\s+@relation\("RecurringExpenseCreatedBy", fields: \[createdById\], references: \[id\]\)/);
   });
 });

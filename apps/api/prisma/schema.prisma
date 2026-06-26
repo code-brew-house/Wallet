@@ -38,6 +38,7 @@ model User {
   createdInvites   Invite[]           @relation("InviteCreatedBy")
   acceptedInvites  Invite[]           @relation("InviteAcceptedBy")
   createdTransfers EnvelopeTransfer[] @relation("EnvelopeTransferCreatedBy")
+  createdRecurring RecurringExpense[] @relation("RecurringExpenseCreatedBy")
   fundingEntries EnvelopeFunding[]
   expenses       Expense[]
 }
@@ -77,6 +78,7 @@ model Membership {
 model Invite {
   id           String       @id @default(uuid())
   tokenHash    String       @unique
+  tokenLookupHash String    @unique
   groupId      String
   createdById  String
   status       InviteStatus @default(active)
@@ -176,10 +178,13 @@ model RecurringExpense {
   nextDueAt   DateTime
   note        String?
   active      Boolean            @default(true)
+  createdById String
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   group       Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
   envelope    Envelope           @relation(fields: [envelopeId], references: [id])
+  createdBy   User               @relation("RecurringExpenseCreatedBy", fields: [createdById], references: [id])
 
   @@index([groupId, nextDueAt, active])
+  @@index([createdById])
 }

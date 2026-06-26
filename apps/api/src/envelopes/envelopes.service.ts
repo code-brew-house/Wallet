@@ -40,7 +40,7 @@ export class EnvelopesService {
     await this.requireEnvelopeInGroup(envelopeId, groupId);
 
     await this.prisma.envelopeFunding.create({
-      data: { groupId, envelopeId, amountMinor: dto.amountMinor, note: dto.note ?? null, createdById: userId },
+      data: { groupId, envelopeId, amountMinor: dto.amountMinor, note: dto.note || null, createdById: userId },
     });
 
     return { summary: await this.balances.getEnvelopeSummary(envelopeId) };
@@ -71,7 +71,7 @@ export class EnvelopesService {
               fromEnvelopeId: dto.fromEnvelopeId,
               toEnvelopeId: dto.toEnvelopeId,
               amountMinor: dto.amountMinor,
-              note: dto.note ?? null,
+              note: dto.note || null,
               createdById: userId,
             },
           });

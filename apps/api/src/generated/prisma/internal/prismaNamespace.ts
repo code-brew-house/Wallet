@@ -1155,6 +1155,7 @@ export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof
 export const InviteScalarFieldEnum = {
   id: 'id',
   tokenHash: 'tokenHash',
+  tokenLookupHash: 'tokenLookupHash',
   groupId: 'groupId',
   createdById: 'createdById',
   status: 'status',
@@ -1236,6 +1237,7 @@ export const RecurringExpenseScalarFieldEnum = {
   nextDueAt: 'nextDueAt',
   note: 'note',
   active: 'active',
+  createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

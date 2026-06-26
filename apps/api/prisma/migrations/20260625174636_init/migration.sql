@@ -46,6 +46,7 @@ CREATE TABLE "Membership" (
 CREATE TABLE "Invite" (
     "id" TEXT NOT NULL,
     "tokenHash" TEXT NOT NULL,
+    "tokenLookupHash" TEXT NOT NULL,
     "groupId" TEXT NOT NULL,
     "createdById" TEXT NOT NULL,
     "status" "InviteStatus" NOT NULL DEFAULT 'active',
@@ -127,6 +128,7 @@ CREATE TABLE "RecurringExpense" (
     "nextDueAt" TIMESTAMP(3) NOT NULL,
     "note" TEXT,
     "active" BOOLEAN NOT NULL DEFAULT true,
+    "createdById" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -147,6 +149,9 @@ CREATE UNIQUE INDEX "Membership_groupId_userId_key" ON "Membership"("groupId", "
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Invite_tokenHash_key" ON "Invite"("tokenHash");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Invite_tokenLookupHash_key" ON "Invite"("tokenLookupHash");
 
 -- CreateIndex
 CREATE INDEX "Invite_groupId_status_idx" ON "Invite"("groupId", "status");
@@ -177,6 +182,9 @@ CREATE INDEX "Expense_groupId_envelopeId_deletedAt_idx" ON "Expense"("groupId", 
 
 -- CreateIndex
 CREATE INDEX "RecurringExpense_groupId_nextDueAt_active_idx" ON "RecurringExpense"("groupId", "nextDueAt", "active");
+
+-- CreateIndex
+CREATE INDEX "RecurringExpense_createdById_idx" ON "RecurringExpense"("createdById");
 
 -- AddForeignKey
 ALTER TABLE "Group" ADD CONSTRAINT "Group_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -234,3 +242,6 @@ ALTER TABLE "RecurringExpense" ADD CONSTRAINT "RecurringExpense_groupId_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "RecurringExpense" ADD CONSTRAINT "RecurringExpense_envelopeId_fkey" FOREIGN KEY ("envelopeId") REFERENCES "Envelope"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RecurringExpense" ADD CONSTRAINT "RecurringExpense_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

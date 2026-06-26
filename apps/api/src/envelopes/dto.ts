@@ -1,4 +1,4 @@
-import { IsInt, IsString, Length, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Length, Min } from 'class-validator';
 
 export class CreateEnvelopeDto {
   @IsString()
@@ -11,9 +11,10 @@ export class FundEnvelopeDto {
   @Min(1)
   amountMinor!: number;
 
+  @IsOptional()
   @IsString()
   @Length(0, 240)
-  note = '';
+  note?: string;
 }
 
 export class TransferEnvelopeDto {
@@ -27,7 +28,8 @@ export class TransferEnvelopeDto {
   @Min(1)
   amountMinor!: number;
 
+  @IsOptional()
   @IsString()
   @Length(0, 240)
-  note = '';
+  note?: string;
 }

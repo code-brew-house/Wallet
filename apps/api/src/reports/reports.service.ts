@@ -40,6 +40,7 @@ type RecurringExpenseRecord = {
   nextDueAt: Date;
   note: string | null;
   active: boolean;
+  createdById: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -182,6 +183,7 @@ export class ReportsService {
       nextDueAt: recurring.nextDueAt.toISOString(),
       note: recurring.note,
       active: recurring.active,
+      createdById: recurring.createdById,
       createdAt: recurring.createdAt.toISOString(),
       updatedAt: recurring.updatedAt.toISOString(),
     };

@@ -27,6 +27,7 @@ export type AggregateInvite = {
 export type InviteMinAggregateOutputType = {
   id: string | null
   tokenHash: string | null
+  tokenLookupHash: string | null
   groupId: string | null
   createdById: string | null
   status: $Enums.InviteStatus | null
@@ -40,6 +41,7 @@ export type InviteMinAggregateOutputType = {
 export type InviteMaxAggregateOutputType = {
   id: string | null
   tokenHash: string | null
+  tokenLookupHash: string | null
   groupId: string | null
   createdById: string | null
   status: $Enums.InviteStatus | null
@@ -53,6 +55,7 @@ export type InviteMaxAggregateOutputType = {
 export type InviteCountAggregateOutputType = {
   id: number
   tokenHash: number
+  tokenLookupHash: number
   groupId: number
   createdById: number
   status: number
@@ -68,6 +71,7 @@ export type InviteCountAggregateOutputType = {
 export type InviteMinAggregateInputType = {
   id?: true
   tokenHash?: true
+  tokenLookupHash?: true
   groupId?: true
   createdById?: true
   status?: true
@@ -81,6 +85,7 @@ export type InviteMinAggregateInputType = {
 export type InviteMaxAggregateInputType = {
   id?: true
   tokenHash?: true
+  tokenLookupHash?: true
   groupId?: true
   createdById?: true
   status?: true
@@ -94,6 +99,7 @@ export type InviteMaxAggregateInputType = {
 export type InviteCountAggregateInputType = {
   id?: true
   tokenHash?: true
+  tokenLookupHash?: true
   groupId?: true
   createdById?: true
   status?: true
@@ -180,6 +186,7 @@ export type InviteGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type InviteGroupByOutputType = {
   id: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   createdById: string
   status: $Enums.InviteStatus
@@ -214,6 +221,7 @@ export type InviteWhereInput = {
   NOT?: Prisma.InviteWhereInput | Prisma.InviteWhereInput[]
   id?: Prisma.StringFilter<"Invite"> | string
   tokenHash?: Prisma.StringFilter<"Invite"> | string
+  tokenLookupHash?: Prisma.StringFilter<"Invite"> | string
   groupId?: Prisma.StringFilter<"Invite"> | string
   createdById?: Prisma.StringFilter<"Invite"> | string
   status?: Prisma.EnumInviteStatusFilter<"Invite"> | $Enums.InviteStatus
@@ -230,6 +238,7 @@ export type InviteWhereInput = {
 export type InviteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
+  tokenLookupHash?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -246,6 +255,7 @@ export type InviteOrderByWithRelationInput = {
 export type InviteWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   tokenHash?: string
+  tokenLookupHash?: string
   AND?: Prisma.InviteWhereInput | Prisma.InviteWhereInput[]
   OR?: Prisma.InviteWhereInput[]
   NOT?: Prisma.InviteWhereInput | Prisma.InviteWhereInput[]
@@ -260,11 +270,12 @@ export type InviteWhereUniqueInput = Prisma.AtLeast<{
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   acceptedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "id" | "tokenHash">
+}, "id" | "tokenHash" | "tokenLookupHash">
 
 export type InviteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
+  tokenLookupHash?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -284,6 +295,7 @@ export type InviteScalarWhereWithAggregatesInput = {
   NOT?: Prisma.InviteScalarWhereWithAggregatesInput | Prisma.InviteScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Invite"> | string
   tokenHash?: Prisma.StringWithAggregatesFilter<"Invite"> | string
+  tokenLookupHash?: Prisma.StringWithAggregatesFilter<"Invite"> | string
   groupId?: Prisma.StringWithAggregatesFilter<"Invite"> | string
   createdById?: Prisma.StringWithAggregatesFilter<"Invite"> | string
   status?: Prisma.EnumInviteStatusWithAggregatesFilter<"Invite"> | $Enums.InviteStatus
@@ -297,6 +309,7 @@ export type InviteScalarWhereWithAggregatesInput = {
 export type InviteCreateInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
   acceptedAt?: Date | string | null
@@ -310,6 +323,7 @@ export type InviteCreateInput = {
 export type InviteUncheckedCreateInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   createdById: string
   status?: $Enums.InviteStatus
@@ -323,6 +337,7 @@ export type InviteUncheckedCreateInput = {
 export type InviteUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -336,6 +351,7 @@ export type InviteUpdateInput = {
 export type InviteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
@@ -349,6 +365,7 @@ export type InviteUncheckedUpdateInput = {
 export type InviteCreateManyInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   createdById: string
   status?: $Enums.InviteStatus
@@ -362,6 +379,7 @@ export type InviteCreateManyInput = {
 export type InviteUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -372,6 +390,7 @@ export type InviteUpdateManyMutationInput = {
 export type InviteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
@@ -395,6 +414,7 @@ export type InviteOrderByRelationAggregateInput = {
 export type InviteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
+  tokenLookupHash?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -408,6 +428,7 @@ export type InviteCountOrderByAggregateInput = {
 export type InviteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
+  tokenLookupHash?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -421,6 +442,7 @@ export type InviteMaxOrderByAggregateInput = {
 export type InviteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
+  tokenLookupHash?: Prisma.SortOrder
   groupId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -572,6 +594,7 @@ export type NullableStringFieldUpdateOperationsInput = {
 export type InviteCreateWithoutCreatedByInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
   acceptedAt?: Date | string | null
@@ -584,6 +607,7 @@ export type InviteCreateWithoutCreatedByInput = {
 export type InviteUncheckedCreateWithoutCreatedByInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
@@ -606,6 +630,7 @@ export type InviteCreateManyCreatedByInputEnvelope = {
 export type InviteCreateWithoutAcceptedByInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
   acceptedAt?: Date | string | null
@@ -618,6 +643,7 @@ export type InviteCreateWithoutAcceptedByInput = {
 export type InviteUncheckedCreateWithoutAcceptedByInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   createdById: string
   status?: $Enums.InviteStatus
@@ -659,6 +685,7 @@ export type InviteScalarWhereInput = {
   NOT?: Prisma.InviteScalarWhereInput | Prisma.InviteScalarWhereInput[]
   id?: Prisma.StringFilter<"Invite"> | string
   tokenHash?: Prisma.StringFilter<"Invite"> | string
+  tokenLookupHash?: Prisma.StringFilter<"Invite"> | string
   groupId?: Prisma.StringFilter<"Invite"> | string
   createdById?: Prisma.StringFilter<"Invite"> | string
   status?: Prisma.EnumInviteStatusFilter<"Invite"> | $Enums.InviteStatus
@@ -688,6 +715,7 @@ export type InviteUpdateManyWithWhereWithoutAcceptedByInput = {
 export type InviteCreateWithoutGroupInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
   acceptedAt?: Date | string | null
@@ -700,6 +728,7 @@ export type InviteCreateWithoutGroupInput = {
 export type InviteUncheckedCreateWithoutGroupInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   createdById: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
@@ -738,6 +767,7 @@ export type InviteUpdateManyWithWhereWithoutGroupInput = {
 export type InviteCreateManyCreatedByInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
@@ -750,6 +780,7 @@ export type InviteCreateManyCreatedByInput = {
 export type InviteCreateManyAcceptedByInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   groupId: string
   createdById: string
   status?: $Enums.InviteStatus
@@ -762,6 +793,7 @@ export type InviteCreateManyAcceptedByInput = {
 export type InviteUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -774,6 +806,7 @@ export type InviteUpdateWithoutCreatedByInput = {
 export type InviteUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -786,6 +819,7 @@ export type InviteUncheckedUpdateWithoutCreatedByInput = {
 export type InviteUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -798,6 +832,7 @@ export type InviteUncheckedUpdateManyWithoutCreatedByInput = {
 export type InviteUpdateWithoutAcceptedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -810,6 +845,7 @@ export type InviteUpdateWithoutAcceptedByInput = {
 export type InviteUncheckedUpdateWithoutAcceptedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
@@ -822,6 +858,7 @@ export type InviteUncheckedUpdateWithoutAcceptedByInput = {
 export type InviteUncheckedUpdateManyWithoutAcceptedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
@@ -834,6 +871,7 @@ export type InviteUncheckedUpdateManyWithoutAcceptedByInput = {
 export type InviteCreateManyGroupInput = {
   id?: string
   tokenHash: string
+  tokenLookupHash: string
   createdById: string
   status?: $Enums.InviteStatus
   expiresAt: Date | string
@@ -846,6 +884,7 @@ export type InviteCreateManyGroupInput = {
 export type InviteUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -858,6 +897,7 @@ export type InviteUpdateWithoutGroupInput = {
 export type InviteUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -870,6 +910,7 @@ export type InviteUncheckedUpdateWithoutGroupInput = {
 export type InviteUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenLookupHash?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInviteStatusFieldUpdateOperationsInput | $Enums.InviteStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -884,6 +925,7 @@ export type InviteUncheckedUpdateManyWithoutGroupInput = {
 export type InviteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tokenHash?: boolean
+  tokenLookupHash?: boolean
   groupId?: boolean
   createdById?: boolean
   status?: boolean
@@ -900,6 +942,7 @@ export type InviteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type InviteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tokenHash?: boolean
+  tokenLookupHash?: boolean
   groupId?: boolean
   createdById?: boolean
   status?: boolean
@@ -916,6 +959,7 @@ export type InviteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type InviteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tokenHash?: boolean
+  tokenLookupHash?: boolean
   groupId?: boolean
   createdById?: boolean
   status?: boolean
@@ -932,6 +976,7 @@ export type InviteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type InviteSelectScalar = {
   id?: boolean
   tokenHash?: boolean
+  tokenLookupHash?: boolean
   groupId?: boolean
   createdById?: boolean
   status?: boolean
@@ -942,7 +987,7 @@ export type InviteSelectScalar = {
   createdAt?: boolean
 }
 
-export type InviteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tokenHash" | "groupId" | "createdById" | "status" | "expiresAt" | "acceptedById" | "acceptedAt" | "revokedAt" | "createdAt", ExtArgs["result"]["invite"]>
+export type InviteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tokenHash" | "tokenLookupHash" | "groupId" | "createdById" | "status" | "expiresAt" | "acceptedById" | "acceptedAt" | "revokedAt" | "createdAt", ExtArgs["result"]["invite"]>
 export type InviteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -969,6 +1014,7 @@ export type $InvitePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tokenHash: string
+    tokenLookupHash: string
     groupId: string
     createdById: string
     status: $Enums.InviteStatus
@@ -1405,6 +1451,7 @@ export interface Prisma__InviteClient<T, Null = never, ExtArgs extends runtime.T
 export interface InviteFieldRefs {
   readonly id: Prisma.FieldRef<"Invite", 'String'>
   readonly tokenHash: Prisma.FieldRef<"Invite", 'String'>
+  readonly tokenLookupHash: Prisma.FieldRef<"Invite", 'String'>
   readonly groupId: Prisma.FieldRef<"Invite", 'String'>
   readonly createdById: Prisma.FieldRef<"Invite", 'String'>
   readonly status: Prisma.FieldRef<"Invite", 'InviteStatus'>

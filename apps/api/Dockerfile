@@ -22,4 +22,4 @@ COPY --from=build /app/apps/web/package.json ./apps/web/package.json
 COPY --from=build /app/apps/smoke/package.json ./apps/smoke/package.json
 RUN bun install --frozen-lockfile --production
 EXPOSE 4000
-CMD ["bun", "--cwd", "apps/api", "src/main.ts"]
+CMD ["bun", "run", "coolify:api:start"]

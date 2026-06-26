@@ -30,6 +30,7 @@ type RecurringExpenseRecord = {
   nextDueAt: Date;
   note: string | null;
   active: boolean;
+  createdById: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -46,6 +47,7 @@ export type RecurringExpenseDto = {
   nextDueAt: string;
   note: string | null;
   active: boolean;
+  createdById: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -58,7 +60,7 @@ export class RecurringExpensesService {
   ) {}
 
   async createRecurring(userId: string, groupId: string, dto: CreateRecurringExpenseDto): Promise<RecurringExpenseDto> {
-    await this.memberships.requireMembership(userId, groupId);
+    await this.memberships.requireRole(userId, groupId, ['owner', 'admin']);
     await this.requireEnvelopeInGroup(dto.envelopeId, groupId);
 
     const recurring = await this.prisma.recurringExpense.create({
@@ -70,6 +72,7 @@ export class RecurringExpensesService {
         frequency: dto.frequency,
         nextDueAt: new Date(dto.nextDueAt),
         note: dto.note ?? null,
+        createdById: userId,
       },
     });
 
@@ -86,7 +89,7 @@ export class RecurringExpensesService {
   }
 
   async confirmOccurrence(userId: string, groupId: string, recurringExpenseId: string): Promise<{ expense: ExpenseDto; nextDueAt: string }> {
-    await this.memberships.requireMembership(userId, groupId);
+    await this.memberships.requireRole(userId, groupId, ['owner', 'admin']);
 
     return this.prisma.$transaction(async (tx) => {
       const recurring = (await tx.recurringExpense.findFirst({
@@ -149,6 +152,7 @@ export class RecurringExpensesService {
       nextDueAt: recurring.nextDueAt.toISOString(),
       note: recurring.note,
       active: recurring.active,
+      createdById: recurring.createdById,
       createdAt: recurring.createdAt.toISOString(),
       updatedAt: recurring.updatedAt.toISOString(),
     };

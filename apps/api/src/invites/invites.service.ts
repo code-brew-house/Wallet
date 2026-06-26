@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { InviteModel } from '../generated/prisma/models/Invite';
 import { MembershipService } from '../memberships/membership.service';
@@ -15,9 +16,11 @@ export class InvitesService {
     await this.memberships.requireRole(userId, groupId, ['owner', 'admin']);
     const token = crypto.randomUUID().replaceAll('-', '') + crypto.randomUUID().replaceAll('-', '');
     const tokenHash = await Bun.password.hash(token);
+    const tokenLookupHash = createInviteTokenLookupHash(token);
     const invite = await this.prisma.invite.create({
       data: {
         tokenHash,
+        tokenLookupHash,
         groupId,
         createdById: userId,
         expiresAt: new Date(Date.now() + dto.expiresInHours * 60 * 60 * 1000),
@@ -54,16 +57,19 @@ export class InvitesService {
   }
 
   private async findActiveInviteByToken(token: string) {
-    const invites = await this.prisma.invite.findMany({
-      where: { status: 'active', expiresAt: { gt: new Date() } },
-      orderBy: { createdAt: 'asc' },
+    const invite = await this.prisma.invite.findUnique({
+      where: { tokenLookupHash: createInviteTokenLookupHash(token) },
     });
 
-    for (const invite of invites) {
-      if (await Bun.password.verify(token, invite.tokenHash)) return invite;
+    if (!invite || invite.status !== 'active' || invite.expiresAt <= new Date()) {
+      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Invite not found' });
     }
 
-    throw new NotFoundException({ code: 'NOT_FOUND', message: 'Invite not found' });
+    if (!(await Bun.password.verify(token, invite.tokenHash))) {
+      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Invite not found' });
+    }
+
+    return invite;
   }
 
   private toInviteResponse(invite: InviteModel, token?: string) {
@@ -80,4 +86,8 @@ export class InvitesService {
       ...(token ? { token } : {}),
     };
   }
+}
+
+function createInviteTokenLookupHash(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
 }

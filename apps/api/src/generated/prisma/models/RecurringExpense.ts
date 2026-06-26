@@ -44,6 +44,7 @@ export type RecurringExpenseMinAggregateOutputType = {
   nextDueAt: Date | null
   note: string | null
   active: boolean | null
+  createdById: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type RecurringExpenseMaxAggregateOutputType = {
   nextDueAt: Date | null
   note: string | null
   active: boolean | null
+  createdById: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +74,7 @@ export type RecurringExpenseCountAggregateOutputType = {
   nextDueAt: number
   note: number
   active: number
+  createdById: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type RecurringExpenseMinAggregateInputType = {
   nextDueAt?: true
   note?: true
   active?: true
+  createdById?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +114,7 @@ export type RecurringExpenseMaxAggregateInputType = {
   nextDueAt?: true
   note?: true
   active?: true
+  createdById?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +129,7 @@ export type RecurringExpenseCountAggregateInputType = {
   nextDueAt?: true
   note?: true
   active?: true
+  createdById?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +231,7 @@ export type RecurringExpenseGroupByOutputType = {
   nextDueAt: Date
   note: string | null
   active: boolean
+  createdById: string
   createdAt: Date
   updatedAt: Date
   _count: RecurringExpenseCountAggregateOutputType | null
@@ -262,10 +269,12 @@ export type RecurringExpenseWhereInput = {
   nextDueAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   note?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   active?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  createdById?: Prisma.StringFilter<"RecurringExpense"> | string
   createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   envelope?: Prisma.XOR<Prisma.EnvelopeScalarRelationFilter, Prisma.EnvelopeWhereInput>
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type RecurringExpenseOrderByWithRelationInput = {
@@ -278,10 +287,12 @@ export type RecurringExpenseOrderByWithRelationInput = {
   nextDueAt?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
   envelope?: Prisma.EnvelopeOrderByWithRelationInput
+  createdBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
@@ -297,10 +308,12 @@ export type RecurringExpenseWhereUniqueInput = Prisma.AtLeast<{
   nextDueAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   note?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
   active?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  createdById?: Prisma.StringFilter<"RecurringExpense"> | string
   createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   envelope?: Prisma.XOR<Prisma.EnvelopeScalarRelationFilter, Prisma.EnvelopeWhereInput>
+  createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type RecurringExpenseOrderByWithAggregationInput = {
@@ -313,6 +326,7 @@ export type RecurringExpenseOrderByWithAggregationInput = {
   nextDueAt?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.RecurringExpenseCountOrderByAggregateInput
@@ -335,6 +349,7 @@ export type RecurringExpenseScalarWhereWithAggregatesInput = {
   nextDueAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringExpense"> | Date | string
   note?: Prisma.StringNullableWithAggregatesFilter<"RecurringExpense"> | string | null
   active?: Prisma.BoolWithAggregatesFilter<"RecurringExpense"> | boolean
+  createdById?: Prisma.StringWithAggregatesFilter<"RecurringExpense"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringExpense"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RecurringExpense"> | Date | string
 }
@@ -351,6 +366,7 @@ export type RecurringExpenseCreateInput = {
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutRecurringInput
   envelope: Prisma.EnvelopeCreateNestedOneWithoutRecurringInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedRecurringInput
 }
 
 export type RecurringExpenseUncheckedCreateInput = {
@@ -363,6 +379,7 @@ export type RecurringExpenseUncheckedCreateInput = {
   nextDueAt: Date | string
   note?: string | null
   active?: boolean
+  createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -379,6 +396,7 @@ export type RecurringExpenseUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutRecurringNestedInput
   envelope?: Prisma.EnvelopeUpdateOneRequiredWithoutRecurringNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedRecurringNestedInput
 }
 
 export type RecurringExpenseUncheckedUpdateInput = {
@@ -391,6 +409,7 @@ export type RecurringExpenseUncheckedUpdateInput = {
   nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -405,6 +424,7 @@ export type RecurringExpenseCreateManyInput = {
   nextDueAt: Date | string
   note?: string | null
   active?: boolean
+  createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -431,6 +451,7 @@ export type RecurringExpenseUncheckedUpdateManyInput = {
   nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -455,6 +476,7 @@ export type RecurringExpenseCountOrderByAggregateInput = {
   nextDueAt?: Prisma.SortOrder
   note?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -473,6 +495,7 @@ export type RecurringExpenseMaxOrderByAggregateInput = {
   nextDueAt?: Prisma.SortOrder
   note?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -487,12 +510,55 @@ export type RecurringExpenseMinOrderByAggregateInput = {
   nextDueAt?: Prisma.SortOrder
   note?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type RecurringExpenseSumOrderByAggregateInput = {
   amountMinor?: Prisma.SortOrder
+}
+
+export type RecurringExpenseCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput> | Prisma.RecurringExpenseCreateWithoutCreatedByInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput | Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyCreatedByInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput> | Prisma.RecurringExpenseCreateWithoutCreatedByInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput | Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyCreatedByInputEnvelope
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+}
+
+export type RecurringExpenseUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput> | Prisma.RecurringExpenseCreateWithoutCreatedByInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput | Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyCreatedByInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutCreatedByInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput> | Prisma.RecurringExpenseCreateWithoutCreatedByInput[] | Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput[]
+  connectOrCreate?: Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput | Prisma.RecurringExpenseCreateOrConnectWithoutCreatedByInput[]
+  upsert?: Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutCreatedByInput | Prisma.RecurringExpenseUpsertWithWhereUniqueWithoutCreatedByInput[]
+  createMany?: Prisma.RecurringExpenseCreateManyCreatedByInputEnvelope
+  set?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  disconnect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  delete?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  connect?: Prisma.RecurringExpenseWhereUniqueInput | Prisma.RecurringExpenseWhereUniqueInput[]
+  update?: Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.RecurringExpenseUpdateWithWhereUniqueWithoutCreatedByInput[]
+  updateMany?: Prisma.RecurringExpenseUpdateManyWithWhereWithoutCreatedByInput | Prisma.RecurringExpenseUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
 }
 
 export type RecurringExpenseCreateNestedManyWithoutGroupInput = {
@@ -587,6 +653,78 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type RecurringExpenseCreateWithoutCreatedByInput = {
+  id?: string
+  amountMinor: number
+  title: string
+  frequency: $Enums.RecurringFrequency
+  nextDueAt: Date | string
+  note?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutRecurringInput
+  envelope: Prisma.EnvelopeCreateNestedOneWithoutRecurringInput
+}
+
+export type RecurringExpenseUncheckedCreateWithoutCreatedByInput = {
+  id?: string
+  groupId: string
+  envelopeId: string
+  amountMinor: number
+  title: string
+  frequency: $Enums.RecurringFrequency
+  nextDueAt: Date | string
+  note?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RecurringExpenseCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput>
+}
+
+export type RecurringExpenseCreateManyCreatedByInputEnvelope = {
+  data: Prisma.RecurringExpenseCreateManyCreatedByInput | Prisma.RecurringExpenseCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type RecurringExpenseUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  update: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedUpdateWithoutCreatedByInput>
+  create: Prisma.XOR<Prisma.RecurringExpenseCreateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedCreateWithoutCreatedByInput>
+}
+
+export type RecurringExpenseUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.RecurringExpenseWhereUniqueInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateWithoutCreatedByInput, Prisma.RecurringExpenseUncheckedUpdateWithoutCreatedByInput>
+}
+
+export type RecurringExpenseUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.RecurringExpenseScalarWhereInput
+  data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutCreatedByInput>
+}
+
+export type RecurringExpenseScalarWhereInput = {
+  AND?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+  OR?: Prisma.RecurringExpenseScalarWhereInput[]
+  NOT?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
+  id?: Prisma.StringFilter<"RecurringExpense"> | string
+  groupId?: Prisma.StringFilter<"RecurringExpense"> | string
+  envelopeId?: Prisma.StringFilter<"RecurringExpense"> | string
+  amountMinor?: Prisma.IntFilter<"RecurringExpense"> | number
+  title?: Prisma.StringFilter<"RecurringExpense"> | string
+  frequency?: Prisma.EnumRecurringFrequencyFilter<"RecurringExpense"> | $Enums.RecurringFrequency
+  nextDueAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  note?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
+  active?: Prisma.BoolFilter<"RecurringExpense"> | boolean
+  createdById?: Prisma.StringFilter<"RecurringExpense"> | string
+  createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
+}
+
 export type RecurringExpenseCreateWithoutGroupInput = {
   id?: string
   amountMinor: number
@@ -598,6 +736,7 @@ export type RecurringExpenseCreateWithoutGroupInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   envelope: Prisma.EnvelopeCreateNestedOneWithoutRecurringInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedRecurringInput
 }
 
 export type RecurringExpenseUncheckedCreateWithoutGroupInput = {
@@ -609,6 +748,7 @@ export type RecurringExpenseUncheckedCreateWithoutGroupInput = {
   nextDueAt: Date | string
   note?: string | null
   active?: boolean
+  createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -639,23 +779,6 @@ export type RecurringExpenseUpdateManyWithWhereWithoutGroupInput = {
   data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutGroupInput>
 }
 
-export type RecurringExpenseScalarWhereInput = {
-  AND?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
-  OR?: Prisma.RecurringExpenseScalarWhereInput[]
-  NOT?: Prisma.RecurringExpenseScalarWhereInput | Prisma.RecurringExpenseScalarWhereInput[]
-  id?: Prisma.StringFilter<"RecurringExpense"> | string
-  groupId?: Prisma.StringFilter<"RecurringExpense"> | string
-  envelopeId?: Prisma.StringFilter<"RecurringExpense"> | string
-  amountMinor?: Prisma.IntFilter<"RecurringExpense"> | number
-  title?: Prisma.StringFilter<"RecurringExpense"> | string
-  frequency?: Prisma.EnumRecurringFrequencyFilter<"RecurringExpense"> | $Enums.RecurringFrequency
-  nextDueAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
-  note?: Prisma.StringNullableFilter<"RecurringExpense"> | string | null
-  active?: Prisma.BoolFilter<"RecurringExpense"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"RecurringExpense"> | Date | string
-}
-
 export type RecurringExpenseCreateWithoutEnvelopeInput = {
   id?: string
   amountMinor: number
@@ -667,6 +790,7 @@ export type RecurringExpenseCreateWithoutEnvelopeInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutRecurringInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedRecurringInput
 }
 
 export type RecurringExpenseUncheckedCreateWithoutEnvelopeInput = {
@@ -678,6 +802,7 @@ export type RecurringExpenseUncheckedCreateWithoutEnvelopeInput = {
   nextDueAt: Date | string
   note?: string | null
   active?: boolean
+  createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -708,6 +833,62 @@ export type RecurringExpenseUpdateManyWithWhereWithoutEnvelopeInput = {
   data: Prisma.XOR<Prisma.RecurringExpenseUpdateManyMutationInput, Prisma.RecurringExpenseUncheckedUpdateManyWithoutEnvelopeInput>
 }
 
+export type RecurringExpenseCreateManyCreatedByInput = {
+  id?: string
+  groupId: string
+  envelopeId: string
+  amountMinor: number
+  title: string
+  frequency: $Enums.RecurringFrequency
+  nextDueAt: Date | string
+  note?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RecurringExpenseUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  frequency?: Prisma.EnumRecurringFrequencyFieldUpdateOperationsInput | $Enums.RecurringFrequency
+  nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutRecurringNestedInput
+  envelope?: Prisma.EnvelopeUpdateOneRequiredWithoutRecurringNestedInput
+}
+
+export type RecurringExpenseUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  envelopeId?: Prisma.StringFieldUpdateOperationsInput | string
+  amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  frequency?: Prisma.EnumRecurringFrequencyFieldUpdateOperationsInput | $Enums.RecurringFrequency
+  nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RecurringExpenseUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  envelopeId?: Prisma.StringFieldUpdateOperationsInput | string
+  amountMinor?: Prisma.IntFieldUpdateOperationsInput | number
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  frequency?: Prisma.EnumRecurringFrequencyFieldUpdateOperationsInput | $Enums.RecurringFrequency
+  nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type RecurringExpenseCreateManyGroupInput = {
   id?: string
   envelopeId: string
@@ -717,6 +898,7 @@ export type RecurringExpenseCreateManyGroupInput = {
   nextDueAt: Date | string
   note?: string | null
   active?: boolean
+  createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -732,6 +914,7 @@ export type RecurringExpenseUpdateWithoutGroupInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   envelope?: Prisma.EnvelopeUpdateOneRequiredWithoutRecurringNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedRecurringNestedInput
 }
 
 export type RecurringExpenseUncheckedUpdateWithoutGroupInput = {
@@ -743,6 +926,7 @@ export type RecurringExpenseUncheckedUpdateWithoutGroupInput = {
   nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -756,6 +940,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutGroupInput = {
   nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -769,6 +954,7 @@ export type RecurringExpenseCreateManyEnvelopeInput = {
   nextDueAt: Date | string
   note?: string | null
   active?: boolean
+  createdById: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -784,6 +970,7 @@ export type RecurringExpenseUpdateWithoutEnvelopeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutRecurringNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedRecurringNestedInput
 }
 
 export type RecurringExpenseUncheckedUpdateWithoutEnvelopeInput = {
@@ -795,6 +982,7 @@ export type RecurringExpenseUncheckedUpdateWithoutEnvelopeInput = {
   nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -808,6 +996,7 @@ export type RecurringExpenseUncheckedUpdateManyWithoutEnvelopeInput = {
   nextDueAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -824,10 +1013,12 @@ export type RecurringExpenseSelect<ExtArgs extends runtime.Types.Extensions.Inte
   nextDueAt?: boolean
   note?: boolean
   active?: boolean
+  createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   envelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recurringExpense"]>
 
 export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -840,10 +1031,12 @@ export type RecurringExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   nextDueAt?: boolean
   note?: boolean
   active?: boolean
+  createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   envelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recurringExpense"]>
 
 export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -856,10 +1049,12 @@ export type RecurringExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   nextDueAt?: boolean
   note?: boolean
   active?: boolean
+  createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   envelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recurringExpense"]>
 
 export type RecurringExpenseSelectScalar = {
@@ -872,22 +1067,26 @@ export type RecurringExpenseSelectScalar = {
   nextDueAt?: boolean
   note?: boolean
   active?: boolean
+  createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "envelopeId" | "amountMinor" | "title" | "frequency" | "nextDueAt" | "note" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
+export type RecurringExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "envelopeId" | "amountMinor" | "title" | "frequency" | "nextDueAt" | "note" | "active" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["recurringExpense"]>
 export type RecurringExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   envelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type RecurringExpenseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   envelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type RecurringExpenseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   envelope?: boolean | Prisma.EnvelopeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -895,6 +1094,7 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
   objects: {
     group: Prisma.$GroupPayload<ExtArgs>
     envelope: Prisma.$EnvelopePayload<ExtArgs>
+    createdBy: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -906,6 +1106,7 @@ export type $RecurringExpensePayload<ExtArgs extends runtime.Types.Extensions.In
     nextDueAt: Date
     note: string | null
     active: boolean
+    createdById: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["recurringExpense"]>
@@ -1304,6 +1505,7 @@ export interface Prisma__RecurringExpenseClient<T, Null = never, ExtArgs extends
   readonly [Symbol.toStringTag]: "PrismaPromise"
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   envelope<T extends Prisma.EnvelopeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EnvelopeDefaultArgs<ExtArgs>>): Prisma.Prisma__EnvelopeClient<runtime.Types.Result.GetResult<Prisma.$EnvelopePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1342,6 +1544,7 @@ export interface RecurringExpenseFieldRefs {
   readonly nextDueAt: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
   readonly note: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly active: Prisma.FieldRef<"RecurringExpense", 'Boolean'>
+  readonly createdById: Prisma.FieldRef<"RecurringExpense", 'String'>
   readonly createdAt: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RecurringExpense", 'DateTime'>
 }
