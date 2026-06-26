@@ -18,6 +18,8 @@ interface InviteResponse {
 }
 
 
+const DASHBOARD_STALE_MAX_AGE_MS = 5 * 60 * 1000;
+
 const dashboardFormIds: Record<FormKind, string> = {
   expense: 'expense-form',
   funding: 'funding-form',
@@ -115,7 +117,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   return (
     <Container size="lg" py="xl">
       <Stack gap="xl">
-        {dashboard ? <StaleDataBanner generatedAt={dashboard.generatedAt} /> : <StaleDataBanner />}
+        {dashboard ? <StaleDataBanner generatedAt={dashboard.generatedAt} maxAgeMs={DASHBOARD_STALE_MAX_AGE_MS} /> : <StaleDataBanner />}
 
         <Group justify="space-between" align="start">
           <div>

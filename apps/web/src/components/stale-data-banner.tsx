@@ -3,8 +3,9 @@
 import { Alert } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
-export function StaleDataBanner({ generatedAt }: { generatedAt?: string }) {
+export function StaleDataBanner({ generatedAt, maxAgeMs }: { generatedAt?: string; maxAgeMs?: number }) {
   const [online, setOnline] = useState(true);
+  const [, setRefreshTick] = useState(0);
 
   useEffect(() => {
     setOnline(navigator.onLine);
@@ -18,11 +19,19 @@ export function StaleDataBanner({ generatedAt }: { generatedAt?: string }) {
     };
   }, []);
 
-  if (online) return null;
+  useEffect(() => {
+    if (!generatedAt || maxAgeMs === undefined) return;
+    const interval = window.setInterval(() => setRefreshTick((tick) => tick + 1), Math.min(maxAgeMs, 60_000));
+    return () => window.clearInterval(interval);
+  }, [generatedAt, maxAgeMs]);
+
+  const isStale = online && generatedAt && maxAgeMs !== undefined && Number.isFinite(Date.parse(generatedAt)) && Date.now() - Date.parse(generatedAt) > maxAgeMs;
+
+  if (online && !isStale) return null;
 
   return (
-    <Alert color="yellow" title="Offline read-only mode">
-      Showing cached Wallet data{generatedAt ? ` from ${new Date(generatedAt).toLocaleString()}` : ''}. New expenses require a connection.
+    <Alert color="yellow" title={online ? 'Stale cached data' : 'Offline read-only mode'}>
+      {online ? 'Showing cached Wallet data that may be out of date.' : 'Showing cached Wallet data in read-only mode.'}{generatedAt ? ` Last refreshed ${new Date(generatedAt).toLocaleString()}` : ''} New expenses require a connection.
     </Alert>
   );
 }
