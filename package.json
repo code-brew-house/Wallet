@@ -9,7 +9,9 @@
     "test": "bun test",
     "typecheck": "bun run --filter '*' typecheck",
     "db:migrate": "bun --cwd apps/api prisma migrate dev",
-    "db:deploy": "bun --cwd apps/api prisma migrate deploy"
+    "db:deploy": "bun --cwd apps/api prisma migrate deploy",
+    "coolify:api:start": "bun run db:deploy && bun --cwd apps/api src/main.ts",
+    "coolify:web:start": "bun --cwd apps/web --bun next start"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -40,6 +40,12 @@
         "typescript": "latest",
       },
     },
+    "apps/smoke": {
+      "name": "@wallet/smoke",
+      "devDependencies": {
+        "typescript": "latest",
+      },
+    },
     "apps/web": {
       "name": "@wallet/web",
       "dependencies": {
@@ -296,6 +302,8 @@
     "@wallet/api": ["@wallet/api@workspace:apps/api"],
 
     "@wallet/shared": ["@wallet/shared@workspace:packages/shared"],
+
+    "@wallet/smoke": ["@wallet/smoke@workspace:apps/smoke"],
 
     "@wallet/web": ["@wallet/web@workspace:apps/web"],
 

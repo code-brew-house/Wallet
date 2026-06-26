@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import './setup-env';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.config';
 import { PrismaService } from '../src/prisma/prisma.service';

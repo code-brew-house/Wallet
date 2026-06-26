@@ -1,0 +1,13 @@
+{
+  "name": "@wallet/smoke",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "bun test coolify-smoke.test.ts",
+    "build": "bun test coolify-smoke.test.ts",
+    "typecheck": "tsc --noEmit --allowJs false --moduleResolution Bundler --module ESNext --target ES2022 --types bun coolify-smoke.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  }
+}

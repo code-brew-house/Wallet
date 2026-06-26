@@ -69,7 +69,7 @@ export class RecurringExpensesService {
         title: dto.title,
         frequency: dto.frequency,
         nextDueAt: new Date(dto.nextDueAt),
-        note: dto.note,
+        note: dto.note ?? null,
       },
     });
 
