@@ -191,6 +191,94 @@ body {
 }
 
 
+.wallet-alert-banner {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--color-info-text);
+}
+
+.wallet-alert-banner-success {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: var(--color-success-text);
+}
+
+.wallet-alert-banner-warn {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: var(--color-warn-text);
+}
+
+.wallet-alert-banner-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--color-danger-text);
+}
+
+.wallet-alert-banner-compact {
+  padding: var(--space-3);
+}
+
+.wallet-alert-banner-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  background: rgba(59, 130, 246, 0.25);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.wallet-alert-banner-success .wallet-alert-banner-icon { background: rgba(34, 197, 94, 0.25); }
+.wallet-alert-banner-warn .wallet-alert-banner-icon { background: rgba(245, 158, 11, 0.25); }
+.wallet-alert-banner-danger .wallet-alert-banner-icon { background: rgba(239, 68, 68, 0.25); }
+
+.wallet-alert-banner-body {
+  display: grid;
+  gap: 2px;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+}
+
+.wallet-status-strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: rgba(14, 14, 16, 0.5);
+  color: var(--color-text-muted);
+  font-size: var(--text-caption-size);
+  overflow-x: auto;
+}
+
+.wallet-status-strip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.wallet-status-strip-stale {
+  margin-left: auto;
+}
+
+.wallet-status-strip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
 .wallet-input-shell {
   padding: var(--space-4);
   border-radius: var(--radius-lg);
