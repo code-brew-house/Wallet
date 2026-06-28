@@ -258,66 +258,6 @@ body {
   background: var(--color-border-strong);
 }
 
-.wallet-bottom-nav {
-  position: fixed;
-  right: var(--space-4);
-  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
-  left: var(--space-4);
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: var(--space-2);
-  width: min(calc(100% - var(--space-8)), 520px);
-  margin: 0 auto;
-  padding: var(--space-2);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-full);
-  background: rgba(31, 31, 35, 0.95);
-  box-shadow: var(--shadow-nav);
-  backdrop-filter: blur(12px);
-}
-
-.wallet-bottom-nav-item {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  min-width: 52px;
-  padding: 6px 10px;
-  border-radius: var(--radius-full);
-  color: var(--color-text-muted);
-  font-size: 9px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.wallet-bottom-nav-item-active {
-  background: rgba(59, 130, 246, 0.18);
-  color: var(--color-accent-text);
-  font-weight: 700;
-}
-
-.wallet-bottom-nav-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.wallet-bottom-nav-add {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: var(--radius-xs);
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-border));
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-  color: #0b0b0e;
-  font-weight: 800;
-}
-
-
 .wallet-page-header {
   display: grid;
   gap: var(--space-5);
