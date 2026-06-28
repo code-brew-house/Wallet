@@ -1,15 +1,18 @@
 'use client';
 
-import { Alert, Badge, Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Badge, Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { StaleDataBanner } from '../../components/stale-data-banner';
 import { AppShell } from '../../components/app-shell';
 import { PageHeader } from '../../components/header';
+import { AlertBanner } from '../../components/alert-banner';
+import { StatusStrip } from '../../components/status-strip';
 import { QuickActionChips } from '../../components/quick-action-chips';
 import { EnvelopeCard } from '../envelopes/envelope-card';
 import { EnvelopeForms, type FormKind } from '../envelopes/envelope-forms';
-import type { ActivityItem, DashboardSummary, EnvelopeSummary } from './types';
+import { AlertInbox } from '../alerts/alert-inbox';
+import type { ActivityItem, DashboardSummary } from './types';
 
 interface DashboardPageProps {
   groupId: string;
@@ -115,9 +118,9 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
       <Stack gap="lg">
         {dashboard ? <StaleDataBanner generatedAt={dashboard.generatedAt} maxAgeMs={DASHBOARD_STALE_MAX_AGE_MS} /> : <StaleDataBanner />}
 
-        {inviteUrl ? <Alert color="teal" title="Invite action ready">Share this invite link: {inviteUrl}</Alert> : null}
-        {actionMessage ? <Alert color="green">{actionMessage}</Alert> : null}
-        {error ? <Alert color="red">{error}</Alert> : null}
+        {inviteUrl ? <AlertBanner variant="info" title="Invite action ready">Share this invite link: {inviteUrl}</AlertBanner> : null}
+        {actionMessage ? <AlertBanner variant="success">{actionMessage}</AlertBanner> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
 
         {isLoading ? (
           <Group justify="center" py="xl"><Loader /></Group>
@@ -130,7 +133,17 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               <SummaryCard label="Recurring" value={String(dashboard.upcomingRecurring.length)} tone="info" />
             </SimpleGrid>
 
-            <QuickActionChips onSelect={openDashboardForm} />
+            <StatusStrip overspentCount={dashboard.overspent.length} lowBalanceCount={lowBalanceEnvelopes.length} staleLabel="stale 6m" />
+
+            <section className="wallet-section">
+              <div className="wallet-section-heading">
+                <div>
+                  <div className="wallet-overline">Quick actions</div>
+                  <h2>Add expense · Fund · Transfer · Recurring</h2>
+                </div>
+              </div>
+              <QuickActionChips onSelect={openDashboardForm} />
+            </section>
 
             <EnvelopeForms
               envelopes={dashboard.envelopes}
@@ -183,7 +196,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               )}
             </section>
 
-            <AttentionArea overspent={dashboard.overspent} lowBalance={lowBalanceEnvelopes} currency={currency} />
+            <AlertInbox overspent={dashboard.overspent} lowBalance={lowBalanceEnvelopes} currency={currency} />
 
             <section className="wallet-section">
               <div className="wallet-section-heading">
@@ -243,41 +256,6 @@ function SummaryCard({ label, value, tone }: { label: string; value: string; ton
   );
 }
 
-function AttentionArea({ overspent, lowBalance, currency }: { overspent: EnvelopeSummary[]; lowBalance: EnvelopeSummary[]; currency: string }) {
-  const moneyFormatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency });
-
-  return (
-    <section className="wallet-section">
-      <div className="wallet-section-heading">
-        <div>
-          <div className="wallet-overline">Attention</div>
-          <h2>Overspent and low balance</h2>
-        </div>
-        <Text size="sm" c="dimmed">Review envelopes that need funding or spending changes.</Text>
-      </div>
-      {overspent.length === 0 && lowBalance.length === 0 ? (
-        <Alert color="teal">No overspent or low balance envelopes right now.</Alert>
-      ) : (
-        <div className="wallet-table-card">
-          {overspent.map((envelope) => (
-            <div key={envelope.id} className="wallet-table-row">
-              <span className="wallet-status-dot wallet-status-danger" aria-hidden="true" />
-              <strong>{envelope.name}</strong>
-              <Badge color="red">Overspent {moneyFormatter.format(envelope.balanceMinor / 100)}</Badge>
-            </div>
-          ))}
-          {lowBalance.map((envelope) => (
-            <div key={envelope.id} className="wallet-table-row">
-              <span className="wallet-status-dot wallet-status-warn" aria-hidden="true" />
-              <strong>{envelope.name}</strong>
-              <Badge color="yellow">Low balance {moneyFormatter.format(envelope.balanceMinor / 100)}</Badge>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
 
 function ActivityRow({ item, currency }: { item: ActivityItem; currency: string }) {
   const moneyFormatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency });

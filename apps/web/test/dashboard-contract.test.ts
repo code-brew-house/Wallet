@@ -59,4 +59,24 @@ describe('dashboard UI contract', () => {
     expect(formsSource).toContain('id="transfer-form"');
     expect(formsSource).toContain('id="recurring-form"');
   });
+
+  test('dashboard composes approved alerts actions and inbox primitives', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    const inboxSource = readFileSync(new URL('../src/features/alerts/alert-inbox.tsx', import.meta.url), 'utf8');
+
+    expect(source).toContain("import { AlertBanner } from '../../components/alert-banner';");
+    expect(source).toContain("import { StatusStrip } from '../../components/status-strip';");
+    expect(source).toContain("import { QuickActionChips } from '../../components/quick-action-chips';");
+    expect(source).toContain("import { AlertInbox } from '../alerts/alert-inbox';");
+    expect(source).toContain('<StatusStrip');
+    expect(source).toContain('<QuickActionChips onSelect={openDashboardForm} />');
+    expect(source).toContain('<AlertInbox');
+    expect(source).not.toContain('<AttentionArea');
+
+    expect(inboxSource).toContain('export function AlertInbox');
+    expect(inboxSource).toContain('wallet-alert-inbox');
+    expect(inboxSource).toContain('All');
+    expect(inboxSource).toContain('Overspent');
+    expect(inboxSource).toContain('Low');
+  });
 });
