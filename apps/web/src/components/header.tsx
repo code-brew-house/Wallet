@@ -39,7 +39,7 @@ export function PageHeader({ overline, title, description, tone = 'info', action
       {tabs ? (
         <div className="wallet-page-header-tabs" role="tablist" aria-label={`${title} tabs`}>
           {tabs.map((tab) => (
-            <button key={tab.label} type="button" className={tab.active ? 'wallet-header-tab wallet-header-tab-active' : 'wallet-header-tab'}>
+            <button key={tab.label} type="button" role="tab" aria-selected={Boolean(tab.active)} className={tab.active ? 'wallet-header-tab wallet-header-tab-active' : 'wallet-header-tab'}>
               {tab.label}
             </button>
           ))}

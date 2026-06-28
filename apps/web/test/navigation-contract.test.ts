@@ -32,6 +32,8 @@ describe('shared wallet chrome contract', () => {
     expect(header).toContain('wallet-overline');
     expect(header).toContain('actions');
     expect(header).toContain('tabs');
+    expect(header).toContain('role="tab"');
+    expect(header).toContain('aria-selected={Boolean(tab.active)}');
   });
 
   test('auth sheet exposes mobile bottom sheet chrome', () => {

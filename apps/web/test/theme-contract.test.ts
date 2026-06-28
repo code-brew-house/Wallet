@@ -36,7 +36,11 @@ describe('wallet theme contract', () => {
     expect(tokens).toContain('--radius-md: 10px;');
     expect(tokens).toContain('--radius-lg: 14px;');
     expect(tokens).toContain('--radius-full: 999px;');
+    expect(tokens).toContain('--text-body-spacing: 0px;');
+    expect(tokens).toContain('--text-body-weight: 400;');
   });
+
+
 
   test('recipes expose the shared visual primitives', () => {
     const recipes = source('../src/styles/recipes.css');
@@ -54,6 +58,16 @@ describe('wallet theme contract', () => {
     ]) {
       expect(recipes).toContain(className);
     }
+    expect(recipes).toContain('.wallet-alert-danger .wallet-alert-icon');
+    expect(recipes).toContain('background: rgba(239, 68, 68, 0.25);');
+  });
+
+  test('sheet recipe is consolidated in one mobile rule', () => {
+    const recipes = source('../src/styles/recipes.css');
+    const mobileSheetRules = [...recipes.matchAll(/^\.wallet-sheet \{$/gm)];
+    expect(mobileSheetRules).toHaveLength(1);
+    expect(recipes).toContain('box-shadow: var(--shadow-sheet);');
+    expect(recipes).toContain('border-radius: var(--radius-xl) var(--radius-xl) 0 0;');
   });
 
   test('Mantine theme exposes CSS variable references', () => {
