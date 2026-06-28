@@ -13,4 +13,17 @@ describe('PWA shell', () => {
     expect(layout).toContain('MantineProvider');
     expect(layout).toContain('ColorSchemeScript');
   });
+
+  test('pins Turbopack root to the workspace checkout without config-time node imports', () => {
+    const config = readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8');
+    expect(config).toContain("const workspaceRoot = process.cwd().endsWith('/apps/web')");
+    expect(config).toContain('root: workspaceRoot');
+    expect(config).not.toContain("from 'node:path'");
+    expect(config).not.toContain("from 'node:url'");
+  });
+
+  test('build script forces production NODE_ENV', () => {
+    const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { scripts: Record<string, string> };
+    expect(packageJson.scripts.build).toBe('NODE_ENV=production bun --bun next build');
+  });
 });

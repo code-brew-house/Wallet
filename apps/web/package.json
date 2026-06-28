@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun --bun next dev",
-    "build": "bun --bun next build",
+    "build": "NODE_ENV=production bun --bun next build",
     "start": "bun --bun next start",
     "test": "bun test test/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
