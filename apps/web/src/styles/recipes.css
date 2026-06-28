@@ -757,3 +757,52 @@ body {
   justify-content: center;
   gap: var(--space-2);
 }
+
+.wallet-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.wallet-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 7px 11px;
+  border-radius: var(--radius-chip);
+  font: 700 12px var(--font-sans);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wallet-chip-primary {
+  background: rgba(30, 58, 138, 0.72);
+  color: var(--button-primary-text);
+  border: 1px solid var(--button-primary-border);
+}
+
+.wallet-chip-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+}
+
+.wallet-action-segmented {
+  width: 100%;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-seg);
+  background: rgba(14, 14, 16, 0.5);
+}
+
+.wallet-action-segmented .mantine-SegmentedControl-control {
+  border-radius: var(--radius-xs);
+}
+
+.wallet-action-segmented .mantine-SegmentedControl-label {
+  color: var(--color-text-muted);
+  font-size: var(--text-caption-size);
+  font-weight: 700;
+}
