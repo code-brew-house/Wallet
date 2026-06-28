@@ -1,9 +1,11 @@
 'use client';
 
-import { Alert, Button, Container, Select, Stack, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Select, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { apiClient } from '../../../lib/api-client';
+import { AuthSheetShell } from '../../../components/sheet';
 
 interface GroupResponse {
   id: string;
@@ -12,8 +14,8 @@ interface GroupResponse {
 }
 
 export default function NewGroupPage() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [createdGroup, setCreatedGroup] = useState<GroupResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm({
     initialValues: { name: '', currency: 'USD' },
@@ -25,15 +27,13 @@ export default function NewGroupPage() {
 
   async function submit(values: typeof form.values) {
     setError(null);
-    setCreatedGroup(null);
     setIsSubmitting(true);
     try {
       const group = await apiClient.request<GroupResponse>('/groups', {
         method: 'POST',
         body: JSON.stringify({ name: values.name, currency: values.currency }),
       });
-      setCreatedGroup(group);
-      form.reset();
+      router.push(`/groups/${group.id}`);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Unable to create group');
     } finally {
@@ -42,24 +42,16 @@ export default function NewGroupPage() {
   }
 
   return (
-    <Container size="xs" py="xl">
-      <form onSubmit={form.onSubmit(submit)}>
-        <Stack gap="md">
-          <Title order={1}>Create group</Title>
-          <Text c="dimmed">Set up a shared Wallet group for your household.</Text>
-          {error ? <Alert color="red">{error}</Alert> : null}
-          {createdGroup ? <Alert color="green">Created {createdGroup.name} with {createdGroup.currency} budgets.</Alert> : null}
-          <TextInput label="Group name" required {...form.getInputProps('name')} />
-          <Select
-            label="Currency"
-            data={['INR', 'USD', 'EUR', 'GBP']}
-            required
-            allowDeselect={false}
-            {...form.getInputProps('currency')}
-          />
-          <Button type="submit" loading={isSubmitting}>Create group</Button>
-        </Stack>
+    <AuthSheetShell
+      title="Create group"
+      description="Set up a shared Wallet group for your household"
+      footer={<Button type="submit" form="new-group-form" className="wallet-button-primary" loading={isSubmitting}>Create group</Button>}
+    >
+      <form id="new-group-form" onSubmit={form.onSubmit(submit)} className="wallet-input-shell">
+        {error ? <Alert color="red">{error}</Alert> : null}
+        <TextInput label="Group name" required {...form.getInputProps('name')} />
+        <Select label="Currency" data={['INR', 'USD', 'EUR', 'GBP']} required allowDeselect={false} {...form.getInputProps('currency')} />
       </form>
-    </Container>
+    </AuthSheetShell>
   );
 }

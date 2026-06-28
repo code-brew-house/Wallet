@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert, Anchor, Button, Container, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Anchor, Button, PasswordInput, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,6 +8,7 @@ import { Suspense, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-store';
 import { getSafeNextPath } from '../../lib/next-path';
+import { AuthSheetShell } from '../../components/sheet';
 
 interface AuthResponse {
   accessToken: string;
@@ -55,20 +56,22 @@ function LoginForm() {
   }
 
   return (
-    <Container size="xs" py="xl">
-      <form onSubmit={form.onSubmit(submit)}>
-        <Stack gap="md">
-          <Title order={1}>Log in</Title>
-          <Text c="dimmed">Access your Wallet group budgets.</Text>
-          {error ? <Alert color="red">{error}</Alert> : null}
-          <TextInput label="Email" type="email" autoComplete="email" required {...form.getInputProps('email')} />
-          <PasswordInput label="Password" autoComplete="current-password" required {...form.getInputProps('password')} />
-          <Button type="submit" loading={isSubmitting}>Log in</Button>
-          <Text size="sm">
-            New to Wallet? <Anchor component={Link} href="/signup">Create an account</Anchor>
-          </Text>
-        </Stack>
+    <AuthSheetShell
+      title="Welcome back"
+      description="Log in to your Wallet"
+      footer={(
+        <>
+          <Button component={Link} href="/signup" className="wallet-button-secondary">Sign up</Button>
+          <Button type="submit" form="login-form" className="wallet-button-primary" loading={isSubmitting}>Log in</Button>
+        </>
+      )}
+    >
+      <form id="login-form" onSubmit={form.onSubmit(submit)} className="wallet-input-shell">
+        {error ? <Alert color="red">{error}</Alert> : null}
+        <TextInput label="Email" type="email" autoComplete="email" required {...form.getInputProps('email')} />
+        <PasswordInput label="Password" autoComplete="current-password" required {...form.getInputProps('password')} />
+        <div className="wallet-muted">New to Wallet? <Anchor component={Link} href="/signup">Create an account</Anchor></div>
       </form>
-    </Container>
+    </AuthSheetShell>
   );
 }

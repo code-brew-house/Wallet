@@ -610,3 +610,27 @@ body {
   font-size: 24px;
   font-weight: 800;
 }
+
+.wallet-landing-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  width: min(100%, 420px);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+
+.wallet-invite-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  width: min(100%, 420px);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.wallet-invite-pills {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
