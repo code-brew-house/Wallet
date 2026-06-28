@@ -43,3 +43,39 @@ describe('shared wallet chrome contract', () => {
     expect(sheet).toContain('hero');
   });
 });
+
+describe('group subpage layout contract', () => {
+  test('envelopes page uses tabs in hero header and app shell', () => {
+    const page = source('../src/app/groups/[groupId]/envelopes/page.tsx');
+    expect(page).toContain('<AppShell groupId={params.groupId} active="envelopes">');
+    expect(page).toContain('title="Envelopes"');
+    expect(page).toContain("tabs={[");
+    expect(page).toContain("{ label: 'Active', active: true }");
+    expect(page).toContain("{ label: 'Archived' }");
+  });
+
+  test('activity page uses date-grouped card rows', () => {
+    const page = source('../src/app/groups/[groupId]/activity/page.tsx');
+    expect(page).toContain('<AppShell groupId={params.groupId} active="activity">');
+    expect(page).toContain('Today');
+    expect(page).toContain('Earlier');
+    expect(page).toContain('wallet-table-card');
+  });
+
+  test('reports page uses KPI chart and spending cards', () => {
+    const page = source('../src/app/groups/[groupId]/reports/page.tsx');
+    expect(page).toContain('<AppShell groupId={params.groupId} active="activity">');
+    expect(page).toContain('wallet-report-chart');
+    expect(page).toContain('wallet-spending-card');
+    expect(page).toContain('Spent this month');
+  });
+
+  test('settings page uses profile header and sectioned cards', () => {
+    const page = source('../src/app/groups/[groupId]/settings/page.tsx');
+    expect(page).toContain('<AppShell groupId={params.groupId} active="settings">');
+    expect(page).toContain('wallet-settings-profile');
+    expect(page).toContain('Group');
+    expect(page).toContain('Appearance');
+    expect(page).toContain('Account');
+  });
+});

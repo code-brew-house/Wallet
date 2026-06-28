@@ -1,8 +1,10 @@
 'use client';
 
-import { Alert, Badge, Card, Container, Group, Loader, Stack, Text, Title } from '@mantine/core';
+import { Alert, Group, Loader, Stack } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { AppShell } from '../../../../components/app-shell';
+import { PageHeader } from '../../../../components/header';
 import type { DashboardSummary } from '../../../../features/dashboard/types';
 import { apiClient } from '../../../../lib/api-client';
 
@@ -35,13 +37,18 @@ export default function GroupActivityPage() {
     };
   }, [params.groupId]);
 
+  const todayItems = dashboard?.recentActivity.filter((item) => new Date(item.occurredAt).toDateString() === new Date().toDateString()) ?? [];
+  const earlierItems = dashboard?.recentActivity.filter((item) => new Date(item.occurredAt).toDateString() !== new Date().toDateString()) ?? [];
+
   return (
-    <Container size="md" py="xl">
+    <AppShell groupId={params.groupId} active="activity">
+      <PageHeader
+        overline="Ledger"
+        title="Activity"
+        description="A chronological ledger of envelope funding, transfers, and expenses."
+        tone="info"
+      />
       <Stack gap="lg">
-        <div>
-          <Title order={1}>Activity</Title>
-          <Text c="dimmed">A chronological ledger of envelope funding, transfers, and expenses.</Text>
-        </div>
         {error ? <Alert color="red">{error}</Alert> : null}
         {isLoading ? <Group justify="center"><Loader /></Group> : null}
         {!isLoading && dashboard?.recentActivity.length === 0 ? (
@@ -49,20 +56,43 @@ export default function GroupActivityPage() {
             Funding entries, envelope transfers, and expense confirmations appear here once your group starts using envelopes.
           </Alert>
         ) : null}
-        <Stack gap="sm">
-          {dashboard?.recentActivity.map((item) => (
-            <Card key={`${item.type}-${item.id}`} withBorder radius="md" padding="md">
-              <Group justify="space-between" align="start">
-                <div>
-                  <Group gap="xs"><Text fw={700}>{item.title}</Text><Badge variant="light">{item.type}</Badge></Group>
-                  <Text size="sm" c="dimmed">{new Date(item.occurredAt).toLocaleString()}</Text>
-                </div>
-                <Text fw={700}>{moneyFormatter.format(item.amountMinor / 100)}</Text>
-              </Group>
-            </Card>
-          ))}
-        </Stack>
+        <ActivityGroup title="Today" items={todayItems} moneyFormatter={moneyFormatter} />
+        <ActivityGroup title="Earlier" items={earlierItems} moneyFormatter={moneyFormatter} />
       </Stack>
-    </Container>
+    </AppShell>
+  );
+}
+
+function ActivityGroup({
+  title,
+  items,
+  moneyFormatter,
+}: {
+  title: string;
+  items: NonNullable<DashboardSummary['recentActivity']>;
+  moneyFormatter: Intl.NumberFormat;
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <section className="wallet-section">
+      <div className="wallet-overline">{title}</div>
+      <div className="wallet-table-card">
+        <div className="wallet-table-header"><span /> <span>Item</span><span>Amount</span></div>
+        {items.map((item) => {
+          const status = item.type === 'expense' ? 'wallet-status-danger' : item.type === 'funding' ? 'wallet-status-success' : '';
+          return (
+            <div key={`${item.type}-${item.id}`} className="wallet-table-row">
+              <span className={`wallet-status-dot ${status}`} aria-hidden="true" />
+              <div>
+                <strong>{item.title}</strong>
+                <div className="wallet-muted">{item.type} · {new Date(item.occurredAt).toLocaleString()}</div>
+              </div>
+              <strong>{moneyFormatter.format(item.amountMinor / 100)}</strong>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

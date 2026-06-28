@@ -561,3 +561,52 @@ body {
   line-height: var(--text-h2-line);
   font-weight: var(--text-h2-weight);
 }
+
+.wallet-report-chart {
+  min-height: 260px;
+}
+
+.wallet-chart-bars {
+  display: flex;
+  align-items: end;
+  gap: var(--space-3);
+  height: 160px;
+  margin-top: var(--space-6);
+}
+
+.wallet-chart-bars span {
+  flex: 1;
+  min-height: 20%;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: linear-gradient(180deg, var(--color-accent-border), var(--color-accent));
+  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22);
+}
+
+.wallet-spending-card {
+  min-height: 150px;
+}
+
+.wallet-settings-profile {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.wallet-settings-profile h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-h2-size);
+}
+
+.wallet-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  color: #0b0b0e;
+  font-size: 24px;
+  font-weight: 800;
+}

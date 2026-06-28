@@ -1,8 +1,10 @@
 'use client';
 
-import { Alert, Badge, Button, Card, Container, Group, Loader, Stack, Text, Title } from '@mantine/core';
+import { Alert, Badge, Button, Group, Loader, Stack } from '@mantine/core';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { AppShell } from '../../../../components/app-shell';
+import { PageHeader } from '../../../../components/header';
 import { apiClient } from '../../../../lib/api-client';
 
 interface GroupMember {
@@ -61,15 +63,20 @@ export default function GroupSettingsPage() {
   }
 
   return (
-    <Container size="md" py="xl">
+    <AppShell groupId={params.groupId} active="settings">
+      <PageHeader
+        overline="Household"
+        title="Settings"
+        description="Manage household members, roles, invite links, appearance, and account actions."
+        tone="info"
+        actions={<Button className="wallet-button-secondary" onClick={() => void createInvite()} loading={isCreatingInvite}>Create invite</Button>}
+      />
       <Stack gap="lg">
-        <Group justify="space-between" align="start">
-          <div>
-            <Title order={1}>Settings</Title>
-            <Text c="dimmed">Manage household members, roles, and invite links for this group.</Text>
-          </div>
-          <Button onClick={() => void createInvite()} loading={isCreatingInvite}>Create invite</Button>
-        </Group>
+        <section className="wallet-card wallet-settings-profile">
+          <div className="wallet-avatar" aria-hidden="true">W</div>
+          <h2>Wallet household</h2>
+          <p className="wallet-muted">{members.length} members · INR</p>
+        </section>
         {error ? <Alert color="red">{error}</Alert> : null}
         {inviteUrl ? <Alert color="teal" title="Invite link">Share this link with a household member: {inviteUrl}</Alert> : null}
         {isLoading ? <Group justify="center"><Loader /></Group> : null}
@@ -78,20 +85,35 @@ export default function GroupSettingsPage() {
             Group members, ownership, and role management controls appear here when memberships are available.
           </Alert>
         ) : null}
-        <Stack gap="sm">
+        <SettingsSection title="Group">
           {members.map((member) => (
-            <Card key={member.user.id} withBorder radius="md" padding="md">
-              <Group justify="space-between">
-                <div>
-                  <Text fw={700}>{member.user.displayName}</Text>
-                  <Text size="sm" c="dimmed">{member.user.email}</Text>
-                </div>
-                <Badge>{member.role}</Badge>
-              </Group>
-            </Card>
+            <div key={member.user.id} className="wallet-table-row">
+              <span className="wallet-status-dot wallet-status-success" aria-hidden="true" />
+              <div>
+                <strong>{member.user.displayName}</strong>
+                <div className="wallet-muted">{member.user.email}</div>
+              </div>
+              <Badge>{member.role}</Badge>
+            </div>
           ))}
-        </Stack>
+        </SettingsSection>
+        <SettingsSection title="Appearance">
+          <div className="wallet-table-row"><span className="wallet-status-dot" /><strong>Theme</strong><span>Dark</span></div>
+          <div className="wallet-table-row"><span className="wallet-status-dot wallet-status-success" /><strong>Accent</strong><span>Indigo</span></div>
+        </SettingsSection>
+        <SettingsSection title="Account">
+          <div className="wallet-table-row"><span className="wallet-status-dot wallet-status-warn" /><strong>Notifications</strong><span>On</span></div>
+        </SettingsSection>
       </Stack>
-    </Container>
+    </AppShell>
+  );
+}
+
+function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="wallet-section">
+      <div className="wallet-overline">{title}</div>
+      <div className="wallet-table-card">{children}</div>
+    </section>
   );
 }

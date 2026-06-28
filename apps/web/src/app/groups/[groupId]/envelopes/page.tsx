@@ -1,10 +1,12 @@
 'use client';
 
-import { Alert, Container, Group, Loader, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { Alert, Group, Loader, SimpleGrid, Stack } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { EnvelopeCard } from '../../../../features/envelopes/envelope-card';
+import { AppShell } from '../../../../components/app-shell';
+import { PageHeader } from '../../../../components/header';
 import type { EnvelopeSummary } from '../../../../features/dashboard/types';
+import { EnvelopeCard } from '../../../../features/envelopes/envelope-card';
 import { apiClient } from '../../../../lib/api-client';
 
 export default function GroupEnvelopesPage() {
@@ -36,12 +38,18 @@ export default function GroupEnvelopesPage() {
   }, [params.groupId]);
 
   return (
-    <Container size="lg" py="xl">
+    <AppShell groupId={params.groupId} active="envelopes">
+      <PageHeader
+        overline="Group envelopes"
+        title="Envelopes"
+        description="Balances, archived status, and funding needs for every group envelope."
+        tone="success"
+        tabs={[
+          { label: 'Active', active: true },
+          { label: 'Archived' },
+        ]}
+      />
       <Stack gap="lg">
-        <div>
-          <Title order={1}>Envelopes</Title>
-          <Text c="dimmed">Balances, archived status, and funding needs for every group envelope.</Text>
-        </div>
         {error ? <Alert color="red">{error}</Alert> : null}
         {isLoading ? <Group justify="center"><Loader /></Group> : null}
         {!isLoading && envelopes.length === 0 ? (
@@ -53,6 +61,6 @@ export default function GroupEnvelopesPage() {
           {envelopes.map((envelope) => <EnvelopeCard key={envelope.id} envelope={envelope} currency="INR" />)}
         </SimpleGrid>
       </Stack>
-    </Container>
+    </AppShell>
   );
 }
