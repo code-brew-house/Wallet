@@ -232,6 +232,7 @@ body {
 .wallet-status-success { background: var(--color-success); }
 .wallet-status-danger { background: var(--color-danger); }
 .wallet-status-warn { background: var(--color-warn); }
+.wallet-status-info { background: var(--color-accent); }
 
 .wallet-pill {
   display: inline-flex;
@@ -526,4 +527,37 @@ body {
   margin: var(--space-3) 0 0;
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
+}
+
+.wallet-dashboard-summary-grid .wallet-card {
+  min-height: 112px;
+}
+
+.wallet-summary-value {
+  margin-top: var(--space-3);
+  color: var(--color-text);
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-line);
+  font-weight: 800;
+  letter-spacing: var(--text-h2-spacing);
+}
+
+.wallet-section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.wallet-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.wallet-section-heading h2 {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text);
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-line);
+  font-weight: var(--text-h2-weight);
 }

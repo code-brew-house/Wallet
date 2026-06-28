@@ -10,6 +10,17 @@ describe('dashboard UI contract', () => {
     expect(source).toContain('Fund envelope');
   });
 
+  test('dashboard uses approved information-first layout chrome', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    expect(source).toContain("import { AppShell } from '../../components/app-shell';");
+    expect(source).toContain("import { PageHeader } from '../../components/header';");
+    expect(source).toContain('active="home"');
+    expect(source).toContain('overline="Envelope-first"');
+    expect(source).toContain('wallet-dashboard-summary-grid');
+    expect(source).toContain('wallet-section');
+    expect(source).toContain('wallet-table-card');
+  });
+
   test('primary dashboard CTAs select mounted form tabs before focusing forms', () => {
     const dashboardSource = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
     const envelopeFormsSource = readFileSync(new URL('../src/features/envelopes/envelope-forms.tsx', import.meta.url), 'utf8');

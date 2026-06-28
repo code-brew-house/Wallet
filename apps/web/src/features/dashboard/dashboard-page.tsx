@@ -1,9 +1,11 @@
 'use client';
 
-import { Alert, Badge, Button, Card, Container, Divider, Group, Loader, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { Alert, Badge, Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { StaleDataBanner } from '../../components/stale-data-banner';
+import { AppShell } from '../../components/app-shell';
+import { PageHeader } from '../../components/header';
 import { EnvelopeCard } from '../envelopes/envelope-card';
 import { EnvelopeForms, type FormKind } from '../envelopes/envelope-forms';
 import type { ActivityItem, DashboardSummary, EnvelopeSummary } from './types';
@@ -115,18 +117,18 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   const lowBalanceEnvelopes = dashboard?.envelopes.filter((envelope) => envelope.balanceMinor >= 0 && envelope.balanceMinor < 1000) ?? [];
 
   return (
-    <Container size="lg" py="xl">
-      <Stack gap="xl">
+    <AppShell groupId={groupId} active="home">
+      <PageHeader
+        overline="Envelope-first"
+        title={`Group ${groupId}`}
+        description="Track shared budgets, funding, spending, recurring expenses, and household activity."
+        tone="info"
+        actions={(
+          <Button className="wallet-button-secondary" onClick={() => void createInvite()} loading={isMutating}>Create invite</Button>
+        )}
+      />
+      <Stack gap="lg">
         {dashboard ? <StaleDataBanner generatedAt={dashboard.generatedAt} maxAgeMs={DASHBOARD_STALE_MAX_AGE_MS} /> : <StaleDataBanner />}
-
-        <Group justify="space-between" align="start">
-          <div>
-            <Badge color="teal" variant="light">Envelope-first</Badge>
-            <Title order={1} mt="xs">Group dashboard</Title>
-            <Text c="dimmed">Track the shared budget for group {groupId}.</Text>
-          </div>
-          <Button onClick={() => void createInvite()} loading={isMutating}>Create invite</Button>
-        </Group>
 
         {inviteUrl ? <Alert color="teal" title="Invite action ready">Share this invite link: {inviteUrl}</Alert> : null}
         {actionMessage ? <Alert color="green">{actionMessage}</Alert> : null}
@@ -136,16 +138,18 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
           <Group justify="center" py="xl"><Loader /></Group>
         ) : dashboard ? (
           <Stack gap="xl">
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-              <SummaryCard label="Total available" value={moneyFormatter.format(dashboard.totalAvailableMinor / 100)} tone="teal" />
-              <SummaryCard label="Spent this month" value={moneyFormatter.format(dashboard.spentThisMonthMinor / 100)} tone="blue" />
+            <SimpleGrid className="wallet-dashboard-summary-grid" cols={{ base: 2, sm: 4 }} spacing="sm">
+              <SummaryCard label="Total available" value={moneyFormatter.format(dashboard.totalAvailableMinor / 100)} tone="success" />
+              <SummaryCard label="Spent this month" value={moneyFormatter.format(dashboard.spentThisMonthMinor / 100)} tone="danger" />
+              <SummaryCard label="Overspent" value={String(dashboard.overspent.length)} tone="warn" />
+              <SummaryCard label="Recurring" value={String(dashboard.upcomingRecurring.length)} tone="info" />
             </SimpleGrid>
 
             <Group gap="sm">
-              <Button onClick={() => focusDashboardForm('expense')}>Add expense</Button>
-              <Button onClick={() => focusDashboardForm('funding')} variant="light">Fund envelope</Button>
-              <Button onClick={() => focusDashboardForm('transfer')} variant="light">Transfer</Button>
-              <Button onClick={() => focusDashboardForm('recurring')} variant="light">Create recurring</Button>
+              <Button className="wallet-button-primary" onClick={() => focusDashboardForm('expense')}>Add expense</Button>
+              <Button className="wallet-button-secondary" onClick={() => focusDashboardForm('funding')}>Fund envelope</Button>
+              <Button className="wallet-button-secondary" onClick={() => focusDashboardForm('transfer')}>Transfer</Button>
+              <Button className="wallet-button-secondary" onClick={() => focusDashboardForm('recurring')}>Create recurring</Button>
             </Group>
 
             <EnvelopeForms
@@ -180,11 +184,14 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               )}
             />
 
-            <section>
-              <Group justify="space-between" mb="md">
-                <Title order={2}>Envelope cards</Title>
-                <Text size="sm" c="dimmed">{dashboard.envelopes.length} active and archived envelopes</Text>
-              </Group>
+            <section className="wallet-section">
+              <div className="wallet-section-heading">
+                <div>
+                  <div className="wallet-overline">Envelopes</div>
+                  <h2>Funding status</h2>
+                </div>
+                <Button className="wallet-button-secondary" onClick={() => focusDashboardForm('funding')}>Fund envelope</Button>
+              </div>
               {dashboard.envelopes.length > 0 ? (
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
                   {dashboard.envelopes.map((envelope) => <EnvelopeCard key={envelope.id} envelope={envelope} currency={currency} />)}
@@ -196,56 +203,61 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
 
             <AttentionArea overspent={dashboard.overspent} lowBalance={lowBalanceEnvelopes} currency={currency} />
 
-            <Card withBorder radius="lg" padding="lg">
-              <Group justify="space-between" mb="md">
-                <Title order={2}>Upcoming recurring expenses</Title>
+            <section className="wallet-section">
+              <div className="wallet-section-heading">
+                <div>
+                  <div className="wallet-overline">Recurring</div>
+                  <h2>Upcoming recurring expenses</h2>
+                </div>
                 <Badge variant="light">Next 10</Badge>
-              </Group>
+              </div>
               {dashboard.upcomingRecurring.length > 0 ? (
-                <Stack gap="sm">
+                <div className="wallet-table-card">
                   {dashboard.upcomingRecurring.map((item) => (
-                    <Group key={item.id} justify="space-between">
+                    <div key={item.id} className="wallet-table-row">
+                      <span className="wallet-status-dot wallet-status-warn" aria-hidden="true" />
                       <div>
-                        <Text fw={600}>{item.title}</Text>
-                        <Text size="sm" c="dimmed">Due {new Date(item.nextDueAt).toLocaleDateString()}</Text>
+                        <strong>{item.title}</strong>
+                        <div className="wallet-muted">Due {new Date(item.nextDueAt).toLocaleDateString()}</div>
                       </div>
-                      <Text fw={700}>{moneyFormatter.format(item.amountMinor / 100)}</Text>
-                    </Group>
+                      <strong>{moneyFormatter.format(item.amountMinor / 100)}</strong>
+                    </div>
                   ))}
-                </Stack>
+                </div>
               ) : (
                 <EmptyState title="No upcoming recurring expenses" description="Scheduled rent, subscriptions, or bills will appear here before they are confirmed." />
               )}
-            </Card>
+            </section>
 
-            <Card withBorder radius="lg" padding="lg">
-              <Group justify="space-between" mb="md">
-                <Title order={2}>Recent activity</Title>
+            <section className="wallet-section">
+              <div className="wallet-section-heading">
+                <div>
+                  <div className="wallet-overline">Activity</div>
+                  <h2>Recent activity</h2>
+                </div>
                 <Text size="sm" c="dimmed">Updated {new Date(dashboard.generatedAt).toLocaleString()}</Text>
-              </Group>
+              </div>
               {dashboard.recentActivity.length > 0 ? (
-                <Stack gap="sm">
+                <div className="wallet-table-card">
                   {dashboard.recentActivity.map((item) => <ActivityRow key={`${item.type}-${item.id}`} item={item} currency={currency} />)}
-                </Stack>
+                </div>
               ) : (
                 <EmptyState title="No activity yet" description="Funding, transfers, and expenses will create a timeline for the group here." />
               )}
-            </Card>
+            </section>
           </Stack>
         ) : null}
       </Stack>
-    </Container>
+    </AppShell>
   );
 }
 
-function SummaryCard({ label, value, tone }: { label: string; value: string; tone: string }) {
+function SummaryCard({ label, value, tone }: { label: string; value: string; tone: 'info' | 'success' | 'warn' | 'danger' }) {
   return (
-    <Card withBorder radius="lg" padding="lg">
-      <Stack gap="xs">
-        <Text size="sm" tt="uppercase" c="dimmed" fw={700}>{label}</Text>
-        <Text size="2rem" fw={900} c={tone}>{value}</Text>
-      </Stack>
-    </Card>
+    <article className={`wallet-card wallet-card-${tone}`}>
+      <div className="wallet-overline">{label}</div>
+      <div className="wallet-summary-value">{value}</div>
+    </article>
   );
 }
 
@@ -253,52 +265,59 @@ function AttentionArea({ overspent, lowBalance, currency }: { overspent: Envelop
   const moneyFormatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency });
 
   return (
-    <Card withBorder radius="lg" padding="lg">
-      <Title order={2}>Overspent and low balance attention</Title>
-      <Text c="dimmed" size="sm" mt="xs">Review envelopes that need funding or spending changes.</Text>
-      <Divider my="md" />
+    <section className="wallet-section">
+      <div className="wallet-section-heading">
+        <div>
+          <div className="wallet-overline">Attention</div>
+          <h2>Overspent and low balance</h2>
+        </div>
+        <Text size="sm" c="dimmed">Review envelopes that need funding or spending changes.</Text>
+      </div>
       {overspent.length === 0 && lowBalance.length === 0 ? (
         <Alert color="teal">No overspent or low balance envelopes right now.</Alert>
       ) : (
-        <Stack gap="sm">
+        <div className="wallet-table-card">
           {overspent.map((envelope) => (
-            <Group key={envelope.id} justify="space-between">
-              <Text fw={600}>{envelope.name}</Text>
+            <div key={envelope.id} className="wallet-table-row">
+              <span className="wallet-status-dot wallet-status-danger" aria-hidden="true" />
+              <strong>{envelope.name}</strong>
               <Badge color="red">Overspent {moneyFormatter.format(envelope.balanceMinor / 100)}</Badge>
-            </Group>
+            </div>
           ))}
           {lowBalance.map((envelope) => (
-            <Group key={envelope.id} justify="space-between">
-              <Text fw={600}>{envelope.name}</Text>
+            <div key={envelope.id} className="wallet-table-row">
+              <span className="wallet-status-dot wallet-status-warn" aria-hidden="true" />
+              <strong>{envelope.name}</strong>
               <Badge color="yellow">Low balance {moneyFormatter.format(envelope.balanceMinor / 100)}</Badge>
-            </Group>
+            </div>
           ))}
-        </Stack>
+        </div>
       )}
-    </Card>
+    </section>
   );
 }
 
 function ActivityRow({ item, currency }: { item: ActivityItem; currency: string }) {
   const moneyFormatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency });
-  const color = item.type === 'expense' ? 'red' : item.type === 'funding' ? 'teal' : 'blue';
+  const color = item.type === 'expense' ? 'wallet-status-danger' : item.type === 'funding' ? 'wallet-status-success' : 'wallet-status-info';
 
   return (
-    <Group justify="space-between" align="start">
+    <div className="wallet-table-row">
+      <span className={`wallet-status-dot ${color}`} aria-hidden="true" />
       <div>
-        <Text fw={600}>{item.title}</Text>
-        <Text size="sm" c="dimmed">{item.type} · {new Date(item.occurredAt).toLocaleString()}</Text>
+        <strong>{item.title}</strong>
+        <div className="wallet-muted">{item.type} · {new Date(item.occurredAt).toLocaleString()}</div>
       </div>
-      <Text fw={700} c={color}>{moneyFormatter.format(item.amountMinor / 100)}</Text>
-    </Group>
+      <strong>{moneyFormatter.format(item.amountMinor / 100)}</strong>
+    </div>
   );
 }
 
 function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <Card withBorder radius="md" padding="md" bg="gray.0">
-      <Text fw={700}>{title}</Text>
-      <Text size="sm" c="dimmed">{description}</Text>
-    </Card>
+    <article className="wallet-card">
+      <strong>{title}</strong>
+      <p className="wallet-muted">{description}</p>
+    </article>
   );
 }
