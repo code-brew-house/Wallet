@@ -25,4 +25,21 @@ describe('dashboard UI contract', () => {
     expect(envelopeFormsSource).toContain('onSelectedFormChange(form: FormKind): void;');
     expect(envelopeFormsSource).toContain('<Tabs value={selectedForm} onChange={');
   });
+
+  test('shared primitives use wallet recipe classes without changing form contracts', () => {
+    const cardSource = readFileSync(new URL('../src/features/envelopes/envelope-card.tsx', import.meta.url), 'utf8');
+    const formsSource = readFileSync(new URL('../src/features/envelopes/envelope-forms.tsx', import.meta.url), 'utf8');
+    const staleBannerSource = readFileSync(new URL('../src/components/stale-data-banner.tsx', import.meta.url), 'utf8');
+
+    expect(cardSource).toContain('wallet-card');
+    expect(cardSource).toContain('wallet-pill');
+    expect(formsSource).toContain('wallet-input-shell');
+    expect(formsSource).toContain('wallet-button-primary');
+    expect(staleBannerSource).toContain('wallet-alert');
+    expect(formsSource).toContain("export type FormKind = 'expense' | 'funding' | 'transfer' | 'recurring';");
+    expect(formsSource).toContain('id="expense-form"');
+    expect(formsSource).toContain('id="funding-form"');
+    expect(formsSource).toContain('id="transfer-form"');
+    expect(formsSource).toContain('id="recurring-form"');
+  });
 });

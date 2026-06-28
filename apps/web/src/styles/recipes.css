@@ -493,3 +493,37 @@ body {
     display: none;
   }
 }
+
+.wallet-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.wallet-card-heading h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text);
+  font-size: var(--text-h3-size);
+  line-height: var(--text-h3-line);
+  letter-spacing: var(--text-h3-spacing);
+  font-weight: var(--text-h3-weight);
+}
+
+.wallet-money {
+  margin-top: var(--space-4);
+  color: var(--color-success-text);
+  font-size: var(--text-h2-size);
+  line-height: var(--text-h2-line);
+  font-weight: 800;
+}
+
+.wallet-money-danger {
+  color: var(--color-danger-text);
+}
+
+.wallet-card p {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}

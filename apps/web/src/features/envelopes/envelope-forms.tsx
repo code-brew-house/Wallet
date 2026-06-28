@@ -202,7 +202,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
   }
 
   return (
-    <Card withBorder radius="lg" padding="lg" id="dashboard-actions">
+    <Card className="wallet-input-shell" withBorder radius="lg" padding="lg" id="dashboard-actions">
       <Stack gap="md">
         <div>
           <Text fw={700}>Envelope actions</Text>
@@ -227,7 +227,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
               </SimpleGrid>
               <Textarea mt="md" label="Note" autosize minRows={2} {...expenseForm.getInputProps('note')} />
               <Group justify="end" mt="md">
-                <Button type="submit" disabled={!hasEnvelopes} loading={submittingForm === 'expense'}>Add expense</Button>
+                <Button type="submit" className="wallet-button-primary" disabled={!hasEnvelopes} loading={submittingForm === 'expense'}>Add expense</Button>
               </Group>
             </form>
           </Tabs.Panel>
@@ -240,7 +240,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
               </SimpleGrid>
               <Textarea mt="md" label="Note" autosize minRows={2} {...fundingForm.getInputProps('note')} />
               <Group justify="end" mt="md">
-                <Button type="submit" disabled={!hasEnvelopes} loading={submittingForm === 'funding'}>Fund envelope</Button>
+                <Button type="submit" className="wallet-button-primary" disabled={!hasEnvelopes} loading={submittingForm === 'funding'}>Fund envelope</Button>
               </Group>
             </form>
           </Tabs.Panel>
@@ -254,7 +254,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
               </SimpleGrid>
               <Textarea mt="md" label="Note" autosize minRows={2} {...transferForm.getInputProps('note')} />
               <Group justify="end" mt="md">
-                <Button type="submit" disabled={activeEnvelopes.length < 2} loading={submittingForm === 'transfer'}>Transfer</Button>
+                <Button type="submit" className="wallet-button-primary" disabled={activeEnvelopes.length < 2} loading={submittingForm === 'transfer'}>Transfer</Button>
               </Group>
             </form>
           </Tabs.Panel>
@@ -280,7 +280,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
               </SimpleGrid>
               <Textarea mt="md" label="Note" autosize minRows={2} {...recurringForm.getInputProps('note')} />
               <Group justify="end" mt="md">
-                <Button type="submit" disabled={!hasEnvelopes} loading={submittingForm === 'recurring'}>Create recurring</Button>
+                <Button type="submit" className="wallet-button-primary" disabled={!hasEnvelopes} loading={submittingForm === 'recurring'}>Create recurring</Button>
               </Group>
             </form>
           </Tabs.Panel>

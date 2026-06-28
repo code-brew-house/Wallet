@@ -1,6 +1,5 @@
 'use client';
 
-import { Alert } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 export function StaleDataBanner({ generatedAt, maxAgeMs }: { generatedAt?: string; maxAgeMs?: number }) {
@@ -30,8 +29,15 @@ export function StaleDataBanner({ generatedAt, maxAgeMs }: { generatedAt?: strin
   if (online && !isStale) return null;
 
   return (
-    <Alert color="yellow" title={online ? 'Stale cached data' : 'Offline read-only mode'}>
-      {online ? 'Showing cached Wallet data that may be out of date.' : 'Showing cached Wallet data in read-only mode.'}{generatedAt ? ` Last refreshed ${new Date(generatedAt).toLocaleString()}` : ''} New expenses require a connection.
-    </Alert>
+    <div className="wallet-alert wallet-alert-warn" role="status">
+      <span className="wallet-alert-icon" aria-hidden="true">i</span>
+      <div>
+        <strong>{online ? 'Stale cached data' : 'Offline read-only mode'}</strong>
+        <div>
+          {online ? 'Showing cached Wallet data that may be out of date.' : 'Showing cached Wallet data in read-only mode.'}
+          {generatedAt ? ` Last refreshed ${new Date(generatedAt).toLocaleString()}` : ''} New expenses require a connection.
+        </div>
+      </div>
+    </div>
   );
 }
