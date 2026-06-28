@@ -9,10 +9,12 @@ describe('action sheet contract', () => {
 
     expect(actionSheet).toContain('export interface ActionSheetProps');
     expect(actionSheet).toContain('formId: string;');
+    expect(actionSheet).toContain('submitDisabled?: boolean;');
     expect(actionSheet).toContain('wallet-sheet-handle');
     expect(actionSheet).toContain('wallet-action-sheet');
     expect(actionSheet).toContain('wallet-button-secondary');
     expect(actionSheet).toContain('wallet-button-primary');
+    expect(actionSheet).toContain('disabled={submitDisabled}');
 
     expect(stepperSheet).toContain('export interface StepperSheetProps');
     expect(stepperSheet).toContain('currentStep: number;');

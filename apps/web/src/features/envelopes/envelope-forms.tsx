@@ -238,7 +238,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
         </form>
       </ActionSheet>
 
-      <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="funding-form" submitLabel="Save" submitClassName="wallet-button-success" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
+      <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="funding-form" submitLabel="Save" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
         <form onSubmit={fundingForm.onSubmit(submitFunding)} id="funding-form">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
             <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...fundingForm.getInputProps('envelopeId')} />
@@ -248,7 +248,7 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
         </form>
       </ActionSheet>
 
-      <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="transfer-form" submitLabel="Save" submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
+      <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="transfer-form" submitLabel="Save" submitDisabled={activeEnvelopes.length < 2} submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
         <form onSubmit={transferForm.onSubmit(submitTransfer)} id="transfer-form">
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
             <Select label="From" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('fromEnvelopeId')} />

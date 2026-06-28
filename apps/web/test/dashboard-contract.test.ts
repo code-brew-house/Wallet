@@ -37,6 +37,9 @@ describe('dashboard UI contract', () => {
     expect(envelopeFormsSource).toContain('<ActionSheet');
     expect(envelopeFormsSource).toContain('<StepperSheet');
     expect(envelopeFormsSource).not.toContain('<Tabs value={selectedForm}');
+
+    expect(envelopeFormsSource).toContain('submitDisabled={activeEnvelopes.length < 2}');
+    expect(envelopeFormsSource).not.toContain('submitClassName="wallet-button-success"');
   });
 
   test('shared primitives use wallet recipe classes without changing form contracts', () => {
