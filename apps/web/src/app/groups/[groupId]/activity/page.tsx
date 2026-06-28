@@ -41,7 +41,7 @@ export default function GroupActivityPage() {
   const earlierItems = dashboard?.recentActivity.filter((item) => new Date(item.occurredAt).toDateString() !== new Date().toDateString()) ?? [];
 
   return (
-    <AppShell groupId={params.groupId} active="activity">
+    <AppShell groupId={params.groupId} active="activity" narrow>
       <PageHeader
         overline="Ledger"
         title="Activity"

@@ -56,7 +56,7 @@ describe('group subpage layout contract', () => {
 
   test('activity page uses date-grouped card rows', () => {
     const page = source('../src/app/groups/[groupId]/activity/page.tsx');
-    expect(page).toContain('<AppShell groupId={params.groupId} active="activity">');
+    expect(page).toContain('<AppShell groupId={params.groupId} active="activity" narrow>');
     expect(page).toContain('Today');
     expect(page).toContain('Earlier');
     expect(page).toContain('wallet-table-card');
@@ -72,7 +72,7 @@ describe('group subpage layout contract', () => {
 
   test('settings page uses profile header and sectioned cards', () => {
     const page = source('../src/app/groups/[groupId]/settings/page.tsx');
-    expect(page).toContain('<AppShell groupId={params.groupId} active="settings">');
+    expect(page).toContain('<AppShell groupId={params.groupId} active="settings" narrow>');
     expect(page).toContain('wallet-settings-profile');
     expect(page).toContain('Group');
     expect(page).toContain('Appearance');

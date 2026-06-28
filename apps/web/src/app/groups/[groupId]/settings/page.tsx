@@ -63,7 +63,7 @@ export default function GroupSettingsPage() {
   }
 
   return (
-    <AppShell groupId={params.groupId} active="settings">
+    <AppShell groupId={params.groupId} active="settings" narrow>
       <PageHeader
         overline="Household"
         title="Settings"
