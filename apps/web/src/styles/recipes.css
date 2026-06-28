@@ -93,23 +93,47 @@ body {
   color: var(--color-text-dim);
 }
 
-.wallet-button-primary {
-  background: var(--color-accent);
-  color: #0b0b0e;
-  border: 1px solid var(--color-accent-border);
+.wallet-button-primary,
+.wallet-button-success,
+.wallet-button-warn,
+.wallet-button-danger,
+.wallet-button-secondary {
   border-radius: var(--radius-md);
   padding: 9px 14px;
+  min-height: 36px;
   font-size: 13px;
   font-weight: 700;
+  line-height: 1;
+}
+
+.wallet-button-primary {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border: 1px solid var(--button-primary-border);
+}
+
+.wallet-button-success {
+  background: var(--button-success-bg);
+  color: var(--button-success-text);
+  border: 1px solid var(--button-success-border);
+}
+
+.wallet-button-warn {
+  background: var(--button-warn-bg);
+  color: var(--button-warn-text);
+  border: 1px solid var(--button-warn-border);
+}
+
+.wallet-button-danger {
+  background: var(--button-danger-bg);
+  color: var(--button-danger-text);
+  border: 1px solid var(--button-danger-border);
 }
 
 .wallet-button-secondary {
-  background: transparent;
-  color: var(--color-text);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  padding: 9px 14px;
-  font-size: 13px;
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border: 1px solid var(--button-secondary-border);
   font-weight: 600;
 }
 

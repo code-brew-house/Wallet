@@ -40,6 +40,25 @@ describe('wallet theme contract', () => {
     expect(tokens).toContain('--text-body-weight: 400;');
   });
 
+  test('defines approved flat alert-family button tokens', () => {
+    const tokens = source('../src/styles/tokens.css');
+    const recipes = source('../src/styles/recipes.css');
+
+    expect(tokens).toContain('--button-primary-bg: #1e3a8a;');
+    expect(tokens).toContain('--button-primary-border: rgba(147, 197, 253, 0.52);');
+    expect(tokens).toContain('--button-primary-text: #dbeafe;');
+    expect(tokens).toContain('--button-success-bg: #14532d;');
+    expect(tokens).toContain('--button-warn-bg: #78350f;');
+    expect(tokens).toContain('--button-danger-bg: #7f1d1d;');
+    expect(tokens).toContain('--radius-chip: 6px;');
+    expect(tokens).toContain('--radius-seg: 6px;');
+
+    expect(recipes).toContain('background: var(--button-primary-bg);');
+    expect(recipes).toContain('border: 1px solid var(--button-primary-border);');
+    expect(recipes).not.toContain('backdrop-filter: blur(10px)');
+    expect(recipes).not.toContain('inset 0 1px 0');
+  });
+
 
 
   test('recipes expose the shared visual primitives', () => {
