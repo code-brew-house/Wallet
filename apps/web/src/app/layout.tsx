@@ -1,5 +1,7 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '../styles/tokens.css';
+import '../styles/recipes.css';
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import type { Metadata, Viewport } from 'next';
 import { Providers as MantineProvider } from './providers';
@@ -13,12 +15,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0CA678',
+  themeColor: '#0e0e10',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang="en" data-theme="dark" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
       </head>

@@ -1,0 +1,95 @@
+:root,
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #0e0e10;
+  --color-bg-elev-1: #17171a;
+  --color-bg-elev-2: #1f1f23;
+  --color-border: #2a2a30;
+  --color-border-strong: #3a3a44;
+  --color-text: #fafafa;
+  --color-text-muted: #d4d4d8;
+  --color-text-dim: #71717a;
+  --color-accent: #3b82f6;
+  --color-accent-border: #60a5fa;
+  --color-accent-text: #93c5fd;
+  --color-success: #22c55e;
+  --color-success-text: #86efac;
+  --color-danger: #ef4444;
+  --color-danger-text: #fca5a5;
+  --color-warn: #f59e0b;
+  --color-warn-text: #fcd34d;
+  --color-info: #3b82f6;
+  --color-info-text: #93c5fd;
+
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --text-display-size: 32px;
+  --text-display-line: 1.1;
+  --text-display-spacing: -0.6px;
+  --text-display-weight: 800;
+  --text-h1-size: 24px;
+  --text-h1-line: 1.2;
+  --text-h1-spacing: -0.4px;
+  --text-h1-weight: 800;
+  --text-h2-size: 20px;
+  --text-h2-line: 1.25;
+  --text-h2-spacing: -0.2px;
+  --text-h2-weight: 700;
+  --text-h3-size: 17px;
+  --text-h3-line: 1.3;
+  --text-h3-spacing: -0.1px;
+  --text-h3-weight: 700;
+  --text-body-size: 14px;
+  --text-body-line: 1.55;
+  --text-caption-size: 12px;
+  --text-caption-line: 1.4;
+  --text-caption-spacing: 0.1px;
+  --text-caption-weight: 500;
+  --text-overline-size: 11px;
+  --text-overline-line: 1.2;
+  --text-overline-spacing: 0.8px;
+  --text-overline-weight: 700;
+
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 56px;
+
+  --radius-none: 0;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 999px;
+
+  --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --shadow-nav: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.5);
+  --glow-accent-8: rgba(59, 130, 246, 0.08);
+  --glow-accent-18: rgba(59, 130, 246, 0.18);
+  --glow-accent-22: rgba(59, 130, 246, 0.22);
+  --backdrop-sheet: rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+  --color-bg: #fbfaf8;
+  --color-bg-elev-1: #ffffff;
+  --color-bg-elev-2: #f4f2ef;
+  --color-border: #e4e0da;
+  --color-border-strong: #cbc4bb;
+  --color-text: #111113;
+  --color-text-muted: #3f3f46;
+  --color-text-dim: #71717a;
+}
