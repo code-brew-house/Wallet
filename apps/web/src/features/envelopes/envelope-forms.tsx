@@ -229,7 +229,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
       </ActionSheet>
 
       <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="funding-form" submitLabel="Save" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
-        <form onSubmit={fundingForm.onSubmit(submitFunding)} id="funding-form">
+        <form onSubmit={fundingForm.onSubmit(submitFunding)} id="funding-form" className="wallet-input-shell">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
             <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...fundingForm.getInputProps('envelopeId')} />
             <TextInput label="Amount" inputMode="decimal" required {...fundingForm.getInputProps('amount')} />
@@ -239,7 +239,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
       </ActionSheet>
 
       <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="transfer-form" submitLabel="Save" submitDisabled={activeEnvelopes.length < 2} submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
-        <form onSubmit={transferForm.onSubmit(submitTransfer)} id="transfer-form">
+        <form onSubmit={transferForm.onSubmit(submitTransfer)} id="transfer-form" className="wallet-input-shell">
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
             <Select label="From" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('fromEnvelopeId')} />
             <Select label="To" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('toEnvelopeId')} />
@@ -263,7 +263,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
         onClose={onCloseForm}
         onSubmit={() => recurringForm.onSubmit(submitRecurring)()}
       >
-        <form onSubmit={recurringForm.onSubmit(submitRecurring)} id="recurring-form">
+        <form onSubmit={recurringForm.onSubmit(submitRecurring)} id="recurring-form" className="wallet-input-shell">
           {recurringStep === 1 ? (
             <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...recurringForm.getInputProps('envelopeId')} />
           ) : null}
