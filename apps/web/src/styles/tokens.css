@@ -22,6 +22,24 @@ html[data-theme='dark'] {
   --color-info: #3b82f6;
   --color-info-text: #93c5fd;
 
+  --button-primary-bg: #1e3a8a;
+  --button-primary-border: rgba(147, 197, 253, 0.52);
+  --button-primary-text: #dbeafe;
+  --button-success-bg: #14532d;
+  --button-success-border: rgba(134, 239, 172, 0.48);
+  --button-success-text: #d1fae5;
+  --button-warn-bg: #78350f;
+  --button-warn-border: rgba(253, 230, 138, 0.48);
+  --button-warn-text: #fef3c7;
+  --button-danger-bg: #7f1d1d;
+  --button-danger-border: rgba(252, 165, 165, 0.5);
+  --button-danger-text: #fee2e2;
+  --button-secondary-bg: transparent;
+  --button-secondary-border: rgba(179, 179, 194, 0.36);
+  --button-secondary-text: var(--color-text);
+  --radius-chip: 6px;
+  --radius-seg: 6px;
+
   --font-sans: Inter, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
