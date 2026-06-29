@@ -89,6 +89,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   const firstEnvelopeId = activeEnvelopes[0]?.id ?? '';
   const secondEnvelopeId = activeEnvelopes[1]?.id ?? firstEnvelopeId;
   const hasEnvelopes = activeEnvelopes.length > 0;
+  const sheetMetadata = ['Wallet action', currency, 'Active envelopes only'];
   const [submittingForm, setSubmittingForm] = useState<FormKind | null>(null);
   const [recurringStep, setRecurringStep] = useState(1);
 
@@ -215,7 +216,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   return (
     <>
 
-      <ActionSheet opened={openedForm === 'expense'} title="Add expense" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="expense-form" submitLabel="Save" submitting={submittingForm === 'expense'} onClose={onCloseForm}>
+      <ActionSheet opened={openedForm === 'expense'} title="Add expense" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="expense-form" submitLabel="Save" submitting={submittingForm === 'expense'} onClose={onCloseForm}>
         <form onSubmit={expenseForm.onSubmit(submitExpense)} id="expense-form" className="wallet-input-shell">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
             <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...expenseForm.getInputProps('envelopeId')} />
@@ -227,7 +228,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
         </form>
       </ActionSheet>
 
-      <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="funding-form" submitLabel="Save" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
+      <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="funding-form" submitLabel="Save" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
         <form onSubmit={fundingForm.onSubmit(submitFunding)} id="funding-form">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
             <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...fundingForm.getInputProps('envelopeId')} />
@@ -237,7 +238,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
         </form>
       </ActionSheet>
 
-      <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="transfer-form" submitLabel="Save" submitDisabled={activeEnvelopes.length < 2} submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
+      <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="transfer-form" submitLabel="Save" submitDisabled={activeEnvelopes.length < 2} submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
         <form onSubmit={transferForm.onSubmit(submitTransfer)} id="transfer-form">
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
             <Select label="From" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('fromEnvelopeId')} />
@@ -252,6 +253,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
         opened={openedForm === 'recurring'}
         title="Create recurring"
         description={`Amounts are entered in ${currency} and saved in minor units.`}
+        metadata={sheetMetadata}
         currentStep={recurringStep}
         totalSteps={3}
         canGoNext={hasEnvelopes}
