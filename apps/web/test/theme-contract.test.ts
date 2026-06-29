@@ -81,6 +81,22 @@ describe('wallet theme contract', () => {
     expect(recipes).toContain('background: rgba(239, 68, 68, 0.25);');
   });
 
+  test('recipes bridge Mantine form controls to Wallet dark tokens', () => {
+    const recipes = source('../src/styles/recipes.css');
+
+    expect(recipes).toContain('.mantine-Input-input');
+    expect(recipes).toContain('.mantine-Textarea-input');
+    expect(recipes).toContain('.mantine-Select-input');
+    expect(recipes).toContain('.mantine-Select-dropdown');
+    expect(recipes).toContain('.mantine-Select-option');
+    expect(recipes).toContain('.mantine-Input-placeholder');
+    expect(recipes).toContain('.mantine-InputWrapper-required');
+    expect(recipes).toContain('.mantine-InputWrapper-error');
+    expect(recipes).toContain('background: var(--color-bg);');
+    expect(recipes).toContain('color: var(--color-text);');
+    expect(recipes).toContain('border-color: var(--color-border-strong);');
+  });
+
   test('sheet recipe is consolidated in one mobile rule', () => {
     const recipes = source('../src/styles/recipes.css');
     const mobileSheetRules = [...recipes.matchAll(/^\.wallet-sheet \{$/gm)];

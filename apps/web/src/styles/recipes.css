@@ -590,6 +590,49 @@ body {
   text-align: center;
 }
 
+.wallet-sheet-heading-branded {
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  background:
+    radial-gradient(circle at 15% 0%, rgba(59, 130, 246, 0.18), transparent 18rem),
+    radial-gradient(circle at 85% 10%, rgba(34, 197, 94, 0.08), transparent 16rem),
+    rgba(255, 255, 255, 0.02);
+}
+
+.wallet-sheet-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: rgba(14, 14, 16, 0.55);
+  color: var(--color-text-muted);
+  font: 700 22px/1 var(--font-sans);
+  cursor: pointer;
+}
+
+.wallet-sheet-close:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.wallet-sheet-metadata {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
 .wallet-sheet-footer {
   display: flex;
   flex-shrink: 0;
@@ -618,6 +661,73 @@ body {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-5);
+}
+
+.mantine-Input-input,
+.mantine-Textarea-input,
+.mantine-Select-input {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+  caret-color: var(--color-accent-text);
+}
+
+.mantine-Input-input::placeholder,
+.mantine-Textarea-input::placeholder,
+.mantine-Input-placeholder {
+  color: var(--color-text-dim);
+}
+
+.mantine-Input-input:focus,
+.mantine-Textarea-input:focus,
+.mantine-Select-input:focus,
+.mantine-Input-input:focus-within,
+.mantine-Textarea-input:focus-within,
+.mantine-Select-input:focus-within {
+  border-color: var(--color-accent-border);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.mantine-Select-dropdown {
+  background: var(--color-bg-elev-1);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-card);
+}
+
+.mantine-Select-option {
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+}
+
+.mantine-Select-option[data-hovered],
+.mantine-Select-option:hover {
+  background: rgba(59, 130, 246, 0.14);
+  color: var(--color-text);
+}
+
+.mantine-Select-option[data-combobox-selected] {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--color-accent-text);
+}
+
+.mantine-InputWrapper-label {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.mantine-InputWrapper-required {
+  color: var(--color-danger-text);
+}
+
+.mantine-InputWrapper-error {
+  color: var(--color-danger-text);
+}
+
+.mantine-Input-input[data-error],
+.mantine-Textarea-input[data-error],
+.mantine-Select-input[data-error] {
+  border-color: var(--color-danger-text);
 }
 
 .wallet-stepper-sheet-progress {
