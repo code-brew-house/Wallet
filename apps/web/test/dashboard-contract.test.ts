@@ -77,6 +77,7 @@ describe('dashboard UI contract', () => {
     expect(inboxSource).toContain('wallet-alert-inbox');
     expect(inboxSource).toContain('All');
     expect(inboxSource).toContain('Overspent');
+    expect(inboxSource).toContain('Low');
   });
   test('dashboard summary type includes group metadata', () => {
     const source = readFileSync(new URL('../src/features/dashboard/types.ts', import.meta.url), 'utf8');
