@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EnvelopeBalanceService, type EnvelopeSummary } from '../envelopes/envelope-balance.service';
 import { MembershipService } from '../memberships/membership.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -54,6 +54,7 @@ export interface ActivityItem {
 }
 
 export interface DashboardSummary {
+  group: { id: string; name: string };
   totalAvailableMinor: number;
   spentThisMonthMinor: number;
   envelopes: EnvelopeSummary[];
@@ -74,6 +75,14 @@ export class ReportsService {
   async getDashboard(userId: string, groupId: string): Promise<DashboardSummary> {
     await this.memberships.requireMembership(userId, groupId);
 
+    const group = await this.prisma.group.findFirst({
+      where: { id: groupId },
+      select: { id: true, name: true },
+    });
+    if (!group) {
+      throw new NotFoundException({ code: 'NOT_FOUND', message: 'Group not found' });
+    }
+
     const now = new Date();
     const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
     const [envelopes, spent, upcomingRecurring, recentActivity] = await Promise.all([
@@ -90,6 +99,7 @@ export class ReportsService {
     const overspent = envelopes.filter((envelope) => envelope.balanceMinor < 0);
 
     return {
+      group,
       totalAvailableMinor,
       spentThisMonthMinor: spent._sum.amountMinor ?? 0,
       envelopes,

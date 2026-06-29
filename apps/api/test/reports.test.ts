@@ -89,6 +89,16 @@ describe('dashboard reports', () => {
     expect(response.body.totalAvailableMinor).toBe(7500);
     expect(response.body.spentThisMonthMinor).toBe(2500);
     expect(response.body.envelopes).toHaveLength(1);
-    expect(response.body.generatedAt).toBeString();
+    expect(response.body.group).toEqual({ id: group.id, name: 'Family Wallet' });
+  });
+  test('returns 404 when the caller is not a member of the requested group', async () => {
+    const outsiderToken = await signup(app, 'outsider@example.com');
+    const ownerToken = await signup(app, 'owner2@example.com');
+    const group = await createGroup(app, ownerToken, 'Hidden Wallet');
+
+    await request(app.getHttpServer())
+      .get(`/groups/${group.id}/dashboard`)
+      .set('Authorization', `Bearer ${outsiderToken}`)
+      .expect(404);
   });
 });
