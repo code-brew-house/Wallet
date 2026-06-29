@@ -1,9 +1,8 @@
 'use client';
 
-import { Card, Select, SimpleGrid, Stack, Text, TextInput, Textarea } from '@mantine/core';
+import { Select, SimpleGrid, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useMemo, useState } from 'react';
-import { ActionSegmentedControl } from '../../components/action-segmented-control';
 import { ActionSheet } from '../../components/action-sheet';
 import { StepperSheet } from '../../components/stepper-sheet';
 import type { EnvelopeSummary } from '../dashboard/types';
@@ -11,8 +10,6 @@ type RecurringFrequency = 'weekly' | 'monthly' | 'yearly';
 
 export interface EnvelopeFormsProps {
   envelopes: EnvelopeSummary[];
-  selectedForm: FormKind;
-  onSelectedFormChange(form: FormKind): void;
   openedForm: FormKind | null;
   onCloseForm(): void;
   currency: string;
@@ -83,7 +80,7 @@ function notePayload(note: string): { note?: string } {
   return trimmed.length > 0 ? { note: trimmed } : {};
 }
 
-export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFormChange, openedForm, onCloseForm, onAddExpense, onFundEnvelope, onTransfer, onCreateRecurring }: EnvelopeFormsProps) {
+export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, onAddExpense, onFundEnvelope, onTransfer, onCreateRecurring }: EnvelopeFormsProps) {
   const activeEnvelopes = useMemo(() => envelopes.filter((envelope) => !envelope.archivedAt), [envelopes]);
   const envelopeOptions = useMemo(
     () => activeEnvelopes.map((envelope) => ({ value: envelope.id, label: envelope.name })),
@@ -216,18 +213,10 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
   }
 
   return (
-    <Card className="wallet-input-shell" withBorder radius="lg" padding="lg" id="dashboard-actions">
-      <Stack gap="md">
-        <div>
-          <Text fw={700}>Form</Text>
-          <Text size="sm" c="dimmed">Choose an action, then complete it in the sheet.</Text>
-        </div>
-        {!hasEnvelopes ? <Text c="dimmed">Create an envelope before adding expenses, funding, transfers, or recurring plans.</Text> : null}
-        <ActionSegmentedControl value={selectedForm} onChange={onSelectedFormChange} />
-      </Stack>
+    <>
 
       <ActionSheet opened={openedForm === 'expense'} title="Add expense" description={`Amounts are entered in ${currency} and saved in minor units.`} formId="expense-form" submitLabel="Save" submitting={submittingForm === 'expense'} onClose={onCloseForm}>
-        <form onSubmit={expenseForm.onSubmit(submitExpense)} id="expense-form">
+        <form onSubmit={expenseForm.onSubmit(submitExpense)} id="expense-form" className="wallet-input-shell">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
             <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...expenseForm.getInputProps('envelopeId')} />
             <TextInput label="Amount" inputMode="decimal" required {...expenseForm.getInputProps('amount')} />
@@ -301,6 +290,6 @@ export function EnvelopeForms({ envelopes, currency, selectedForm, onSelectedFor
           ) : null}
         </form>
       </StepperSheet>
-    </Card>
+    </>
   );
 }

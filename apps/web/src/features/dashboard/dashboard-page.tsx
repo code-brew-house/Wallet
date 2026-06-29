@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { StaleDataBanner } from '../../components/stale-data-banner';
@@ -33,7 +33,6 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
-  const [selectedForm, setSelectedForm] = useState<FormKind>('expense');
   const [openedForm, setOpenedForm] = useState<FormKind | null>(null);
   const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency }), [currency]);
 
@@ -98,11 +97,11 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   }
 
   function openDashboardForm(form: FormKind) {
-    setSelectedForm(form);
     setOpenedForm(form);
   }
 
   const lowBalanceEnvelopes = dashboard?.envelopes.filter((envelope) => envelope.balanceMinor >= 0 && envelope.balanceMinor < 1000) ?? [];
+  const activeEnvelopeCount = dashboard?.envelopes.filter((envelope) => !envelope.archivedAt).length ?? 0;
 
   return (
     <AppShell groupId={groupId} active="home">
@@ -149,8 +148,6 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               <EnvelopeForms
                 envelopes={dashboard.envelopes}
                 currency={currency}
-                selectedForm={selectedForm}
-                onSelectedFormChange={setSelectedForm}
                 openedForm={openedForm}
                 onCloseForm={() => setOpenedForm(null)}
                 onAddExpense={(values) => runMutation(
@@ -187,7 +184,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
                   <div className="wallet-overline">Envelopes</div>
                   <h2>Funding status</h2>
                 </div>
-                <Badge variant="light">{dashboard.envelopes.length} active</Badge>
+                <span className="wallet-pill">{activeEnvelopeCount} active</span>
               </div>
               {dashboard.envelopes.length > 0 ? (
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
@@ -206,7 +203,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
                   <div className="wallet-overline">Recurring</div>
                   <h2>Upcoming recurring expenses</h2>
                 </div>
-                <Badge variant="light">Next 10</Badge>
+                <span className="wallet-pill">Next 10</span>
               </div>
               {dashboard.upcomingRecurring.length > 0 ? (
                 <div className="wallet-table-card">

@@ -25,7 +25,6 @@ describe('dashboard UI contract', () => {
     const dashboardSource = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
     const envelopeFormsSource = readFileSync(new URL('../src/features/envelopes/envelope-forms.tsx', import.meta.url), 'utf8');
 
-    expect(dashboardSource).toContain("const [selectedForm, setSelectedForm] = useState<FormKind>('expense');");
     expect(dashboardSource).toContain("const [openedForm, setOpenedForm] = useState<FormKind | null>(null);");
     expect(dashboardSource).toContain('<QuickActionChips onSelect={openDashboardForm} />');
     expect(dashboardSource).toContain('openedForm={openedForm}');
@@ -33,7 +32,6 @@ describe('dashboard UI contract', () => {
 
     expect(envelopeFormsSource).toContain('openedForm: FormKind | null;');
     expect(envelopeFormsSource).toContain('onCloseForm(): void;');
-    expect(envelopeFormsSource).toContain('<ActionSegmentedControl');
     expect(envelopeFormsSource).toContain('<ActionSheet');
     expect(envelopeFormsSource).toContain('<StepperSheet');
     expect(envelopeFormsSource).not.toContain('<Tabs value={selectedForm}');
@@ -90,4 +88,20 @@ describe('dashboard UI contract', () => {
     expect(source).toContain('<QuickActionChips onSelect={openDashboardForm} />');
     expect(source).not.toContain('openDashboardForm(\'funding\')');
   });
+  test('quick actions are modal-only and dashboard counts use wallet pills', () => {
+    const dashboardSource = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    const formsSource = readFileSync(new URL('../src/features/envelopes/envelope-forms.tsx', import.meta.url), 'utf8');
+
+    expect(dashboardSource).not.toContain('import { Badge,');
+    expect(dashboardSource).toContain('activeEnvelopeCount');
+    expect(dashboardSource).toContain('<span className="wallet-pill">{activeEnvelopeCount} active</span>');
+    expect(dashboardSource).toContain('<span className="wallet-pill">Next 10</span>');
+    expect(dashboardSource).toContain('<QuickActionChips onSelect={openDashboardForm} />');
+
+    expect(formsSource).not.toContain('ActionSegmentedControl');
+    expect(formsSource).not.toContain('<Card className="wallet-input-shell"');
+    expect(formsSource).not.toContain('<Text fw={700}>Form</Text>');
+    expect(formsSource).not.toContain('Choose an action, then complete it in the sheet.');
+  });
+
 });
