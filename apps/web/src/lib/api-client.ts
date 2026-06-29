@@ -7,6 +7,24 @@ export interface ApiClientOptions {
   fetchImpl?: FetchImplementation;
 }
 
+interface ApiBaseEnv {
+  NEXT_PUBLIC_API_BASE_URL?: string;
+  NODE_ENV?: string;
+}
+
+export function resolveApiBaseUrl(env: ApiBaseEnv = process.env): string {
+  const configuredBaseUrl = env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.replace(/\/+$/, '');
+  }
+
+  if (env.NODE_ENV === 'production') {
+    throw new Error('NEXT_PUBLIC_API_BASE_URL is required for production builds');
+  }
+
+  return 'http://localhost:4000';
+}
+
 export function createApiClient(options: ApiClientOptions) {
   const fetchImpl = options.fetchImpl ?? fetch;
 
@@ -29,6 +47,6 @@ export function createApiClient(options: ApiClientOptions) {
 }
 
 export const apiClient = createApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000',
+  baseUrl: resolveApiBaseUrl(),
   getAccessToken: () => (typeof window === 'undefined' ? null : window.sessionStorage.getItem('wallet_access_token')),
 });

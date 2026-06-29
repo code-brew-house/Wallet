@@ -8,6 +8,9 @@ COPY apps/smoke/package.json ./apps/smoke/package.json
 RUN bun install --frozen-lockfile
 
 FROM deps AS build
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+RUN test -n "$NEXT_PUBLIC_API_BASE_URL" || (echo "NEXT_PUBLIC_API_BASE_URL is required when building the web client" >&2; exit 1)
 COPY apps/web ./apps/web
 RUN bun run --filter @wallet/web build
 

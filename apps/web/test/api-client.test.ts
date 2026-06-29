@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { createApiClient } from '../src/lib/api-client';
+import { createApiClient, resolveApiBaseUrl } from '../src/lib/api-client';
 import { getSafeNextPath } from '../src/lib/next-path';
 
 describe('api client', () => {
@@ -20,6 +20,25 @@ describe('api client', () => {
     expect(call).toBeDefined();
     expect(call?.url).toBe('http://api.test/health');
     expect(new Headers(call?.headers).get('Authorization')).toBe('Bearer abc123');
+  });
+});
+
+describe('API base URL configuration', () => {
+  test('requires an explicit API URL in production builds', () => {
+    expect(resolveApiBaseUrl({ NODE_ENV: 'development' })).toBe('http://localhost:4000');
+    expect(resolveApiBaseUrl({ NODE_ENV: 'production', NEXT_PUBLIC_API_BASE_URL: 'https://api.wallet.test/' })).toBe('https://api.wallet.test');
+    expect(() => resolveApiBaseUrl({ NODE_ENV: 'production' })).toThrow('NEXT_PUBLIC_API_BASE_URL');
+  });
+
+  test('web Docker build receives the public API URL before compiling the client bundle', () => {
+    const dockerfile = readFileSync(new URL('../Dockerfile', import.meta.url), 'utf8');
+    const argIndex = dockerfile.indexOf('ARG NEXT_PUBLIC_API_BASE_URL');
+    const guardIndex = dockerfile.indexOf('test -n "$NEXT_PUBLIC_API_BASE_URL"');
+    const buildIndex = dockerfile.indexOf('bun run --filter @wallet/web build');
+
+    expect(argIndex).toBeGreaterThan(-1);
+    expect(guardIndex).toBeGreaterThan(argIndex);
+    expect(buildIndex).toBeGreaterThan(guardIndex);
   });
 });
 

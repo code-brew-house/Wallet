@@ -17,7 +17,7 @@ Other forms (expense, fund, transfer) use a single-step slide-up sheet; only the
 
 ## Goals
 
-- **Quiet, dark-feeling primary buttons**: the current teal-on-dark pops too much. Use a deeper teal that stays in the brand family without dominating the page.
+- **Quiet, dark-feeling primary buttons**: use flat alert-family colors with lighter borders. Save / Next use dark navy from the info-alert family; success / warn / danger actions use the matching dark green / amber / red families.
 - **Reusable alert primitives**: a single `<Alert variant=...>` family that covers success / info / warn / danger and a compact mode.
 - **Sheet-based forms**: replace the always-mounted tabs in `EnvelopeForms` with chips that open a bottom sheet. Keep segmented control for choosing *which* form before opening.
 - **No regressions**: existing fields, validation, and mutations stay the same; only the chrome around them changes.
@@ -39,13 +39,13 @@ Other forms (expense, fund, transfer) use a single-step slide-up sheet; only the
 | **A2** | **A2a · pill status strip** + A1a attention list below | Status strip shows counts ("2 overspent · 1 low · stale 6m"). The two already-attention items show as full A1a banners below the strip. |
 | **A5** | **A5a · alert inbox drawer** (filter + list) | The "Attention" section on the dashboard IS the inbox, not a separate route. Filter chips (All / Overspent / Low) on top; rows below. Stale data stays on the status strip, not in the inbox. |
 
-**Open for confirmation**: A1 → A1a, A2 → A2a. Defaulting to round-1 because the user did not specify. Easy to swap to A1b (compact) or A2b (sharp square strip) if the user prefers.
+Final choice: A1 = A1a, A2 = A2a, A5 = A5a.
 
 ### Section B · Quick actions (above envelope actions)
 
 **B2c · mid-radius square (6px)**.
 
-- Primary chip (`+ Add expense`): teal-tinted background, light text, 6px corners.
+- Primary chip (`+ Add expense`): info-alert navy-tinted background, light text, 6px corners.
 - Secondary chips (`+ Fund`, `⇄ Transfer`, `↻ Recurring`): transparent background, `border-strong` border, `text` foreground, 6px corners.
 - All chips are the same height; wrap to a second row on narrow screens.
 - Clicking a chip opens the corresponding bottom sheet (see Section C).
@@ -74,21 +74,35 @@ Drop the existing `<Tabs>` from `EnvelopeForms`. Replace it with a `<SegmentedCo
 
 ## Visual Tokens
 
-### Darker primary button
+### Alert-family button colors
 
-Current `--color-accent: #2dd4bf` (bright teal) on `var(--color-bg)` is too loud. Change to a deeper teal that keeps brand identity without dominating the page.
+Buttons keep the existing button formatting: same padding, rounded rectangle, border, font weight, min-height, and placement. Only the color layer changes.
 
-**Proposed change** in `apps/web/src/styles/recipes.css`:
+Use flat fills, no gradient, no glass, no inset highlight, no blur, and no shadow.
+
+The button colors come from the alert palette at dark 900-level saturation, with a lighter family border to stay in sync with the rest of the application:
 
 ```css
---color-accent: #0d9488;          /* teal-600, was #2dd4bf */
---color-accent-border: #0f766e;   /* teal-700, was #14b8a6 */
---color-accent-text: #f0fdfa;     /* teal-50, replaces #0b0b0e dark text on bright teal */
+--button-primary-bg: #1e3a8a;       /* blue-900, same hue as alert-info */
+--button-primary-border: rgba(147, 197, 253, 0.52);
+--button-primary-text: #dbeafe;     /* blue-100 */
+
+--button-success-bg: #14532d;       /* green-900, same hue as alert-success */
+--button-success-border: rgba(134, 239, 172, 0.48);
+--button-success-text: #d1fae5;     /* green-100 */
+
+--button-warn-bg: #78350f;          /* amber-900, same hue as alert-warn */
+--button-warn-border: rgba(253, 230, 138, 0.48);
+--button-warn-text: #fef3c7;        /* amber-100 */
+
+--button-danger-bg: #7f1d1d;        /* red-900, same hue as alert-danger */
+--button-danger-border: rgba(252, 165, 165, 0.50);
+--button-danger-text: #fee2e2;      /* red-100 */
+
+--button-secondary-bg: transparent;
+--button-secondary-border: rgba(179, 179, 194, 0.36);
+--button-secondary-text: var(--color-text);
 ```
-
-The `.wallet-button-primary` rule needs to flip its text color from `#0b0b0e` to `var(--color-accent-text)` so it stays legible on the new darker background. The "Funding status" card glow (`--wallet-glow: rgba(45,212,191,0.22)`) can keep its current value; if it looks too washed out, switch to `rgba(13,148,136,0.22)`.
-
-**Open for confirmation**: the exact hex (`#0d9488` is teal-600). Alternatives: `#0f766e` (teal-700) for an even darker, more muted look; or keep teal-600 but use `var(--color-accent-text)` for the contrast. Pick one at spec review.
 
 ### Other token decisions (no changes needed)
 
@@ -120,7 +134,7 @@ Existing files that change:
 - `apps/web/src/features/dashboard/dashboard-page.tsx`: replace the four-button row with `QuickActionChips`; replace the inline `<Alert>`s with `AlertBanner`; replace the inline Attention section with `StatusStrip` + `AlertInboxRow` list.
 - `apps/web/src/features/envelopes/envelope-forms.tsx`: remove the `<Tabs>` shell, expose a `selectedForm` prop that the parent uses to drive the sheet; the form rendering moves into `ActionSheet`.
 - `apps/web/src/components/header.tsx`: no change.
-- `apps/web/src/styles/recipes.css`: add the new radii (`--radius-chip`, `--radius-seg`), update `--color-accent*` to the darker teal, and flip the primary button text color.
+- `apps/web/src/styles/recipes.css`: add the new radii (`--radius-chip`, `--radius-seg`), add the alert-family button variables, and map primary/success/warn/danger/secondary button classes to the flat fills + lighter borders above.
 
 ## Data flow
 
@@ -155,10 +169,12 @@ Visual regression: optional; not required for the spec.
 - Server-side prefetch changes.
 - Anything that touches the API or schema.
 
-## Open questions for spec review
+## Final review decisions
 
-1. Confirm A1 = A1a (full banner) and A2 = A2a (pill strip). Otherwise pick A1b/A2b etc.
-2. Confirm darker accent = `#0d9488` (teal-600). Otherwise pick teal-700 or another.
-3. Confirm chip radius = 6px (mid). Otherwise pick 3px (sharp) or 999px (pill).
-4. Confirm segmented labels = `Add · Fund · Move · Plan`. Otherwise pick `Add expense · Fund envelope · Transfer · Create recurring` (current).
-5. Confirm 3-step recurring sheet. Otherwise make recurring a single-step sheet like the others.
+1. A1 = A1a full banner.
+2. A2 = A2a pill status strip.
+3. A5 = A5a alert inbox drawer.
+4. B2 = B2c mid-radius chips.
+5. C2 = C2b sharp segmented control.
+6. C5 = C5d stepped sheet for recurring; one-step slide-up sheet for all other forms.
+7. Buttons use flat alert-family fills with lighter borders; no glass, gradient, blur, inset highlight, or shadow.
