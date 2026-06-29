@@ -700,8 +700,9 @@ body {
   border-radius: var(--radius-sm);
 }
 
-.mantine-Select-option[data-hovered],
-.mantine-Select-option:hover {
+.mantine-Select-option[data-combobox-active],
+.mantine-Select-option:hover,
+.mantine-Select-option:focus {
   background: rgba(59, 130, 246, 0.14);
   color: var(--color-text);
 }

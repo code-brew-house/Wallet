@@ -89,6 +89,8 @@ describe('wallet theme contract', () => {
     expect(recipes).toContain('.mantine-Select-input');
     expect(recipes).toContain('.mantine-Select-dropdown');
     expect(recipes).toContain('.mantine-Select-option');
+    expect(recipes).toContain('.mantine-Select-option[data-combobox-active]');
+    expect(recipes).not.toContain('.mantine-Select-option[data-hovered]');
     expect(recipes).toContain('.mantine-Input-placeholder');
     expect(recipes).toContain('.mantine-InputWrapper-required');
     expect(recipes).toContain('.mantine-InputWrapper-error');
