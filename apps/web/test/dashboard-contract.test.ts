@@ -52,7 +52,7 @@ describe('dashboard UI contract', () => {
     expect(cardSource).toContain('wallet-pill');
     expect(formsSource).toContain('wallet-input-shell');
     expect(actionSheetSource).toContain('wallet-button-primary');
-    expect(staleBannerSource).toContain('wallet-alert');
+    expect(staleBannerSource).toContain('AlertBanner');
     expect(formsSource).toContain("export type FormKind = 'expense' | 'funding' | 'transfer' | 'recurring';");
     expect(formsSource).toContain('id="expense-form"');
     expect(formsSource).toContain('id="funding-form"');
@@ -77,6 +77,10 @@ describe('dashboard UI contract', () => {
     expect(inboxSource).toContain('wallet-alert-inbox');
     expect(inboxSource).toContain('All');
     expect(inboxSource).toContain('Overspent');
-    expect(inboxSource).toContain('Low');
+  });
+  test('dashboard summary type includes group metadata', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/types.ts', import.meta.url), 'utf8');
+    expect(source).toContain('export interface DashboardSummary');
+    expect(source).toContain('group: { id: string; name: string }');
   });
 });

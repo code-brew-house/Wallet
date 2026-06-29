@@ -14,6 +14,7 @@ export interface ActivityItem {
 }
 
 export interface DashboardSummary {
+  group: { id: string; name: string };
   totalAvailableMinor: number;
   spentThisMonthMinor: number;
   envelopes: EnvelopeSummary[];
