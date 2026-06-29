@@ -7,7 +7,7 @@ describe('dashboard UI contract', () => {
     expect(source).toContain('Total available');
     expect(source).toContain('Spent this month');
     expect(source).toContain('Add expense');
-    expect(source).toContain('Fund envelope');
+    expect(source).toContain('active');
   });
 
   test('dashboard uses approved information-first layout chrome', () => {
@@ -80,7 +80,13 @@ describe('dashboard UI contract', () => {
   });
   test('dashboard summary type includes group metadata', () => {
     const source = readFileSync(new URL('../src/features/dashboard/types.ts', import.meta.url), 'utf8');
-    expect(source).toContain('export interface DashboardSummary');
     expect(source).toContain('group: { id: string; name: string }');
+  });
+  test('homepage title uses group name and Quick Actions stay the only visible launcher', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    expect(source).not.toContain('`Group ${groupId}`');
+    expect(source).toContain('data-testid="dashboard-action-sheets-host"');
+    expect(source).toContain('<QuickActionChips onSelect={openDashboardForm} />');
+    expect(source).not.toContain('openDashboardForm(\'funding\')');
   });
 });

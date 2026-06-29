@@ -108,7 +108,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
     <AppShell groupId={groupId} active="home">
       <PageHeader
         overline="Envelope-first"
-        title={`Group ${groupId}`}
+        title={dashboard?.group.name ?? 'Group'}
         description="Track shared budgets, funding, spending, recurring expenses, and household activity."
         tone="info"
         actions={(
@@ -145,39 +145,41 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               <QuickActionChips onSelect={openDashboardForm} />
             </section>
 
-            <EnvelopeForms
-              envelopes={dashboard.envelopes}
-              currency={currency}
-              selectedForm={selectedForm}
-              onSelectedFormChange={setSelectedForm}
-              openedForm={openedForm}
-              onCloseForm={() => setOpenedForm(null)}
-              onAddExpense={(values) => runMutation(
-                async () => {
-                  await apiClient.request<unknown>(`/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(values) });
-                },
-                'Expense added',
-              )}
-              onFundEnvelope={(values) => runMutation(
-                async () => {
-                  const { envelopeId, ...body } = values;
-                  await apiClient.request<unknown>(`/groups/${groupId}/envelopes/${envelopeId}/funding`, { method: 'POST', body: JSON.stringify(body) });
-                },
-                'Envelope funded',
-              )}
-              onTransfer={(values) => runMutation(
-                async () => {
-                  await apiClient.request<unknown>(`/groups/${groupId}/transfers`, { method: 'POST', body: JSON.stringify(values) });
-                },
-                'Transfer complete',
-              )}
-              onCreateRecurring={(values) => runMutation(
-                async () => {
-                  await apiClient.request<unknown>(`/groups/${groupId}/recurring-expenses`, { method: 'POST', body: JSON.stringify(values) });
-                },
-                'Recurring expense created',
-              )}
-            />
+            <div data-testid="dashboard-action-sheets-host" hidden={openedForm === null}>
+              <EnvelopeForms
+                envelopes={dashboard.envelopes}
+                currency={currency}
+                selectedForm={selectedForm}
+                onSelectedFormChange={setSelectedForm}
+                openedForm={openedForm}
+                onCloseForm={() => setOpenedForm(null)}
+                onAddExpense={(values) => runMutation(
+                  async () => {
+                    await apiClient.request<unknown>(`/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(values) });
+                  },
+                  'Expense added',
+                )}
+                onFundEnvelope={(values) => runMutation(
+                  async () => {
+                    const { envelopeId, ...body } = values;
+                    await apiClient.request<unknown>(`/groups/${groupId}/envelopes/${envelopeId}/funding`, { method: 'POST', body: JSON.stringify(body) });
+                  },
+                  'Envelope funded',
+                )}
+                onTransfer={(values) => runMutation(
+                  async () => {
+                    await apiClient.request<unknown>(`/groups/${groupId}/transfers`, { method: 'POST', body: JSON.stringify(values) });
+                  },
+                  'Transfer complete',
+                )}
+                onCreateRecurring={(values) => runMutation(
+                  async () => {
+                    await apiClient.request<unknown>(`/groups/${groupId}/recurring-expenses`, { method: 'POST', body: JSON.stringify(values) });
+                  },
+                  'Recurring expense created',
+                )}
+              />
+            </div>
 
             <section className="wallet-section">
               <div className="wallet-section-heading">
@@ -185,7 +187,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
                   <div className="wallet-overline">Envelopes</div>
                   <h2>Funding status</h2>
                 </div>
-                <Button className="wallet-button-secondary" onClick={() => openDashboardForm('funding')}>Fund envelope</Button>
+                <Badge variant="light">{dashboard.envelopes.length} active</Badge>
               </div>
               {dashboard.envelopes.length > 0 ? (
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
