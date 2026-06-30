@@ -13,6 +13,12 @@ export interface ActivityItem {
   occurredAt: string;
 }
 
+export interface ActivityPage {
+  items: ActivityItem[];
+  nextOffset: number | null;
+  limit: number;
+}
+
 export interface DashboardSummary {
   group: { id: string; name: string };
   totalAvailableMinor: number;

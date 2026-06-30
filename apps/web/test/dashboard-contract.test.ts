@@ -23,12 +23,19 @@ describe('dashboard UI contract', () => {
 
   test('primary dashboard CTAs open action sheets instead of mounted tabs', () => {
     const dashboardSource = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    const quickActionSource = readFileSync(new URL('../src/components/quick-action-chips.tsx', import.meta.url), 'utf8');
     const envelopeFormsSource = readFileSync(new URL('../src/features/envelopes/envelope-forms.tsx', import.meta.url), 'utf8');
 
     expect(dashboardSource).toContain("const [openedForm, setOpenedForm] = useState<FormKind | null>(null);");
     expect(dashboardSource).toContain('<QuickActionChips onSelect={openDashboardForm} />');
     expect(dashboardSource).toContain('openedForm={openedForm}');
     expect(dashboardSource).toContain('onCloseForm={() => setOpenedForm(null)}');
+    expect(dashboardSource).toContain("allowedForms={['expense', 'recurring']}");
+    expect(dashboardSource).toContain('subscribeWalletDataRefresh');
+    expect(dashboardSource).toContain("window.addEventListener('focus', refetchDashboard)");
+    expect(dashboardSource).toContain("style={{ display: 'contents' }}");
+    expect(quickActionSource).not.toContain("form: 'funding'");
+    expect(quickActionSource).not.toContain("form: 'transfer'");
 
     expect(envelopeFormsSource).toContain('openedForm: FormKind | null;');
     expect(envelopeFormsSource).toContain('onCloseForm(): void;');
@@ -102,6 +109,36 @@ describe('dashboard UI contract', () => {
     expect(formsSource).not.toContain('<Card className="wallet-input-shell"');
     expect(formsSource).not.toContain('<Text fw={700}>Form</Text>');
     expect(formsSource).not.toContain('Choose an action, then complete it in the sheet.');
+  });
+
+  test('activity page loads descending activity pages after the first ten', () => {
+    const activitySource = readFileSync(new URL('../src/app/groups/[groupId]/activity/page.tsx', import.meta.url), 'utf8');
+    const typesSource = readFileSync(new URL('../src/features/dashboard/types.ts', import.meta.url), 'utf8');
+
+    expect(typesSource).toContain('export interface ActivityPage');
+    expect(activitySource).toContain('nextActivityOffset');
+    expect(activitySource).toContain('`/groups/${params.groupId}/activity?limit=10');
+    expect(activitySource).toContain('Load more activity');
+  });
+
+  test('group screens format money with the persisted group currency', () => {
+    const dashboardRoute = readFileSync(new URL('../src/app/groups/[groupId]/page.tsx', import.meta.url), 'utf8');
+    const dashboardSource = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    const envelopesSource = readFileSync(new URL('../src/app/groups/[groupId]/envelopes/page.tsx', import.meta.url), 'utf8');
+    const activitySource = readFileSync(new URL('../src/app/groups/[groupId]/activity/page.tsx', import.meta.url), 'utf8');
+    const reportsSource = readFileSync(new URL('../src/app/groups/[groupId]/reports/page.tsx', import.meta.url), 'utf8');
+
+    expect(dashboardRoute).not.toContain('currency="INR"');
+    expect(dashboardSource).toContain('useGroupCurrency(groupId)');
+    expect(envelopesSource).toContain('useGroupCurrency(groupId)');
+    expect(activitySource).toContain('useGroupCurrency(params.groupId)');
+    expect(reportsSource).toContain('useGroupCurrency(params.groupId)');
+
+    for (const source of [dashboardRoute, dashboardSource, envelopesSource, activitySource, reportsSource]) {
+      expect(source).not.toContain("currency: 'INR'");
+      expect(source).not.toContain('currency="INR"');
+    }
+    expect(readFileSync(new URL('../src/app/groups/[groupId]/settings/page.tsx', import.meta.url), 'utf8')).toContain('useGroupCurrency(params.groupId)');
   });
 
 });

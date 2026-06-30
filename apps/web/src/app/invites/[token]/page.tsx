@@ -1,12 +1,13 @@
 'use client';
 
-import { Alert, Button } from '@mantine/core';
+import { Button } from '@mantine/core';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { useAuth } from '../../../lib/auth-store';
 import { AuthSheetShell } from '../../../components/sheet';
+import { AlertBanner } from '../../../components/alert-banner';
 
 export default function InvitePage() {
   const params = useParams<{ token: string | string[] }>();
@@ -70,13 +71,12 @@ export default function InvitePage() {
     >
       <div className="wallet-input-shell">
         {!accessToken ? (
-          <div className="wallet-alert">
-            <span className="wallet-alert-icon" aria-hidden="true">i</span>
-            <div>Use an existing account or create one, then return here to accept this invite.</div>
-          </div>
+          <AlertBanner>
+            Use an existing account or create one, then return here to accept this invite.
+          </AlertBanner>
         ) : null}
-        {error ? <Alert color="red">{error}</Alert> : null}
-        {acceptedGroupId ? <Alert color="teal">Invite accepted for group {acceptedGroupId}.</Alert> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
+        {acceptedGroupId ? <AlertBanner variant="success">Invite accepted for group {acceptedGroupId}.</AlertBanner> : null}
         <Button onClick={acceptInvite} loading={isSubmitting} disabled={!token || !accessToken || Boolean(acceptedGroupId)} className="wallet-button-primary">
           Accept invite
         </Button>

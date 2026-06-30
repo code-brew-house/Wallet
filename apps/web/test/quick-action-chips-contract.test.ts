@@ -11,8 +11,8 @@ describe('quick action chips contract', () => {
     expect(chips).toContain('wallet-quick-actions');
     expect(chips).toContain('wallet-chip-primary');
     expect(chips).toContain('Add expense');
-    expect(chips).toContain('Fund');
-    expect(chips).toContain('Transfer');
+    expect(chips).not.toContain('Fund');
+    expect(chips).not.toContain('Transfer');
     expect(chips).toContain('Recurring');
 
     expect(segmented).toContain('ActionSegmentedControl');

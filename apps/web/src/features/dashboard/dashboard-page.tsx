@@ -3,6 +3,8 @@
 import { Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
+import { useGroupCurrency } from '../../lib/group-currency';
+import { subscribeWalletDataRefresh } from '../../lib/wallet-data-refresh';
 import { StaleDataBanner } from '../../components/stale-data-banner';
 import { AppShell } from '../../components/app-shell';
 import { PageHeader } from '../../components/header';
@@ -16,7 +18,6 @@ import type { ActivityItem, DashboardSummary } from './types';
 
 interface DashboardPageProps {
   groupId: string;
-  currency: string;
 }
 
 interface InviteResponse {
@@ -26,7 +27,7 @@ interface InviteResponse {
 
 const DASHBOARD_STALE_MAX_AGE_MS = 5 * 60 * 1000;
 
-export function DashboardPage({ groupId, currency }: DashboardPageProps) {
+export function DashboardPage({ groupId }: DashboardPageProps) {
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
@@ -34,6 +35,7 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [openedForm, setOpenedForm] = useState<FormKind | null>(null);
+  const currency = useGroupCurrency(groupId);
   const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency }), [currency]);
 
   const loadDashboard = useCallback(async () => {
@@ -68,6 +70,15 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
     const nextDashboard = await loadDashboard();
     setDashboard(nextDashboard);
   }
+
+  useEffect(() => {
+    const unsubscribe = subscribeWalletDataRefresh(refetchDashboard);
+    window.addEventListener('focus', refetchDashboard);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('focus', refetchDashboard);
+    };
+  }, [loadDashboard]);
 
   async function runMutation(request: () => Promise<void>, successMessage: string) {
     setIsMutating(true);
@@ -132,42 +143,30 @@ export function DashboardPage({ groupId, currency }: DashboardPageProps) {
               <SummaryCard label="Recurring" value={String(dashboard.upcomingRecurring.length)} tone="info" />
             </SimpleGrid>
 
-            <StatusStrip overspentCount={dashboard.overspent.length} lowBalanceCount={lowBalanceEnvelopes.length} staleLabel="stale 6m" />
+            <StatusStrip overspentCount={dashboard.overspent.length} lowBalanceCount={lowBalanceEnvelopes.length} />
 
             <section className="wallet-section">
               <div className="wallet-section-heading">
                 <div>
                   <div className="wallet-overline">Quick actions</div>
-                  <h2>Add expense · Fund · Transfer · Recurring</h2>
+                  <h2>Add expense · Recurring</h2>
                 </div>
               </div>
               <QuickActionChips onSelect={openDashboardForm} />
             </section>
 
-            <div data-testid="dashboard-action-sheets-host" hidden={openedForm === null}>
+            <div data-testid="dashboard-action-sheets-host" hidden={openedForm === null} style={{ display: 'contents' }}>
               <EnvelopeForms
                 envelopes={dashboard.envelopes}
                 currency={currency}
                 openedForm={openedForm}
                 onCloseForm={() => setOpenedForm(null)}
+                allowedForms={['expense', 'recurring']}
                 onAddExpense={(values) => runMutation(
                   async () => {
                     await apiClient.request<unknown>(`/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(values) });
                   },
                   'Expense added',
-                )}
-                onFundEnvelope={(values) => runMutation(
-                  async () => {
-                    const { envelopeId, ...body } = values;
-                    await apiClient.request<unknown>(`/groups/${groupId}/envelopes/${envelopeId}/funding`, { method: 'POST', body: JSON.stringify(body) });
-                  },
-                  'Envelope funded',
-                )}
-                onTransfer={(values) => runMutation(
-                  async () => {
-                    await apiClient.request<unknown>(`/groups/${groupId}/transfers`, { method: 'POST', body: JSON.stringify(values) });
-                  },
-                  'Transfer complete',
                 )}
                 onCreateRecurring={(values) => runMutation(
                   async () => {

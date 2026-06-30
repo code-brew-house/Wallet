@@ -6,8 +6,6 @@ interface QuickActionChipsProps {
 
 const actions: Array<{ form: FormKind; label: string; primary?: boolean }> = [
   { form: 'expense', label: '+ Add expense', primary: true },
-  { form: 'funding', label: '+ Fund' },
-  { form: 'transfer', label: '⇄ Transfer' },
   { form: 'recurring', label: '↻ Recurring' },
 ];
 

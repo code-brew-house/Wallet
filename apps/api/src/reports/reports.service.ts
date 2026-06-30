@@ -26,7 +26,7 @@ type TransferRecord = {
 type ExpenseRecord = {
   id: string;
   amountMinor: number;
-  spentAt: Date;
+  createdAt: Date;
   title: string;
 };
 
@@ -51,6 +51,12 @@ export interface ActivityItem {
   title: string;
   amountMinor: number;
   occurredAt: string;
+}
+
+export interface ActivityPage {
+  items: ActivityItem[];
+  nextOffset: number | null;
+  limit: number;
 }
 
 export interface DashboardSummary {
@@ -92,7 +98,7 @@ export class ReportsService {
         _sum: { amountMinor: true },
       }),
       this.getUpcomingRecurring(groupId),
-      this.getRecentActivity(groupId),
+      this.getRecentActivityPage(groupId, 0, 10),
     ]);
 
     const totalAvailableMinor = envelopes.reduce((sum, envelope) => sum + envelope.balanceMinor, 0);
@@ -105,9 +111,14 @@ export class ReportsService {
       envelopes,
       overspent,
       upcomingRecurring,
-      recentActivity,
+      recentActivity: recentActivity.items,
       generatedAt: now.toISOString(),
     };
+  }
+
+  async getActivityPage(userId: string, groupId: string, offset: number, limit: number): Promise<ActivityPage> {
+    await this.memberships.requireMembership(userId, groupId);
+    return this.getRecentActivityPage(groupId, offset, limit);
   }
 
   private async getUpcomingRecurring(groupId: string): Promise<RecurringExpenseDto[]> {
@@ -119,13 +130,16 @@ export class ReportsService {
     return recurringExpenses.map((recurring) => this.serializeRecurring(recurring as RecurringExpenseRecord));
   }
 
-  private async getRecentActivity(groupId: string): Promise<ActivityItem[]> {
+  private async getRecentActivityPage(groupId: string, offset: number, limit: number): Promise<ActivityPage> {
+    const safeOffset = Math.max(0, Math.trunc(offset));
+    const safeLimit = Math.min(50, Math.max(1, Math.trunc(limit)));
+    const fetchLimit = safeOffset + safeLimit + 1;
     const [funding, transfers, expenses] = await Promise.all([
       this.prisma.envelopeFunding.findMany({
         where: { groupId, deletedAt: null },
         include: { envelope: { select: { name: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        take: fetchLimit,
       }),
       this.prisma.envelopeTransfer.findMany({
         where: { groupId, deletedAt: null },
@@ -133,23 +147,28 @@ export class ReportsService {
           fromEnvelope: { select: { name: true } },
           toEnvelope: { select: { name: true } },
         },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        take: fetchLimit,
       }),
       this.prisma.expense.findMany({
         where: { groupId, deletedAt: null },
-        orderBy: { spentAt: 'desc' },
-        take: 10,
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+        take: fetchLimit,
       }),
     ]);
 
-    return [
+    const sortedActivity = [
       ...(funding as FundingRecord[]).map((item) => this.serializeFundingActivity(item)),
       ...(transfers as TransferRecord[]).map((item) => this.serializeTransferActivity(item)),
       ...(expenses as ExpenseRecord[]).map((item) => this.serializeExpenseActivity(item)),
-    ]
-      .sort((left, right) => Date.parse(right.occurredAt) - Date.parse(left.occurredAt))
-      .slice(0, 10);
+    ].sort(compareActivityDescending);
+    const items = sortedActivity.slice(safeOffset, safeOffset + safeLimit);
+
+    return {
+      items,
+      nextOffset: sortedActivity.length > safeOffset + safeLimit ? safeOffset + safeLimit : null,
+      limit: safeLimit,
+    };
   }
 
   private serializeFundingActivity(funding: FundingRecord): ActivityItem {
@@ -178,7 +197,7 @@ export class ReportsService {
       type: 'expense',
       title: expense.title,
       amountMinor: expense.amountMinor,
-      occurredAt: expense.spentAt.toISOString(),
+      occurredAt: expense.createdAt.toISOString(),
     };
   }
 
@@ -198,4 +217,11 @@ export class ReportsService {
       updatedAt: recurring.updatedAt.toISOString(),
     };
   }
+}
+
+function compareActivityDescending(left: ActivityItem, right: ActivityItem): number {
+  const timeDifference = Date.parse(right.occurredAt) - Date.parse(left.occurredAt);
+  if (timeDifference !== 0) return timeDifference;
+  const typeDifference = left.type.localeCompare(right.type);
+  return typeDifference !== 0 ? typeDifference : left.id.localeCompare(right.id);
 }

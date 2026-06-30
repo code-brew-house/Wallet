@@ -126,6 +126,27 @@ describe('envelope ledger', () => {
       });
   });
 
+  test('rejects duplicate envelope names with a descriptive message', async () => {
+    const ownerToken = await signup(app, 'owner@example.com');
+    const group = await createGroup(app, ownerToken, 'Family Wallet');
+
+    await request(app.getHttpServer())
+      .post(`/groups/${group.id}/envelopes`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Groceries' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/groups/${group.id}/envelopes`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Groceries' })
+      .expect(400)
+      .expect(({ body }) => {
+        expectErrorCode(body, 'INVALID_INPUT');
+        expect(body.message ?? body.response?.message).toBe('An envelope named "Groceries" already exists in this group');
+      });
+  });
+
   test('rejects transfers that overspend the source envelope', async () => {
     const ownerToken = await signup(app, 'owner@example.com');
     const group = await createGroup(app, ownerToken, 'Family Wallet');

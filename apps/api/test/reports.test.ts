@@ -91,6 +91,72 @@ describe('dashboard reports', () => {
     expect(response.body.envelopes).toHaveLength(1);
     expect(response.body.group).toEqual({ id: group.id, name: 'Family Wallet' });
   });
+
+  test('returns recent activity in descending pages of ten', async () => {
+    const ownerToken = await signup(app, 'activity-owner@example.com');
+    const group = await createGroup(app, ownerToken, 'Activity Wallet');
+    const owner = await prisma.user.findUniqueOrThrow({ where: { email: 'activity-owner@example.com' } });
+
+    const envelope = await request(app.getHttpServer())
+      .post(`/groups/${group.id}/envelopes`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Groceries' })
+      .expect(201);
+
+    const base = Date.UTC(2026, 5, 29, 12, 0, 0);
+    for (let index = 0; index < 12; index += 1) {
+      await prisma.envelopeFunding.create({
+        data: {
+          groupId: group.id,
+          envelopeId: envelope.body.id,
+          createdById: owner.id,
+          amountMinor: 100 + index,
+          note: `Activity ${index}`,
+          createdAt: new Date(base + index * 60_000),
+        },
+      });
+    }
+
+    await prisma.expense.create({
+      data: {
+        groupId: group.id,
+        envelopeId: envelope.body.id,
+        createdById: owner.id,
+        amountMinor: 2500,
+        title: 'Backdated groceries',
+        spentAt: new Date(base - 24 * 60 * 60 * 1000),
+        createdAt: new Date(base + 20 * 60_000),
+      },
+    });
+
+    await request(app.getHttpServer())
+      .get(`/groups/${group.id}/dashboard`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.recentActivity.map((item: { title: string }) => item.title)).toEqual([
+          'Backdated groceries',
+          'Activity 11',
+          'Activity 10',
+          'Activity 9',
+          'Activity 8',
+          'Activity 7',
+          'Activity 6',
+          'Activity 5',
+          'Activity 4',
+          'Activity 3',
+        ]);
+      });
+
+    await request(app.getHttpServer())
+      .get(`/groups/${group.id}/activity?offset=10&limit=10`)
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.items.map((item: { title: string }) => item.title)).toEqual(['Activity 2', 'Activity 1', 'Activity 0']);
+        expect(body.nextOffset).toBeNull();
+      });
+  });
   test('returns 404 when the caller is not a member of the requested group', async () => {
     const outsiderToken = await signup(app, 'outsider@example.com');
     const ownerToken = await signup(app, 'owner2@example.com');

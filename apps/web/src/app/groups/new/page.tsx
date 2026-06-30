@@ -1,11 +1,12 @@
 'use client';
 
-import { Alert, Button, Select, TextInput } from '@mantine/core';
+import { Button, Select, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { AuthSheetShell } from '../../../components/sheet';
+import { AlertBanner } from '../../../components/alert-banner';
 
 interface GroupResponse {
   id: string;
@@ -48,7 +49,7 @@ export default function NewGroupPage() {
       footer={<Button type="submit" form="new-group-form" className="wallet-button-primary" loading={isSubmitting}>Create group</Button>}
     >
       <form id="new-group-form" onSubmit={form.onSubmit(submit)} className="wallet-input-shell">
-        {error ? <Alert color="red">{error}</Alert> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
         <TextInput label="Group name" required {...form.getInputProps('name')} />
         <Select label="Currency" data={['INR', 'USD', 'EUR', 'GBP']} required allowDeselect={false} {...form.getInputProps('currency')} />
       </form>

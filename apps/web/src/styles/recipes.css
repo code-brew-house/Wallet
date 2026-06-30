@@ -269,9 +269,6 @@ body {
   white-space: nowrap;
 }
 
-.wallet-status-strip-stale {
-  margin-left: auto;
-}
 
 .wallet-status-strip-dot {
   width: 8px;
@@ -454,7 +451,7 @@ body {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: max(var(--space-3), env(safe-area-inset-bottom, 0px));
   z-index: 20;
   display: flex;
   justify-content: center;
@@ -464,7 +461,7 @@ body {
 
 .wallet-bottom-nav-inner {
   display: grid;
-  grid-template-columns: repeat(5, minmax(44px, 1fr));
+  grid-template-columns: repeat(4, minmax(44px, 1fr));
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1);
@@ -481,11 +478,12 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 6px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   border-radius: var(--radius-full);
   color: var(--color-text-muted);
   text-decoration: none;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
 }
 
@@ -498,23 +496,8 @@ body {
 .wallet-bottom-nav-icon {
   display: grid;
   place-items: center;
-  width: 18px;
-  height: 18px;
-}
-
-.wallet-bottom-nav-add {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  justify-self: center;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-border));
-  color: #0b0b0e;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: 800;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  width: 28px;
+  height: 28px;
 }
 
 .wallet-auth-root {

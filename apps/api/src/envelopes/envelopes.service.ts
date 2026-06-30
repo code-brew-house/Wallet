@@ -21,8 +21,18 @@ export class EnvelopesService {
 
   async createEnvelope(userId: string, groupId: string, dto: CreateEnvelopeDto): Promise<EnvelopeSummary> {
     await this.memberships.requireRole(userId, groupId, MANAGER_ROLES);
-    const envelope = await this.prisma.envelope.create({ data: { groupId, name: dto.name } });
-    return this.balances.getEnvelopeSummary(envelope.id);
+    try {
+      const envelope = await this.prisma.envelope.create({ data: { groupId, name: dto.name } });
+      return this.balances.getEnvelopeSummary(envelope.id);
+    } catch (error) {
+      if (this.isPrismaUniqueConstraintViolation(error)) {
+        throw new BadRequestException({
+          code: 'INVALID_INPUT',
+          message: `An envelope named "${dto.name}" already exists in this group`,
+        });
+      }
+      throw error;
+    }
   }
 
   async listEnvelopes(userId: string, groupId: string): Promise<EnvelopeSummary[]> {
@@ -109,6 +119,12 @@ export class EnvelopesService {
     }
 
     throw new BadRequestException({ code: 'INVALID_INPUT', message: 'Transfer could not be applied safely; retry' });
+  }
+
+  private isPrismaUniqueConstraintViolation(error: unknown): boolean {
+    if (typeof error !== 'object' || error === null) return false;
+    const candidate = error as { code?: unknown; cause?: { originalCode?: unknown; kind?: unknown } };
+    return candidate.code === 'P2002' || candidate.cause?.originalCode === '23505' || candidate.cause?.kind === 'UniqueConstraintViolation';
   }
 
   private isPrismaSerializationFailure(error: unknown): boolean {

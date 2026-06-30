@@ -4,7 +4,9 @@
   "type": "module",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "bun run --filter '*' dev",
+    "dev": "bun run dev:api & bun run dev:web",
+    "dev:api": "bun --env-file=.env --cwd apps/api --hot src/main.ts",
+    "dev:web": "bun --cwd apps/web --bun next dev",
     "build": "bun run --filter '*' build",
     "test": "bun test",
     "typecheck": "bun run --filter '*' typecheck",

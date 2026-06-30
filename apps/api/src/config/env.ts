@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+const developmentDefaults = {
+  DATABASE_URL: 'postgresql://wallet:wallet@localhost:55432/wallet',
+  WEB_PUBLIC_URL: 'http://localhost:3000',
+  JWT_ACCESS_SECRET: 'development-access-secret-for-wallet-local',
+  JWT_REFRESH_SECRET: 'development-refresh-secret-for-wallet-local',
+  COOKIE_DOMAIN: 'localhost',
+} satisfies Partial<NodeJS.ProcessEnv>;
+
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   API_PORT: z.coerce.number().int().positive().default(4000),
@@ -11,5 +19,12 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
-export const env = envSchema.parse(process.env);
-export type Env = typeof env;
+export type Env = z.infer<typeof envSchema>;
+
+export function loadEnv(source: NodeJS.ProcessEnv): Env {
+  const nodeEnv = source.NODE_ENV ?? 'development';
+  const defaults = nodeEnv === 'production' ? {} : developmentDefaults;
+  return envSchema.parse({ ...defaults, ...source, NODE_ENV: nodeEnv });
+}
+
+export const env = loadEnv(process.env);

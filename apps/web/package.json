@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --bun next dev",
+    "dev": "bun --cwd ../.. dev",
     "build": "NODE_ENV=production bun --bun next build",
     "start": "bun --bun next start",
     "test": "bun test test/*.test.ts",

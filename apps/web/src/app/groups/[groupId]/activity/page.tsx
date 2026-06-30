@@ -1,19 +1,24 @@
 'use client';
 
-import { Alert, Group, Loader, Stack } from '@mantine/core';
+import { Button, Group, Loader, Stack } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { AppShell } from '../../../../components/app-shell';
 import { PageHeader } from '../../../../components/header';
-import type { DashboardSummary } from '../../../../features/dashboard/types';
+import { AlertBanner } from '../../../../components/alert-banner';
+import type { ActivityItem, ActivityPage } from '../../../../features/dashboard/types';
 import { apiClient } from '../../../../lib/api-client';
+import { useGroupCurrency } from '../../../../lib/group-currency';
 
 export default function GroupActivityPage() {
   const params = useParams<{ groupId: string }>();
-  const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
+  const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
+  const [nextActivityOffset, setNextActivityOffset] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }), []);
+  const currency = useGroupCurrency(params.groupId);
+  const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency }), [currency]);
 
   useEffect(() => {
     let cancelled = false;
@@ -22,8 +27,11 @@ export default function GroupActivityPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await apiClient.request<DashboardSummary>(`/groups/${params.groupId}/dashboard`);
-        if (!cancelled) setDashboard(response);
+        const response = await apiClient.request<ActivityPage>(`/groups/${params.groupId}/activity?limit=10`);
+        if (!cancelled) {
+          setActivityItems(response.items);
+          setNextActivityOffset(response.nextOffset);
+        }
       } catch (requestError) {
         if (!cancelled) setError(requestError instanceof Error ? requestError.message : 'Unable to load activity');
       } finally {
@@ -37,8 +45,23 @@ export default function GroupActivityPage() {
     };
   }, [params.groupId]);
 
-  const todayItems = dashboard?.recentActivity.filter((item) => new Date(item.occurredAt).toDateString() === new Date().toDateString()) ?? [];
-  const earlierItems = dashboard?.recentActivity.filter((item) => new Date(item.occurredAt).toDateString() !== new Date().toDateString()) ?? [];
+  async function loadMoreActivity() {
+    if (nextActivityOffset === null) return;
+    setIsLoadingMore(true);
+    setError(null);
+    try {
+      const response = await apiClient.request<ActivityPage>(`/groups/${params.groupId}/activity?limit=10&offset=${nextActivityOffset}`);
+      setActivityItems((currentItems) => [...currentItems, ...response.items]);
+      setNextActivityOffset(response.nextOffset);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to load more activity');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
+
+  const todayItems = activityItems.filter((item) => new Date(item.occurredAt).toDateString() === new Date().toDateString());
+  const earlierItems = activityItems.filter((item) => new Date(item.occurredAt).toDateString() !== new Date().toDateString());
 
   return (
     <AppShell groupId={params.groupId} active="activity" narrow>
@@ -49,15 +72,22 @@ export default function GroupActivityPage() {
         tone="info"
       />
       <Stack gap="lg">
-        {error ? <Alert color="red">{error}</Alert> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
         {isLoading ? <Group justify="center"><Loader /></Group> : null}
-        {!isLoading && dashboard?.recentActivity.length === 0 ? (
-          <Alert color="blue" title="No activity yet">
+        {!isLoading && activityItems.length === 0 ? (
+          <AlertBanner title="No activity yet">
             Funding entries, envelope transfers, and expense confirmations appear here once your group starts using envelopes.
-          </Alert>
+          </AlertBanner>
         ) : null}
         <ActivityGroup title="Today" items={todayItems} moneyFormatter={moneyFormatter} />
         <ActivityGroup title="Earlier" items={earlierItems} moneyFormatter={moneyFormatter} />
+        {nextActivityOffset !== null ? (
+          <Group justify="center">
+            <Button className="wallet-button-secondary" loading={isLoadingMore} onClick={() => void loadMoreActivity()}>
+              Load more activity
+            </Button>
+          </Group>
+        ) : null}
       </Stack>
     </AppShell>
   );
@@ -69,7 +99,7 @@ function ActivityGroup({
   moneyFormatter,
 }: {
   title: string;
-  items: NonNullable<DashboardSummary['recentActivity']>;
+  items: ActivityItem[];
   moneyFormatter: Intl.NumberFormat;
 }) {
   if (items.length === 0) return null;

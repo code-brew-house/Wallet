@@ -1,11 +1,13 @@
 'use client';
 
-import { Alert, Badge, Button, Group, Loader, Stack } from '@mantine/core';
+import { Badge, Button, Group, Loader, Stack } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import { type ReactNode, useEffect, useState } from 'react';
 import { AppShell } from '../../../../components/app-shell';
 import { PageHeader } from '../../../../components/header';
+import { AlertBanner } from '../../../../components/alert-banner';
 import { apiClient } from '../../../../lib/api-client';
+import { useGroupCurrency } from '../../../../lib/group-currency';
 
 interface GroupMember {
   role: 'owner' | 'admin' | 'member';
@@ -23,6 +25,7 @@ export default function GroupSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingInvite, setIsCreatingInvite] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const currency = useGroupCurrency(params.groupId);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,15 +78,15 @@ export default function GroupSettingsPage() {
         <section className="wallet-card wallet-settings-profile">
           <div className="wallet-avatar" aria-hidden="true">W</div>
           <h2>Wallet household</h2>
-          <p className="wallet-muted">{members.length} members · INR</p>
+          <p className="wallet-muted">{members.length} members · {currency}</p>
         </section>
-        {error ? <Alert color="red">{error}</Alert> : null}
-        {inviteUrl ? <Alert color="teal" title="Invite link">Share this link with a household member: {inviteUrl}</Alert> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
+        {inviteUrl ? <AlertBanner variant="success" title="Invite link">Share this link with a household member: {inviteUrl}</AlertBanner> : null}
         {isLoading ? <Group justify="center"><Loader /></Group> : null}
         {!isLoading && members.length === 0 ? (
-          <Alert color="blue" title="No members found">
+          <AlertBanner title="No members found">
             Group members, ownership, and role management controls appear here when memberships are available.
-          </Alert>
+          </AlertBanner>
         ) : null}
         <SettingsSection title="Group">
           {members.map((member) => (

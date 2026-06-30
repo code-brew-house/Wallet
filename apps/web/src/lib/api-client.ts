@@ -7,22 +7,27 @@ export interface ApiClientOptions {
   fetchImpl?: FetchImplementation;
 }
 
-interface ApiBaseEnv {
-  NEXT_PUBLIC_API_BASE_URL?: string;
-  NODE_ENV?: string;
+export function resolveApiBaseUrl(_env?: unknown): string {
+  return '/api';
 }
 
-export function resolveApiBaseUrl(env: ApiBaseEnv = process.env): string {
-  const configuredBaseUrl = env.NEXT_PUBLIC_API_BASE_URL?.trim();
-  if (configuredBaseUrl) {
-    return configuredBaseUrl.replace(/\/+$/, '');
-  }
+function formatApiError(error: ApiErrorBody | undefined, path: string, status: number): string {
+  const message = error?.message?.trim() || `Request to ${path} failed with status ${status}`;
+  const details = Object.values(error?.details ?? {}).flat().filter((detail) => detail.trim().length > 0);
+  return details.length > 0 ? `${message}: ${details.join('; ')}` : message;
+}
 
-  if (env.NODE_ENV === 'production') {
-    throw new Error('NEXT_PUBLIC_API_BASE_URL is required for production builds');
-  }
+function isGetRequest(init: RequestInit): boolean {
+  return init.method === undefined || init.method.toUpperCase() === 'GET';
+}
 
-  return 'http://localhost:4000';
+function needsWalletReadCacheBust(path: string, init: RequestInit): boolean {
+  return isGetRequest(init) && (path.includes('/dashboard') || path.includes('/envelopes') || path.includes('/activity'));
+}
+
+function appendWalletFreshParam(path: string): string {
+  const separator = path.includes('?') ? '&' : '?';
+  return `${path}${separator}_walletFresh=${Date.now()}`;
 }
 
 export function createApiClient(options: ApiClientOptions) {
@@ -34,11 +39,14 @@ export function createApiClient(options: ApiClientOptions) {
     const token = options.getAccessToken();
     if (token) headers.set('Authorization', `Bearer ${token}`);
 
-    const response = await fetchImpl(`${options.baseUrl}${path}`, { ...init, headers, credentials: 'include' });
+    const cache = isGetRequest(init) ? 'no-store' : init.cache;
+    const requestInit: RequestInit = { ...init, headers, credentials: 'include', ...(cache ? { cache } : {}) };
+    const requestPath = needsWalletReadCacheBust(path, init) ? appendWalletFreshParam(path) : path;
+    const response = await fetchImpl(`${options.baseUrl}${requestPath}`, requestInit);
     const body = await response.json().catch(() => undefined);
     if (!response.ok) {
       const error = body as ApiErrorBody | undefined;
-      throw new Error(error?.message ?? 'Request failed');
+      throw new Error(formatApiError(error, path, response.status));
     }
     return body as T;
   }

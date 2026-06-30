@@ -117,6 +117,9 @@ describe('groups and invites', () => {
     const secondMemberToken = await signup(app, 'second@example.com');
     const group = await createGroup(app, ownerToken, 'Family Wallet');
     const invite = await createInvite(app, ownerToken, group.id);
+    expect(invite.token).toHaveLength(5);
+    expect(invite.token).toMatch(/^[A-Z0-9]{5}$/);
+
 
     await request(app.getHttpServer())
       .post(`/invites/${invite.token}/accept`)

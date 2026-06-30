@@ -1,19 +1,22 @@
 'use client';
 
-import { Alert, Group, Loader, SimpleGrid, Stack } from '@mantine/core';
+import { Group, Loader, SimpleGrid, Stack } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { AppShell } from '../../../../components/app-shell';
 import { PageHeader } from '../../../../components/header';
+import { AlertBanner } from '../../../../components/alert-banner';
 import type { DashboardSummary } from '../../../../features/dashboard/types';
 import { apiClient } from '../../../../lib/api-client';
+import { useGroupCurrency } from '../../../../lib/group-currency';
 
 export default function GroupReportsPage() {
   const params = useParams<{ groupId: string }>();
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }), []);
+  const currency = useGroupCurrency(params.groupId);
+  const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency }), [currency]);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,9 +39,8 @@ export default function GroupReportsPage() {
       cancelled = true;
     };
   }, [params.groupId]);
-
   return (
-    <AppShell groupId={params.groupId} active="activity">
+    <AppShell groupId={params.groupId}>
       <PageHeader
         overline="Reports"
         title="Spending overview"
@@ -46,7 +48,7 @@ export default function GroupReportsPage() {
         tone="warn"
       />
       <Stack gap="lg">
-        {error ? <Alert color="red">{error}</Alert> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
         {isLoading ? <Group justify="center"><Loader /></Group> : null}
         {dashboard ? (
           <>
@@ -76,9 +78,9 @@ export default function GroupReportsPage() {
           </>
         ) : null}
         {!isLoading && dashboard?.envelopes.length === 0 ? (
-          <Alert color="blue" title="Reports start with envelopes">
+          <AlertBanner title="Reports start with envelopes">
             Spending trends, envelope burn-down, and recurring expense forecasts appear here after envelopes receive funding and expenses.
-          </Alert>
+          </AlertBanner>
         ) : null}
       </Stack>
     </AppShell>

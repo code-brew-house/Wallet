@@ -2,14 +2,15 @@ import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 
 describe('offline cache service worker', () => {
-  test('caches only same-origin GET dashboard, envelope, and activity reads', () => {
+  test('fetches dashboard, envelope, and activity reads from network before cached fallback', () => {
     const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
-    expect(worker).toContain('StaleWhileRevalidate');
+    expect(worker).toContain('NetworkFirst');
     expect(worker).toContain('request.method === "GET"');
     expect(worker).toContain('url.origin === self.location.origin');
     expect(worker).toContain("url.pathname.includes('/dashboard')");
     expect(worker).toContain("url.pathname.includes('/envelopes')");
     expect(worker).toContain("url.pathname.includes('/activity')");
+    expect(worker).not.toContain('StaleWhileRevalidate');
     expect(worker).not.toContain('request.method !== "GET"');
     expect(worker).not.toContain('request.method === "POST"');
   });

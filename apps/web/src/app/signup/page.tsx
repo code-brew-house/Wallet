@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert, Anchor, Button, PasswordInput, TextInput } from '@mantine/core';
+import { Anchor, Button, PasswordInput, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -9,6 +9,7 @@ import { apiClient } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-store';
 import { getSafeNextPath } from '../../lib/next-path';
 import { AuthSheetShell } from '../../components/sheet';
+import { AlertBanner } from '../../components/alert-banner';
 
 interface AuthResponse {
   accessToken: string;
@@ -68,7 +69,7 @@ function SignupForm() {
       )}
     >
       <form id="signup-form" onSubmit={form.onSubmit(submit)} className="wallet-input-shell">
-        {error ? <Alert color="red">{error}</Alert> : null}
+        {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
         <TextInput label="Display name" autoComplete="name" required {...form.getInputProps('displayName')} />
         <TextInput label="Email" type="email" autoComplete="email" required {...form.getInputProps('email')} />
         <PasswordInput label="Password" autoComplete="new-password" required {...form.getInputProps('password')} />

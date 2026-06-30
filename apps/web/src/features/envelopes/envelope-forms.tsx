@@ -13,10 +13,11 @@ export interface EnvelopeFormsProps {
   openedForm: FormKind | null;
   onCloseForm(): void;
   currency: string;
-  onAddExpense(values: { envelopeId: string; amountMinor: number; spentAt: string; title: string; note?: string }): Promise<void>;
-  onFundEnvelope(values: { envelopeId: string; amountMinor: number; note?: string }): Promise<void>;
-  onTransfer(values: { fromEnvelopeId: string; toEnvelopeId: string; amountMinor: number; note?: string }): Promise<void>;
-  onCreateRecurring(values: {
+  allowedForms?: FormKind[];
+  onAddExpense?(values: { envelopeId: string; amountMinor: number; spentAt: string; title: string; note?: string }): Promise<void>;
+  onFundEnvelope?(values: { envelopeId: string; amountMinor: number; note?: string }): Promise<void>;
+  onTransfer?(values: { fromEnvelopeId: string; toEnvelopeId: string; amountMinor: number; note?: string }): Promise<void>;
+  onCreateRecurring?(values: {
     envelopeId: string;
     amountMinor: number;
     title: string;
@@ -80,7 +81,7 @@ function notePayload(note: string): { note?: string } {
   return trimmed.length > 0 ? { note: trimmed } : {};
 }
 
-export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, onAddExpense, onFundEnvelope, onTransfer, onCreateRecurring }: EnvelopeFormsProps) {
+export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, allowedForms, onAddExpense, onFundEnvelope, onTransfer, onCreateRecurring }: EnvelopeFormsProps) {
   const activeEnvelopes = useMemo(() => envelopes.filter((envelope) => !envelope.archivedAt), [envelopes]);
   const envelopeOptions = useMemo(
     () => activeEnvelopes.map((envelope) => ({ value: envelope.id, label: envelope.name })),
@@ -92,6 +93,12 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   const sheetMetadata = ['Wallet action', currency, 'Active envelopes only'];
   const [submittingForm, setSubmittingForm] = useState<FormKind | null>(null);
   const [recurringStep, setRecurringStep] = useState(1);
+  const canRenderForm = (form: FormKind) => (!allowedForms || allowedForms.includes(form)) && (
+    (form === 'expense' && Boolean(onAddExpense)) ||
+    (form === 'funding' && Boolean(onFundEnvelope)) ||
+    (form === 'transfer' && Boolean(onTransfer)) ||
+    (form === 'recurring' && Boolean(onCreateRecurring))
+  );
 
   const expenseForm = useForm<ExpenseFormValues>({
     initialValues: { envelopeId: firstEnvelopeId, amount: '', spentAt: todayDateValue(), title: '', note: '' },
@@ -146,6 +153,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   async function submitExpense(values: ExpenseFormValues) {
     setSubmittingForm('expense');
     try {
+      if (!onAddExpense) throw new Error('Add expense action is unavailable');
       await onAddExpense({
         envelopeId: values.envelopeId,
         amountMinor: amountToMinor(values.amount),
@@ -165,6 +173,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   async function submitFunding(values: FundingFormValues) {
     setSubmittingForm('funding');
     try {
+      if (!onFundEnvelope) throw new Error('Funding action is unavailable');
       await onFundEnvelope({ envelopeId: values.envelopeId, amountMinor: amountToMinor(values.amount), ...notePayload(values.note) });
       fundingForm.setValues({ envelopeId: values.envelopeId, amount: '', note: '' });
       onCloseForm();
@@ -178,6 +187,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   async function submitTransfer(values: TransferFormValues) {
     setSubmittingForm('transfer');
     try {
+      if (!onTransfer) throw new Error('Transfer action is unavailable');
       await onTransfer({
         fromEnvelopeId: values.fromEnvelopeId,
         toEnvelopeId: values.toEnvelopeId,
@@ -196,6 +206,7 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
   async function submitRecurring(values: RecurringFormValues) {
     setSubmittingForm('recurring');
     try {
+      if (!onCreateRecurring) throw new Error('Recurring action is unavailable');
       await onCreateRecurring({
         envelopeId: values.envelopeId,
         amountMinor: amountToMinor(values.amount),
@@ -215,83 +226,90 @@ export function EnvelopeForms({ envelopes, currency, openedForm, onCloseForm, on
 
   return (
     <>
-
-      <ActionSheet opened={openedForm === 'expense'} title="Add expense" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="expense-form" submitLabel="Save" submitting={submittingForm === 'expense'} onClose={onCloseForm}>
-        <form onSubmit={expenseForm.onSubmit(submitExpense)} id="expense-form" className="wallet-input-shell">
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-            <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...expenseForm.getInputProps('envelopeId')} />
-            <TextInput label="Amount" inputMode="decimal" required {...expenseForm.getInputProps('amount')} />
-            <TextInput label="Spent on" type="date" required {...expenseForm.getInputProps('spentAt')} />
-            <TextInput label="Title" required {...expenseForm.getInputProps('title')} />
-          </SimpleGrid>
-          <Textarea mt="md" label="Note" autosize minRows={2} {...expenseForm.getInputProps('note')} />
-        </form>
-      </ActionSheet>
-
-      <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="funding-form" submitLabel="Save" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
-        <form onSubmit={fundingForm.onSubmit(submitFunding)} id="funding-form" className="wallet-input-shell">
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-            <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...fundingForm.getInputProps('envelopeId')} />
-            <TextInput label="Amount" inputMode="decimal" required {...fundingForm.getInputProps('amount')} />
-          </SimpleGrid>
-          <Textarea mt="md" label="Note" autosize minRows={2} {...fundingForm.getInputProps('note')} />
-        </form>
-      </ActionSheet>
-
-      <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="transfer-form" submitLabel="Save" submitDisabled={activeEnvelopes.length < 2} submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
-        <form onSubmit={transferForm.onSubmit(submitTransfer)} id="transfer-form" className="wallet-input-shell">
-          <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-            <Select label="From" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('fromEnvelopeId')} />
-            <Select label="To" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('toEnvelopeId')} />
-            <TextInput label="Amount" inputMode="decimal" required {...transferForm.getInputProps('amount')} />
-          </SimpleGrid>
-          <Textarea mt="md" label="Note" autosize minRows={2} {...transferForm.getInputProps('note')} />
-        </form>
-      </ActionSheet>
-
-      <StepperSheet
-        opened={openedForm === 'recurring'}
-        title="Create recurring"
-        description={`Amounts are entered in ${currency} and saved in minor units.`}
-        metadata={sheetMetadata}
-        currentStep={recurringStep}
-        totalSteps={3}
-        canGoNext={hasEnvelopes}
-        submitting={submittingForm === 'recurring'}
-        onBack={() => setRecurringStep((step) => Math.max(1, step - 1))}
-        onNext={() => setRecurringStep((step) => Math.min(3, step + 1))}
-        onClose={onCloseForm}
-        onSubmit={() => recurringForm.onSubmit(submitRecurring)()}
-      >
-        <form onSubmit={recurringForm.onSubmit(submitRecurring)} id="recurring-form" className="wallet-input-shell">
-          {recurringStep === 1 ? (
-            <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...recurringForm.getInputProps('envelopeId')} />
-          ) : null}
-          {recurringStep === 2 ? (
+      {canRenderForm('expense') ? (
+        <ActionSheet opened={openedForm === 'expense'} title="Add expense" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="expense-form" submitLabel="Save" submitting={submittingForm === 'expense'} onClose={onCloseForm}>
+          <form onSubmit={expenseForm.onSubmit(submitExpense)} id="expense-form" className="wallet-input-shell">
             <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-              <TextInput label="Amount" inputMode="decimal" required {...recurringForm.getInputProps('amount')} />
-              <Select
-                label="Frequency"
-                data={[
-                  { value: 'weekly', label: 'Weekly' },
-                  { value: 'monthly', label: 'Monthly' },
-                  { value: 'yearly', label: 'Yearly' },
-                ]}
-                allowDeselect={false}
-                required
-                {...recurringForm.getInputProps('frequency')}
-              />
-              <TextInput label="Next due date" type="date" required {...recurringForm.getInputProps('nextDueAt')} />
+              <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...expenseForm.getInputProps('envelopeId')} />
+              <TextInput label="Amount" inputMode="decimal" required {...expenseForm.getInputProps('amount')} />
+              <TextInput label="Spent on" type="date" required {...expenseForm.getInputProps('spentAt')} />
+              <TextInput label="Title" required {...expenseForm.getInputProps('title')} />
             </SimpleGrid>
-          ) : null}
-          {recurringStep === 3 ? (
-            <>
-              <TextInput label="Title" required {...recurringForm.getInputProps('title')} />
-              <Textarea mt="md" label="Note" autosize minRows={2} {...recurringForm.getInputProps('note')} />
-            </>
-          ) : null}
-        </form>
-      </StepperSheet>
+            <Textarea mt="md" label="Note" autosize minRows={2} {...expenseForm.getInputProps('note')} />
+          </form>
+        </ActionSheet>
+      ) : null}
+
+      {canRenderForm('funding') ? (
+        <ActionSheet opened={openedForm === 'funding'} title="Fund envelope" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="funding-form" submitLabel="Save" submitting={submittingForm === 'funding'} onClose={onCloseForm}>
+          <form onSubmit={fundingForm.onSubmit(submitFunding)} id="funding-form" className="wallet-input-shell">
+            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+              <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...fundingForm.getInputProps('envelopeId')} />
+              <TextInput label="Amount" inputMode="decimal" required {...fundingForm.getInputProps('amount')} />
+            </SimpleGrid>
+            <Textarea mt="md" label="Note" autosize minRows={2} {...fundingForm.getInputProps('note')} />
+          </form>
+        </ActionSheet>
+      ) : null}
+
+      {canRenderForm('transfer') ? (
+        <ActionSheet opened={openedForm === 'transfer'} title="Transfer" description={`Amounts are entered in ${currency} and saved in minor units.`} metadata={sheetMetadata} formId="transfer-form" submitLabel="Save" submitDisabled={activeEnvelopes.length < 2} submitting={submittingForm === 'transfer'} onClose={onCloseForm}>
+          <form onSubmit={transferForm.onSubmit(submitTransfer)} id="transfer-form" className="wallet-input-shell">
+            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
+              <Select label="From" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('fromEnvelopeId')} />
+              <Select label="To" data={envelopeOptions} required allowDeselect={false} {...transferForm.getInputProps('toEnvelopeId')} />
+              <TextInput label="Amount" inputMode="decimal" required {...transferForm.getInputProps('amount')} />
+            </SimpleGrid>
+            <Textarea mt="md" label="Note" autosize minRows={2} {...transferForm.getInputProps('note')} />
+          </form>
+        </ActionSheet>
+      ) : null}
+
+      {canRenderForm('recurring') ? (
+        <StepperSheet
+          opened={openedForm === 'recurring'}
+          title="Create recurring"
+          description={`Amounts are entered in ${currency} and saved in minor units.`}
+          metadata={sheetMetadata}
+          currentStep={recurringStep}
+          totalSteps={3}
+          canGoNext={hasEnvelopes}
+          submitting={submittingForm === 'recurring'}
+          onBack={() => setRecurringStep((step) => Math.max(1, step - 1))}
+          onNext={() => setRecurringStep((step) => Math.min(3, step + 1))}
+          onClose={onCloseForm}
+          onSubmit={() => recurringForm.onSubmit(submitRecurring)()}
+        >
+          <form onSubmit={recurringForm.onSubmit(submitRecurring)} id="recurring-form" className="wallet-input-shell">
+            {recurringStep === 1 ? (
+              <Select label="Envelope" data={envelopeOptions} required allowDeselect={false} {...recurringForm.getInputProps('envelopeId')} />
+            ) : null}
+            {recurringStep === 2 ? (
+              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+                <TextInput label="Amount" inputMode="decimal" required {...recurringForm.getInputProps('amount')} />
+                <Select
+                  label="Frequency"
+                  data={[
+                    { value: 'weekly', label: 'Weekly' },
+                    { value: 'monthly', label: 'Monthly' },
+                    { value: 'yearly', label: 'Yearly' },
+                  ]}
+                  allowDeselect={false}
+                  required
+                  {...recurringForm.getInputProps('frequency')}
+                />
+                <TextInput label="Next due date" type="date" required {...recurringForm.getInputProps('nextDueAt')} />
+              </SimpleGrid>
+            ) : null}
+            {recurringStep === 3 ? (
+              <>
+                <TextInput label="Title" required {...recurringForm.getInputProps('title')} />
+                <Textarea mt="md" label="Note" autosize minRows={2} {...recurringForm.getInputProps('note')} />
+              </>
+            ) : null}
+          </form>
+        </StepperSheet>
+      ) : null}
     </>
   );
 }
