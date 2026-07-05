@@ -16,7 +16,7 @@ FROM oven/bun:1 AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends curl \
+  && apt-get install -y --no-install-recommends curl wget \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/package.json /app/bun.lock /app/tsconfig.base.json ./
