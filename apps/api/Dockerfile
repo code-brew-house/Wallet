@@ -15,6 +15,10 @@ RUN bun run --filter @wallet/api build
 FROM oven/bun:1 AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/package.json /app/bun.lock /app/tsconfig.base.json ./
 COPY --from=build /app/packages/shared ./packages/shared
 COPY --from=build /app/apps/api ./apps/api
