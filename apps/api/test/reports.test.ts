@@ -5,6 +5,7 @@ import request from 'supertest';
 import './setup-env';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { readFileSync } from 'node:fs';
 
 async function signup(app: INestApplication, email: string) {
   const response = await request(app.getHttpServer())
@@ -156,6 +157,14 @@ describe('dashboard reports', () => {
         expect(body.items.map((item: { title: string }) => item.title)).toEqual(['Activity 2', 'Activity 1', 'Activity 0']);
         expect(body.nextOffset).toBeNull();
       });
+  });
+
+  test('activity pagination applies limit and offset in the database union', () => {
+    const source = readFileSync(new URL('../src/reports/reports.service.ts', import.meta.url), 'utf8');
+
+    expect(source).toContain('$queryRaw');
+    expect(source).toContain('LIMIT ${safeLimit + 1} OFFSET ${safeOffset}');
+    expect(source).not.toContain('const fetchLimit = safeOffset + safeLimit + 1');
   });
   test('returns 404 when the caller is not a member of the requested group', async () => {
     const outsiderToken = await signup(app, 'outsider@example.com');

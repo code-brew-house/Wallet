@@ -47,6 +47,15 @@ describe('dashboard UI contract', () => {
     expect(envelopeFormsSource).not.toContain('submitClassName="wallet-button-success"');
   });
 
+  test('background dashboard refresh handles API failures without unhandled rejections', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    const refetchBody = source.slice(source.indexOf('async function refetchDashboard()'), source.indexOf('  useEffect(() => {', source.indexOf('async function refetchDashboard()')));
+
+    expect(refetchBody).toContain('try {');
+    expect(refetchBody).toContain('catch (requestError)');
+    expect(refetchBody).toContain("setError(requestError instanceof Error ? requestError.message : 'Unable to refresh dashboard')");
+  });
+
   test('shared primitives use wallet recipe classes without changing form contracts', () => {
     const cardSource = readFileSync(new URL('../src/features/envelopes/envelope-card.tsx', import.meta.url), 'utf8');
     const formsSource = readFileSync(new URL('../src/features/envelopes/envelope-forms.tsx', import.meta.url), 'utf8');
@@ -119,6 +128,14 @@ describe('dashboard UI contract', () => {
     expect(activitySource).toContain('nextActivityOffset');
     expect(activitySource).toContain('`/groups/${params.groupId}/activity?limit=10');
     expect(activitySource).toContain('Load more activity');
+  });
+
+  test('activity page groups dates by UTC calendar day', () => {
+    const activitySource = readFileSync(new URL('../src/app/groups/[groupId]/activity/page.tsx', import.meta.url), 'utf8');
+
+    expect(activitySource).toContain('utcDateKey');
+    expect(activitySource).toContain('.toISOString().slice(0, 10)');
+    expect(activitySource).not.toContain('.toDateString()');
   });
 
   test('group screens format money with the persisted group currency', () => {

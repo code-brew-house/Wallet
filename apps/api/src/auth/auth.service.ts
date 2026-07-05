@@ -111,6 +111,8 @@ export class AuthService {
   }
 
   private isUniqueConstraintViolation(error: unknown): boolean {
-    return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2002';
+    if (typeof error !== 'object' || error === null) return false;
+    const candidate = error as { code?: unknown; cause?: { originalCode?: unknown; kind?: unknown } };
+    return candidate.code === 'P2002' || candidate.cause?.originalCode === '23505' || candidate.cause?.kind === 'UniqueConstraintViolation';
   }
 }

@@ -1,8 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { createApiClient, resolveApiBaseUrl } from '../src/lib/api-client';
+import { ApiRequestError, createApiClient, resolveApiBaseUrl } from '../src/lib/api-client';
 import { getSafeNextPath } from '../src/lib/next-path';
 import { rewriteProxyResponseHeaders } from '../src/app/api/[...path]/route';
+import { shouldClearAccessTokenAfterRefreshError } from '../src/lib/auth-store';
 
 describe('api client', () => {
   test('prefixes configured API base URL and attaches bearer token', async () => {
@@ -54,6 +55,20 @@ describe('api client', () => {
 
     await expect(client.request('/groups/1/envelopes')).rejects.toThrow('Invalid request body: name must be shorter than or equal to 80 characters');
   });
+
+  test('throws typed API errors with response status and code', async () => {
+    const client = createApiClient({
+      baseUrl: 'http://api.test',
+      getAccessToken: () => null,
+      fetchImpl: async () => new Response(JSON.stringify({ code: 'UNAUTHORIZED', message: 'Please sign in' }), {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      }),
+    });
+
+    await expect(client.request('/auth/refresh', { method: 'POST' })).rejects.toBeInstanceOf(ApiRequestError);
+    await expect(client.request('/auth/refresh', { method: 'POST' })).rejects.toMatchObject({ status: 401, code: 'UNAUTHORIZED' });
+  });
 });
 
 describe('API base URL configuration', () => {
@@ -70,6 +85,19 @@ describe('API base URL configuration', () => {
     expect(dockerfile).toContain('bun run --filter @wallet/web build');
   });
 
+  test('standalone web Docker output preserves monorepo server path', () => {
+    const nextConfig = readFileSync(new URL('../next.config.ts', import.meta.url), 'utf8');
+
+    expect(nextConfig).toContain('outputFileTracingRoot: workspaceRoot');
+  });
+
+  test('production API startup has the Prisma CLI available for migrations', () => {
+    const apiPackage = JSON.parse(readFileSync(new URL('../../api/package.json', import.meta.url), 'utf8'));
+
+    expect(apiPackage.dependencies.prisma).toBeDefined();
+    expect(apiPackage.devDependencies?.prisma).toBeUndefined();
+  });
+
   test('root and web dev commands start both frontend and backend services', () => {
     const rootPackage = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url), 'utf8'));
     const webPackage = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
@@ -79,6 +107,15 @@ describe('API base URL configuration', () => {
     expect(rootPackage.scripts['dev:api']).toContain('apps/api');
     expect(rootPackage.scripts['dev:web']).toContain('apps/web');
     expect(webPackage.scripts.dev).toBe('bun --cwd ../.. dev');
+  });
+
+  test('root test script only targets source test files so build output is ignored', () => {
+    const rootPackage = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url), 'utf8'));
+
+    expect(rootPackage.scripts.test).toContain('apps/api/test/*.test.ts');
+    expect(rootPackage.scripts.test).toContain('apps/web/test/*.test.ts');
+    expect(rootPackage.scripts.test).toContain('packages/shared/src/*.test.ts');
+    expect(rootPackage.scripts.test).not.toBe('bun test');
   });
 
   test('Next API proxy forwards browser auth requests to the server-reachable API URL', () => {
@@ -108,6 +145,21 @@ describe('API base URL configuration', () => {
     expect(freshness).toContain("export const WALLET_DATA_REFRESH_EVENT = 'wallet:data-refresh';");
     expect(freshness).toContain('export function notifyWalletDataChanged()');
     expect(freshness).toContain('export function subscribeWalletDataRefresh(callback: () => void): () => void');
+  });
+
+  test('auth refresh preserves stored access token on transient failures', () => {
+    expect(shouldClearAccessTokenAfterRefreshError(new ApiRequestError('Please sign in', 401, 'UNAUTHORIZED'))).toBe(true);
+    expect(shouldClearAccessTokenAfterRefreshError(new ApiRequestError('Server unavailable', 503, 'DEPENDENCY_UNAVAILABLE'))).toBe(false);
+    expect(shouldClearAccessTokenAfterRefreshError(new TypeError('Failed to fetch'))).toBe(false);
+  });
+
+  test('API proxy preserves mutation request content length while stripping conditional cache headers', () => {
+    const route = readFileSync(new URL('../src/app/api/[...path]/route.ts', import.meta.url), 'utf8');
+    const requestHeaderBlock = route.slice(route.indexOf('const headers = new Headers(request.headers);'), route.indexOf('try {'));
+
+    expect(requestHeaderBlock).not.toContain("headers.delete('content-length')");
+    expect(requestHeaderBlock).toContain("headers.delete('if-none-match')");
+    expect(requestHeaderBlock).toContain("headers.delete('if-modified-since')");
   });
 
   test('rewrites backend refresh cookie path to the same-origin API proxy path', () => {

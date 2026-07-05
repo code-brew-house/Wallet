@@ -8,7 +8,7 @@
     "dev:api": "bun --env-file=.env --cwd apps/api --hot src/main.ts",
     "dev:web": "bun --cwd apps/web --bun next dev",
     "build": "bun run --filter '*' build",
-    "test": "bun test",
+    "test": "bun test apps/api/test/*.test.ts apps/web/test/*.test.ts apps/smoke/*.test.ts packages/shared/src/*.test.ts",
     "typecheck": "bun run --filter '*' typecheck",
     "db:migrate": "bun --cwd apps/api prisma migrate dev",
     "db:deploy": "bun --cwd apps/api prisma migrate deploy",

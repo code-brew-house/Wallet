@@ -15,6 +15,20 @@ describe('offline cache service worker', () => {
     expect(worker).not.toContain('request.method === "POST"');
   });
 
+  test('normalizes volatile wallet freshness parameters before cache lookup', () => {
+    const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
+
+    expect(worker).toContain('cacheKeyWillBeUsed');
+    expect(worker).toContain("url.searchParams.delete('_walletFresh')");
+    expect(worker).toContain('return url.toString()');
+  });
+
+  test('only describes write actions as connection-required while offline', () => {
+    const banner = readFileSync(new URL('../src/components/stale-data-banner.tsx', import.meta.url), 'utf8');
+
+    expect(banner).toContain("online ? 'Displayed data may be stale. Refocus the app to refresh.' : 'New expenses require a connection.'");
+  });
+
   test('marks online dashboard data stale when generatedAt exceeds max age', () => {
     const banner = readFileSync(new URL('../src/components/stale-data-banner.tsx', import.meta.url), 'utf8');
     const dashboard = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');

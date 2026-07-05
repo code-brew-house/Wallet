@@ -1,8 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ExpenseDto } from '../expenses/expenses.service';
 import { MembershipService } from '../memberships/membership.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecurringExpenseDto } from './dto';
+import { Prisma } from '../generated/prisma/client';
 
 type Frequency = 'weekly' | 'monthly' | 'yearly';
 
@@ -52,6 +53,7 @@ export type RecurringExpenseDto = {
   updatedAt: string;
 };
 
+
 @Injectable()
 export class RecurringExpensesService {
   constructor(
@@ -91,33 +93,62 @@ export class RecurringExpensesService {
   async confirmOccurrence(userId: string, groupId: string, recurringExpenseId: string): Promise<{ expense: ExpenseDto; nextDueAt: string }> {
     await this.memberships.requireRole(userId, groupId, ['owner', 'admin']);
 
-    return this.prisma.$transaction(async (tx) => {
-      const recurring = (await tx.recurringExpense.findFirst({
-        where: { id: recurringExpenseId, groupId, active: true },
-      })) as RecurringExpenseRecord | null;
-      if (!recurring) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Recurring expense not found' });
+    return this.runSerializableRecurringConfirmation(async () =>
+      this.prisma.$transaction(
+        async (tx) => {
+          const recurring = (await tx.recurringExpense.findFirst({
+            where: { id: recurringExpenseId, groupId, active: true },
+          })) as RecurringExpenseRecord | null;
+          if (!recurring) throw new NotFoundException({ code: 'NOT_FOUND', message: 'Recurring expense not found' });
 
-      await this.requireEnvelopeInGroup(recurring.envelopeId, groupId, tx);
-      const nextDueAt = advanceDueDate(recurring.nextDueAt, recurring.frequency);
+          await this.requireEnvelopeInGroup(recurring.envelopeId, groupId, tx);
+          const nextDueAt = advanceDueDate(recurring.nextDueAt, recurring.frequency);
 
-      const expense = await tx.expense.create({
-        data: {
-          groupId,
-          envelopeId: recurring.envelopeId,
-          amountMinor: recurring.amountMinor,
-          spentAt: recurring.nextDueAt,
-          title: recurring.title,
-          note: recurring.note,
-          createdById: userId,
+          const updatedRecurring = await tx.recurringExpense.updateMany({
+            where: { id: recurring.id, groupId, active: true, nextDueAt: recurring.nextDueAt },
+            data: { nextDueAt },
+          });
+          if (updatedRecurring.count !== 1) {
+            throw new BadRequestException({ code: 'INVALID_INPUT', message: 'Recurring expense was already confirmed; refresh and try again' });
+          }
+
+          const expense = await tx.expense.create({
+            data: {
+              groupId,
+              envelopeId: recurring.envelopeId,
+              amountMinor: recurring.amountMinor,
+              spentAt: recurring.nextDueAt,
+              title: recurring.title,
+              note: recurring.note,
+              createdById: userId,
+            },
+          });
+
+          return {
+            expense: this.serializeExpense(expense),
+            nextDueAt: nextDueAt.toISOString(),
+          };
         },
-      });
-      const updatedRecurring = await tx.recurringExpense.update({ where: { id: recurring.id }, data: { nextDueAt } });
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      ),
+    );
+  }
 
-      return {
-        expense: this.serializeExpense(expense),
-        nextDueAt: updatedRecurring.nextDueAt.toISOString(),
-      };
-    });
+  private async runSerializableRecurringConfirmation<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (error) {
+      if (this.isPrismaSerializationFailure(error)) {
+        throw new BadRequestException({ code: 'INVALID_INPUT', message: 'Recurring expense could not be confirmed safely; retry' });
+      }
+      throw error;
+    }
+  }
+
+  private isPrismaSerializationFailure(error: unknown): boolean {
+    if (typeof error !== 'object' || error === null) return false;
+    const candidate = error as { code?: unknown; cause?: { originalCode?: unknown; kind?: unknown } };
+    return candidate.code === 'P2034' || candidate.cause?.originalCode === '40001' || candidate.cause?.kind === 'TransactionWriteConflict';
   }
 
   private async requireEnvelopeInGroup(envelopeId: string, groupId: string, client: RecurringLookupClient = this.prisma) {
@@ -160,9 +191,20 @@ export class RecurringExpensesService {
 }
 
 function advanceDueDate(current: Date, frequency: Frequency): Date {
-  const next = new Date(current);
-  if (frequency === 'weekly') next.setDate(next.getDate() + 7);
-  if (frequency === 'monthly') next.setMonth(next.getMonth() + 1);
-  if (frequency === 'yearly') next.setFullYear(next.getFullYear() + 1);
-  return next;
+  if (frequency === 'weekly') return new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
+  if (frequency === 'yearly') {
+    const targetYear = current.getUTCFullYear() + 1;
+    const targetMonth = current.getUTCMonth();
+    const day = Math.min(current.getUTCDate(), daysInUtcMonth(targetYear, targetMonth));
+    return new Date(Date.UTC(targetYear, targetMonth, day, current.getUTCHours(), current.getUTCMinutes(), current.getUTCSeconds(), current.getUTCMilliseconds()));
+  }
+
+  const targetYear = current.getUTCFullYear() + (current.getUTCMonth() === 11 ? 1 : 0);
+  const targetMonth = (current.getUTCMonth() + 1) % 12;
+  const day = Math.min(current.getUTCDate(), daysInUtcMonth(targetYear, targetMonth));
+  return new Date(Date.UTC(targetYear, targetMonth, day, current.getUTCHours(), current.getUTCMinutes(), current.getUTCSeconds(), current.getUTCMilliseconds()));
+}
+
+function daysInUtcMonth(year: number, month: number): number {
+  return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 }

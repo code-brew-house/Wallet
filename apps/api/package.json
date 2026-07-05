@@ -17,6 +17,7 @@
     "@nestjs/platform-express": "latest",
     "@prisma/adapter-pg": "latest",
     "@prisma/client": "latest",
+    "prisma": "latest",
     "@wallet/shared": "workspace:*",
     "argon2": "latest",
     "class-transformer": "latest",
@@ -33,7 +34,6 @@
     "@types/express": "^5.0.6",
     "@types/pg": "latest",
     "@types/supertest": "latest",
-    "prisma": "latest",
     "supertest": "latest",
     "typescript": "latest"
   }

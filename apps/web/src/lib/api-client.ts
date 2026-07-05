@@ -11,6 +11,17 @@ export function resolveApiBaseUrl(_env?: unknown): string {
   return '/api';
 }
 
+export class ApiRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code?: ApiErrorBody['code'],
+  ) {
+    super(message);
+    this.name = 'ApiRequestError';
+  }
+}
+
 function formatApiError(error: ApiErrorBody | undefined, path: string, status: number): string {
   const message = error?.message?.trim() || `Request to ${path} failed with status ${status}`;
   const details = Object.values(error?.details ?? {}).flat().filter((detail) => detail.trim().length > 0);
@@ -46,7 +57,7 @@ export function createApiClient(options: ApiClientOptions) {
     const body = await response.json().catch(() => undefined);
     if (!response.ok) {
       const error = body as ApiErrorBody | undefined;
-      throw new Error(formatApiError(error, path, response.status));
+      throw new ApiRequestError(formatApiError(error, path, response.status), response.status, error?.code);
     }
     return body as T;
   }

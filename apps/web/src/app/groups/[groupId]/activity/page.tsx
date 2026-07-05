@@ -60,8 +60,9 @@ export default function GroupActivityPage() {
     }
   }
 
-  const todayItems = activityItems.filter((item) => new Date(item.occurredAt).toDateString() === new Date().toDateString());
-  const earlierItems = activityItems.filter((item) => new Date(item.occurredAt).toDateString() !== new Date().toDateString());
+  const todayKey = utcDateKey(new Date().toISOString());
+  const todayItems = activityItems.filter((item) => utcDateKey(item.occurredAt) === todayKey);
+  const earlierItems = activityItems.filter((item) => utcDateKey(item.occurredAt) !== todayKey);
 
   return (
     <AppShell groupId={params.groupId} active="activity" narrow>
@@ -91,6 +92,10 @@ export default function GroupActivityPage() {
       </Stack>
     </AppShell>
   );
+}
+
+function utcDateKey(isoDate: string) {
+  return new Date(isoDate).toISOString().slice(0, 10);
 }
 
 function ActivityGroup({

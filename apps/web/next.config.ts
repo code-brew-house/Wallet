@@ -6,6 +6,7 @@ const workspaceRoot = process.cwd().endsWith('/apps/web')
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  outputFileTracingRoot: workspaceRoot,
   turbopack: {
     root: workspaceRoot,
   },

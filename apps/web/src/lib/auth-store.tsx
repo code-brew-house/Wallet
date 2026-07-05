@@ -1,5 +1,6 @@
 'use client';
 
+import { ApiRequestError } from './api-client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { apiClient } from './api-client';
 
@@ -12,6 +13,10 @@ const AuthContext = createContext<AuthState | null>(null);
 
 function readStoredAccessToken(): string | null {
   return typeof window === 'undefined' ? null : window.sessionStorage.getItem('wallet_access_token');
+}
+
+export function shouldClearAccessTokenAfterRefreshError(error: unknown): boolean {
+  return error instanceof ApiRequestError && (error.status === 401 || error.status === 403);
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -35,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const session = await apiClient.request<{ accessToken: string }>('/auth/refresh', { method: 'POST' });
         if (!cancelled) setAccessToken(session.accessToken);
-      } catch {
-        if (!cancelled) setAccessToken(null);
+      } catch (requestError) {
+        if (!cancelled && shouldClearAccessTokenAfterRefreshError(requestError)) setAccessToken(null);
       }
     }
 

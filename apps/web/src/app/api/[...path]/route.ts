@@ -30,7 +30,6 @@ async function proxyApiRequest(request: NextRequest, context: RouteContext): Pro
 
   const headers = new Headers(request.headers);
   headers.delete('host');
-  headers.delete('content-length');
   headers.delete('if-none-match');
   headers.delete('if-modified-since');
 

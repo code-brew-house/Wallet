@@ -67,8 +67,13 @@ export function DashboardPage({ groupId }: DashboardPageProps) {
 
 
   async function refetchDashboard() {
-    const nextDashboard = await loadDashboard();
-    setDashboard(nextDashboard);
+    try {
+      const nextDashboard = await loadDashboard();
+      setDashboard(nextDashboard);
+      setError(null);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to refresh dashboard');
+    }
   }
 
   useEffect(() => {

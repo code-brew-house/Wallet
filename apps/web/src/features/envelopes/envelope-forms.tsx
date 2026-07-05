@@ -63,11 +63,11 @@ function todayDateValue() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function amountToMinor(amount: string) {
-  return Math.round(Number(amount) * 100);
+export function amountToMinor(amount: string) {
+  return Math.round(Number(amount.replace(/,/g, '')) * 100);
 }
 
-function positiveAmount(value: string) {
+export function positiveAmount(value: string) {
   const amountMinor = amountToMinor(value);
   return Number.isFinite(amountMinor) && amountMinor > 0 ? null : 'Enter an amount greater than 0';
 }

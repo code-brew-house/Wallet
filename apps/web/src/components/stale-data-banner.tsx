@@ -29,10 +29,13 @@ export function StaleDataBanner({ generatedAt, maxAgeMs }: { generatedAt?: strin
 
   if (online && !isStale) return null;
 
+  const detail = online ? 'Displayed data may be stale. Refocus the app to refresh.' : 'New expenses require a connection.';
+
   return (
     <AlertBanner variant="warn" title={online ? 'Stale cached data' : 'Offline read-only mode'}>
       {online ? 'Showing cached Wallet data that may be out of date.' : 'Showing cached Wallet data in read-only mode.'}
-      {generatedAt ? ` Last refreshed ${new Date(generatedAt).toLocaleString()}` : ''} New expenses require a connection.
+      {generatedAt ? ` Last refreshed ${new Date(generatedAt).toLocaleString()}. ` : ' '}
+      {detail}
     </AlertBanner>
   );
 }

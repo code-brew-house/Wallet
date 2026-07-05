@@ -6,28 +6,12 @@ import type { RecurringExpenseDto } from '../recurring-expenses/recurring-expens
 
 type Frequency = 'weekly' | 'monthly' | 'yearly';
 
-type FundingRecord = {
+type ActivityRow = {
   id: string;
-  amountMinor: number;
-  note: string | null;
-  createdAt: Date;
-  envelope: { name: string };
-};
-
-type TransferRecord = {
-  id: string;
-  amountMinor: number;
-  note: string | null;
-  createdAt: Date;
-  fromEnvelope: { name: string };
-  toEnvelope: { name: string };
-};
-
-type ExpenseRecord = {
-  id: string;
-  amountMinor: number;
-  createdAt: Date;
+  type: 'funding' | 'transfer' | 'expense';
   title: string;
+  amountMinor: number;
+  occurredAt: Date;
 };
 
 type RecurringExpenseRecord = {
@@ -133,73 +117,61 @@ export class ReportsService {
   private async getRecentActivityPage(groupId: string, offset: number, limit: number): Promise<ActivityPage> {
     const safeOffset = Math.max(0, Math.trunc(offset));
     const safeLimit = Math.min(50, Math.max(1, Math.trunc(limit)));
-    const fetchLimit = safeOffset + safeLimit + 1;
-    const [funding, transfers, expenses] = await Promise.all([
-      this.prisma.envelopeFunding.findMany({
-        where: { groupId, deletedAt: null },
-        include: { envelope: { select: { name: true } } },
-        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
-        take: fetchLimit,
-      }),
-      this.prisma.envelopeTransfer.findMany({
-        where: { groupId, deletedAt: null },
-        include: {
-          fromEnvelope: { select: { name: true } },
-          toEnvelope: { select: { name: true } },
-        },
-        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
-        take: fetchLimit,
-      }),
-      this.prisma.expense.findMany({
-        where: { groupId, deletedAt: null },
-        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
-        take: fetchLimit,
-      }),
-    ]);
+    const rows = await this.prisma.$queryRaw<ActivityRow[]>`
+      SELECT *
+      FROM (
+        SELECT
+          funding."id",
+          'funding' AS "type",
+          COALESCE(funding."note", 'Funded ' || envelope."name") AS "title",
+          funding."amountMinor",
+          funding."createdAt" AS "occurredAt"
+        FROM "EnvelopeFunding" funding
+        INNER JOIN "Envelope" envelope ON envelope."id" = funding."envelopeId"
+        WHERE funding."groupId" = ${groupId} AND funding."deletedAt" IS NULL
 
-    const sortedActivity = [
-      ...(funding as FundingRecord[]).map((item) => this.serializeFundingActivity(item)),
-      ...(transfers as TransferRecord[]).map((item) => this.serializeTransferActivity(item)),
-      ...(expenses as ExpenseRecord[]).map((item) => this.serializeExpenseActivity(item)),
-    ].sort(compareActivityDescending);
-    const items = sortedActivity.slice(safeOffset, safeOffset + safeLimit);
+        UNION ALL
+
+        SELECT
+          transfer."id",
+          'transfer' AS "type",
+          COALESCE(transfer."note", from_envelope."name" || ' to ' || to_envelope."name") AS "title",
+          transfer."amountMinor",
+          transfer."createdAt" AS "occurredAt"
+        FROM "EnvelopeTransfer" transfer
+        INNER JOIN "Envelope" from_envelope ON from_envelope."id" = transfer."fromEnvelopeId"
+        INNER JOIN "Envelope" to_envelope ON to_envelope."id" = transfer."toEnvelopeId"
+        WHERE transfer."groupId" = ${groupId} AND transfer."deletedAt" IS NULL
+
+        UNION ALL
+
+        SELECT
+          expense."id",
+          'expense' AS "type",
+          expense."title",
+          expense."amountMinor",
+          expense."createdAt" AS "occurredAt"
+        FROM "Expense" expense
+        WHERE expense."groupId" = ${groupId} AND expense."deletedAt" IS NULL
+      ) activity
+      ORDER BY "occurredAt" DESC, "type" ASC, "id" ASC
+      LIMIT ${safeLimit + 1} OFFSET ${safeOffset}
+    `;
+    const items = rows.slice(0, safeLimit).map((row) => ({
+      id: row.id,
+      type: row.type,
+      title: row.title,
+      amountMinor: row.amountMinor,
+      occurredAt: row.occurredAt.toISOString(),
+    }));
 
     return {
       items,
-      nextOffset: sortedActivity.length > safeOffset + safeLimit ? safeOffset + safeLimit : null,
+      nextOffset: rows.length > safeLimit ? safeOffset + safeLimit : null,
       limit: safeLimit,
     };
   }
 
-  private serializeFundingActivity(funding: FundingRecord): ActivityItem {
-    return {
-      id: funding.id,
-      type: 'funding',
-      title: funding.note ?? `Funded ${funding.envelope.name}`,
-      amountMinor: funding.amountMinor,
-      occurredAt: funding.createdAt.toISOString(),
-    };
-  }
-
-  private serializeTransferActivity(transfer: TransferRecord): ActivityItem {
-    return {
-      id: transfer.id,
-      type: 'transfer',
-      title: transfer.note ?? `${transfer.fromEnvelope.name} to ${transfer.toEnvelope.name}`,
-      amountMinor: transfer.amountMinor,
-      occurredAt: transfer.createdAt.toISOString(),
-    };
-  }
-
-  private serializeExpenseActivity(expense: ExpenseRecord): ActivityItem {
-    return {
-      id: expense.id,
-      type: 'expense',
-      title: expense.title,
-      amountMinor: expense.amountMinor,
-      occurredAt: expense.createdAt.toISOString(),
-    };
-  }
 
   private serializeRecurring(recurring: RecurringExpenseRecord): RecurringExpenseDto {
     return {
@@ -219,9 +191,3 @@ export class ReportsService {
   }
 }
 
-function compareActivityDescending(left: ActivityItem, right: ActivityItem): number {
-  const timeDifference = Date.parse(right.occurredAt) - Date.parse(left.occurredAt);
-  if (timeDifference !== 0) return timeDifference;
-  const typeDifference = left.type.localeCompare(right.type);
-  return typeDifference !== 0 ? typeDifference : left.id.localeCompare(right.id);
-}
