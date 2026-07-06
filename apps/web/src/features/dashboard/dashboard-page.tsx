@@ -3,6 +3,7 @@
 import { Button, Group, Loader, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
+import { useAuth } from '../../lib/auth-store';
 import { useGroupCurrency } from '../../lib/group-currency';
 import { subscribeWalletDataRefresh } from '../../lib/wallet-data-refresh';
 import { StaleDataBanner } from '../../components/stale-data-banner';
@@ -35,6 +36,7 @@ export function DashboardPage({ groupId }: DashboardPageProps) {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [openedForm, setOpenedForm] = useState<FormKind | null>(null);
+  const { accessToken, isRefreshing } = useAuth();
   const currency = useGroupCurrency(groupId);
   const moneyFormatter = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency }), [currency]);
 
@@ -45,6 +47,8 @@ export function DashboardPage({ groupId }: DashboardPageProps) {
 
   useEffect(() => {
     let cancelled = false;
+    if (isRefreshing) return;
+    if (!accessToken) return;
 
     async function loadInitialDashboard() {
       setIsLoading(true);
@@ -63,10 +67,18 @@ export function DashboardPage({ groupId }: DashboardPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [loadDashboard]);
+  }, [accessToken, isRefreshing, loadDashboard]);
+
+  useEffect(() => {
+    if (isRefreshing || accessToken) return;
+    setDashboard(null);
+    setError('Authentication required');
+    setIsLoading(false);
+  }, [accessToken, isRefreshing]);
 
 
   async function refetchDashboard() {
+    if (isRefreshing || !accessToken) return;
     try {
       const nextDashboard = await loadDashboard();
       setDashboard(nextDashboard);
@@ -83,7 +95,7 @@ export function DashboardPage({ groupId }: DashboardPageProps) {
       unsubscribe();
       window.removeEventListener('focus', refetchDashboard);
     };
-  }, [loadDashboard]);
+  }, [accessToken, isRefreshing, loadDashboard]);
 
   async function runMutation(request: () => Promise<void>, successMessage: string) {
     setIsMutating(true);

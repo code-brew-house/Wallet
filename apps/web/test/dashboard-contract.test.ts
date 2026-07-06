@@ -158,6 +158,45 @@ describe('dashboard UI contract', () => {
     expect(readFileSync(new URL('../src/app/groups/[groupId]/settings/page.tsx', import.meta.url), 'utf8')).toContain('useGroupCurrency(params.groupId)');
   });
 
+  test('dashboard waits for refreshed auth before requesting protected data', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    const firstEffectStart = source.indexOf('useEffect(() => {');
+    const firstEffectEnd = source.indexOf('  }, [', firstEffectStart);
+    const initialLoadEffect = source.slice(firstEffectStart, firstEffectEnd);
+    const initialLoadDependencies = source.slice(firstEffectEnd, source.indexOf(');', firstEffectEnd) + 2);
+    const loadDashboardCallIndex = initialLoadEffect.indexOf('void loadInitialDashboard();');
+    const missingContracts: string[] = [];
+
+    if (!source.includes("import { useAuth } from '../../lib/auth-store';")) {
+      missingContracts.push('DashboardPage imports useAuth from the shared auth store');
+    }
+    if (!source.includes('const { accessToken, isRefreshing } = useAuth();')) {
+      missingContracts.push('DashboardPage reads accessToken and isRefreshing from useAuth');
+    }
+    if (firstEffectStart === -1 || firstEffectEnd === -1 || loadDashboardCallIndex === -1) {
+      missingContracts.push('DashboardPage has an initial dashboard-loading effect');
+    }
+    if (
+      loadDashboardCallIndex === -1 ||
+      initialLoadEffect.indexOf('if (isRefreshing) return;') === -1 ||
+      initialLoadEffect.indexOf('if (isRefreshing) return;') > loadDashboardCallIndex
+    ) {
+      missingContracts.push('DashboardPage returns before loadDashboard while auth refresh is in progress');
+    }
+    if (
+      loadDashboardCallIndex === -1 ||
+      initialLoadEffect.indexOf('if (!accessToken) return;') === -1 ||
+      initialLoadEffect.indexOf('if (!accessToken) return;') > loadDashboardCallIndex
+    ) {
+      missingContracts.push('DashboardPage does not request dashboard data until an access token exists');
+    }
+    if (!initialLoadDependencies.includes('[accessToken, isRefreshing, loadDashboard]')) {
+      missingContracts.push('DashboardPage reruns the initial dashboard load when accessToken or isRefreshing changes');
+    }
+
+    expect(missingContracts).toEqual([]);
+  });
+
   test('dashboard initial load failure renders a recovery card instead of a blank body', () => {
     const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
     expect(source).toContain('<EmptyState title="Dashboard unavailable"');
