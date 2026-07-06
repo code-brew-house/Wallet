@@ -17,6 +17,9 @@ export function rewriteProxyResponseHeaders(upstreamHeaders: Headers): Headers {
   if (setCookie) {
     headers.set('set-cookie', setCookie.replace(/Path=\/auth\/refresh\b/gi, 'Path=/api/auth/refresh'));
   }
+  if (headers.get('content-type')?.toLowerCase().startsWith('application/json')) {
+    headers.set('content-type', 'application/json');
+  }
   headers.delete('content-length');
   headers.set('cache-control', 'no-store');
   return headers;

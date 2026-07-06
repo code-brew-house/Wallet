@@ -12,11 +12,18 @@ workbox.routing.registerRoute(
   ({ request, url }) =>
     request.method === "GET" &&
     url.origin === self.location.origin &&
+    url.pathname.startsWith('/api/') &&
     (url.pathname.includes('/dashboard') || url.pathname.includes('/envelopes') || url.pathname.includes('/activity')),
   new workbox.strategies.NetworkFirst({
     cacheName: 'wallet-readonly-api-v1',
     plugins: [
       walletFreshCacheKeyPlugin,
+      new workbox.cacheableResponse.CacheableResponsePlugin({
+        statuses: [200],
+        headers: {
+          'content-type': 'application/json',
+        },
+      }),
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 60,
         maxAgeSeconds: 60 * 60 * 24,

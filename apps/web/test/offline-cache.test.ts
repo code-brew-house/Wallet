@@ -15,6 +15,32 @@ describe('offline cache service worker', () => {
     expect(worker).not.toContain('request.method === "POST"');
   });
 
+  test('caches only successful JSON API read responses at runtime', () => {
+    const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
+    const missingContracts = [
+      {
+        name: 'API path prefix scope',
+        pattern: /url\.pathname\.startsWith\((['"])\/api\/\1\)/,
+      },
+      {
+        name: 'CacheableResponsePlugin',
+        pattern: /new workbox\.cacheableResponse\.CacheableResponsePlugin\(/,
+      },
+      {
+        name: 'status 200 cacheability',
+        pattern: /statuses:\s*\[\s*200\s*\]/,
+      },
+      {
+        name: 'application/json content-type cacheability',
+        pattern: /headers:\s*\{[^}]*(['"])content-type\1:\s*(['"])application\/json\2/,
+      },
+    ]
+      .filter(({ pattern }) => !pattern.test(worker))
+      .map(({ name }) => name);
+
+    expect(missingContracts).toEqual([]);
+  });
+
   test('normalizes volatile wallet freshness parameters before cache lookup', () => {
     const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
 
