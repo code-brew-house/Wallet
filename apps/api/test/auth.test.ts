@@ -129,4 +129,63 @@ describe('auth', () => {
         expect(clearCookie).toContain('Path=/auth/refresh');
       });
   });
+
+  test('updates password with correct current password and rotates refresh cookie', async () => {
+    const signup = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({ email: 'password-change@example.com', password: 'StrongPass123!', displayName: 'Password Change' })
+      .expect(201);
+    const accessToken = signup.body.accessToken as string;
+
+    await request(app.getHttpServer())
+      .patch('/auth/password')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ currentPassword: 'StrongPass123!', newPassword: 'NewStrongPass456!' })
+      .expect(200)
+      .expect(({ body, headers }) => {
+        expect(body.accessToken).toBeString();
+        expect(setCookieHeaders({ headers }).some((cookie) => cookie.startsWith('wallet_refresh='))).toBe(true);
+      });
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'password-change@example.com', password: 'StrongPass123!' })
+      .expect(401)
+      .expect(({ body }) => expect(body.code).toBe('LOGIN_FAILED'));
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'password-change@example.com', password: 'NewStrongPass456!' })
+      .expect(200)
+      .expect(({ body }) => expect(body.accessToken).toBeString());
+
+  });
+
+  test('rejects password update with wrong current password', async () => {
+    const signup = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({ email: 'password-wrong@example.com', password: 'StrongPass123!', displayName: 'Wrong Password' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .patch('/auth/password')
+      .set('Authorization', `Bearer ${signup.body.accessToken}`)
+      .send({ currentPassword: 'WrongPass123!', newPassword: 'NewStrongPass456!' })
+      .expect(401)
+      .expect(({ body }) => expect(body.code).toBe('LOGIN_FAILED'));
+  });
+
+  test('rejects password update when new password matches current password', async () => {
+    const signup = await request(app.getHttpServer())
+      .post('/auth/signup')
+      .send({ email: 'password-same@example.com', password: 'StrongPass123!', displayName: 'Same Password' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .patch('/auth/password')
+      .set('Authorization', `Bearer ${signup.body.accessToken}`)
+      .send({ currentPassword: 'StrongPass123!', newPassword: 'StrongPass123!' })
+      .expect(400)
+      .expect(({ body }) => expect(body.code).toBe('INVALID_INPUT'));
+  });
 });

@@ -1,13 +1,16 @@
 'use client';
 
-import { Badge, Button, Group, Loader, Stack } from '@mantine/core';
-import { useParams } from 'next/navigation';
+import { Badge, Button, Group, Loader, PasswordInput, Stack } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useParams, useRouter } from 'next/navigation';
 import { type ReactNode, useEffect, useState } from 'react';
 import { AppShell } from '../../../../components/app-shell';
 import { PageHeader } from '../../../../components/header';
 import { AlertBanner } from '../../../../components/alert-banner';
+import { ActionSheet } from '../../../../components/action-sheet';
 import { apiClient } from '../../../../lib/api-client';
 import { useGroupCurrency } from '../../../../lib/group-currency';
+import { useAuth } from '../../../../lib/auth-store';
 
 interface GroupMember {
   role: 'owner' | 'admin' | 'member';
@@ -18,13 +21,24 @@ interface InviteResponse {
   token?: string;
 }
 
+interface AuthResponse {
+  accessToken: string;
+  user: { id: string; email: string; displayName: string };
+}
+
 export default function GroupSettingsPage() {
   const params = useParams<{ groupId: string }>();
+  const router = useRouter();
+  const { setAccessToken } = useAuth();
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingInvite, setIsCreatingInvite] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accountMessage, setAccountMessage] = useState<{ variant: 'success' | 'danger' | 'info'; text: string } | null>(null);
+  const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const currency = useGroupCurrency(params.groupId);
 
   useEffect(() => {
@@ -62,6 +76,48 @@ export default function GroupSettingsPage() {
       setError(requestError instanceof Error ? requestError.message : 'Unable to create invite');
     } finally {
       setIsCreatingInvite(false);
+    }
+  }
+
+  async function logout() {
+    setIsLoggingOut(true);
+    setError(null);
+    try {
+      await apiClient.request<{ ok: true }>('/auth/logout', { method: 'POST' });
+    } catch (requestError) {
+      setIsLoggingOut(false);
+      setError(requestError instanceof Error ? requestError.message : 'Unable to log out');
+      return;
+    }
+    setAccessToken(null);
+    void router.replace('/login');
+  }
+
+  const passwordForm = useForm({
+    initialValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+    validate: {
+      currentPassword: (value) => (value.length >= 8 ? null : 'Password must be at least 8 characters'),
+      newPassword: (value) => (value.length >= 8 ? null : 'Password must be at least 8 characters'),
+      confirmPassword: (value, values) => (value === values.newPassword ? null : 'Passwords do not match'),
+    },
+  });
+
+  async function submitPasswordChange(values: typeof passwordForm.values) {
+    setIsUpdatingPassword(true);
+    setError(null);
+    try {
+      const response = await apiClient.request<AuthResponse>('/auth/password', {
+        method: 'PATCH',
+        body: JSON.stringify({ currentPassword: values.currentPassword, newPassword: values.newPassword }),
+      });
+      setAccessToken(response.accessToken);
+      passwordForm.reset();
+      setIsPasswordSheetOpen(false);
+      setAccountMessage({ variant: 'success', text: 'Password updated. Use the new password next time you log in.' });
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Unable to update password');
+    } finally {
+      setIsUpdatingPassword(false);
     }
   }
 
@@ -105,9 +161,34 @@ export default function GroupSettingsPage() {
           <div className="wallet-table-row"><span className="wallet-status-dot wallet-status-success" /><strong>Accent</strong><span>Indigo</span></div>
         </SettingsSection>
         <SettingsSection title="Account">
-          <div className="wallet-table-row"><span className="wallet-status-dot wallet-status-warn" /><strong>Notifications</strong><span>On</span></div>
+          {accountMessage ? <AlertBanner variant={accountMessage.variant}>{accountMessage.text}</AlertBanner> : null}
+          <div className="wallet-table-row">
+            <span className="wallet-status-dot wallet-status-info" aria-hidden="true" />
+            <strong>Change password</strong>
+            <Button className="wallet-button-secondary" onClick={() => { setIsPasswordSheetOpen(true); setError(null); setAccountMessage(null); }}>Change password</Button>
+          </div>
+          <div className="wallet-table-row">
+            <span className="wallet-status-dot wallet-status-danger" aria-hidden="true" />
+            <strong>Log out</strong>
+            <Button className="wallet-button-danger" loading={isLoggingOut} onClick={() => void logout()}>Log out</Button>
+          </div>
         </SettingsSection>
       </Stack>
+      <ActionSheet
+        opened={isPasswordSheetOpen}
+        title="Change password"
+        formId="change-password-form"
+        submitLabel="Update password"
+        submitting={isUpdatingPassword}
+        onClose={() => { if (!isUpdatingPassword) { setIsPasswordSheetOpen(false); passwordForm.reset(); } }}
+      >
+        <form id="change-password-form" onSubmit={passwordForm.onSubmit(submitPasswordChange)} className="wallet-input-shell">
+          {error ? <AlertBanner variant="danger">{error}</AlertBanner> : null}
+          <PasswordInput label="Current password" autoComplete="current-password" required {...passwordForm.getInputProps('currentPassword')} />
+          <PasswordInput label="New password" autoComplete="new-password" required {...passwordForm.getInputProps('newPassword')} />
+          <PasswordInput label="Confirm new password" autoComplete="new-password" required {...passwordForm.getInputProps('confirmPassword')} />
+        </form>
+      </ActionSheet>
     </AppShell>
   );
 }

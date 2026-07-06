@@ -6,7 +6,7 @@ import { env } from '../config/env';
 import type { User } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CurrentUser } from './current-user';
-import type { LoginDto, SignupDto } from './dto';
+import type { LoginDto, SignupDto, UpdatePasswordDto } from './dto';
 
 export interface AuthResponse {
   user: { id: string; email: string; displayName: string };
@@ -45,7 +45,6 @@ export class AuthService {
       throw error;
     }
   }
-
   async login(dto: LoginDto): Promise<AuthResponse> {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (!user) {
@@ -58,6 +57,31 @@ export class AuthService {
     }
 
     return this.createAuthResponse(user);
+  }
+
+  async updatePassword(userId: string, dto: UpdatePasswordDto): Promise<AuthResponse> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException({ code: 'UNAUTHORIZED', message: 'Authentication required' } satisfies ApiErrorBody);
+    }
+
+    const currentValid = await argon2.verify(user.passwordHash, dto.currentPassword);
+    if (!currentValid) {
+      throw new UnauthorizedException({ code: 'LOGIN_FAILED', message: 'Current password is incorrect' } satisfies ApiErrorBody);
+    }
+
+    const sameAsCurrent = await argon2.verify(user.passwordHash, dto.newPassword);
+    if (sameAsCurrent) {
+      throw new BadRequestException({
+        code: 'INVALID_INPUT',
+        message: 'New password must be different from current password',
+        details: { newPassword: ['New password must be different from current password'] },
+      } satisfies ApiErrorBody);
+    }
+
+    const newHash = await argon2.hash(dto.newPassword);
+    const updatedUser = await this.prisma.user.update({ where: { id: userId }, data: { passwordHash: newHash } });
+    return this.createAuthResponse(updatedUser);
   }
 
   async verifyAccessToken(token: string): Promise<CurrentUser> {

@@ -1,10 +1,10 @@
-import { Body, Controller, Get, HttpCode, Inject, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Inject, Patch, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { createValidationPipe } from '../app.config';
 import { env } from '../config/env';
 import { CurrentUserParam } from './current-user';
 import type { CurrentUser } from './current-user';
-import { LoginDto, SignupDto } from './dto';
+import { LoginDto, SignupDto, UpdatePasswordDto } from './dto';
 import { AuthService } from './auth.service';
 import type { AuthResponse } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -60,6 +60,18 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async me(@CurrentUserParam() user: CurrentUser): Promise<CurrentUser> {
     return user;
+  }
+
+  @Patch('password')
+  @UseGuards(JwtAuthGuard)
+  async updatePassword(
+    @CurrentUserParam() user: CurrentUser,
+    @Body(createValidationPipe(UpdatePasswordDto)) dto: UpdatePasswordDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResponse> {
+    const authResponse = await this.authService.updatePassword(user.id, dto);
+    await this.setRefreshCookie(response, authResponse.user);
+    return authResponse;
   }
 
   private async setRefreshCookie(response: Response, user: CurrentUser): Promise<void> {

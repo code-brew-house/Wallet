@@ -6,6 +6,7 @@ import { apiClient } from './api-client';
 
 interface AuthState {
   accessToken: string | null;
+  isRefreshing: boolean;
   setAccessToken(token: string | null): void;
 }
 
@@ -21,6 +22,7 @@ export function shouldClearAccessTokenAfterRefreshError(error: unknown): boolean
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [accessToken, setAccessTokenState] = useState<string | null>(() => readStoredAccessToken());
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
 
   const setAccessToken = useCallback((token: string | null) => {
     setAccessTokenState(token);
@@ -30,8 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AuthState>(() => ({
     accessToken,
+    isRefreshing,
     setAccessToken,
-  }), [accessToken, setAccessToken]);
+  }), [accessToken, isRefreshing, setAccessToken]);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,6 +45,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!cancelled) setAccessToken(session.accessToken);
       } catch (requestError) {
         if (!cancelled && shouldClearAccessTokenAfterRefreshError(requestError)) setAccessToken(null);
+      } finally {
+        if (!cancelled) setIsRefreshing(false);
       }
     }
 

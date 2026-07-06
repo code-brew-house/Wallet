@@ -1,4 +1,4 @@
-const DEFAULT_NEXT_PATH = '/groups/new';
+const DEFAULT_NEXT_PATH = '/groups';
 const CONTROL_OR_BACKSLASH = /[\u0000-\u001F\u007F\\]/;
 
 export function getSafeNextPath(nextPath: string | null): string {

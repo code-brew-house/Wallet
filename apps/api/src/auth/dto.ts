@@ -21,3 +21,13 @@ export class LoginDto {
   @MinLength(8)
   password!: string;
 }
+
+export class UpdatePasswordDto {
+  @IsString()
+  @MinLength(8)
+  currentPassword!: string;
+
+  @IsString()
+  @MinLength(8)
+  newPassword!: string;
+}

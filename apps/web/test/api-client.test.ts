@@ -197,8 +197,9 @@ describe('invite acceptance auth gate', () => {
 });
 
 describe('auth next path redirect safety', () => {
-  test('rejects protocol-relative next paths for login and signup redirects', () => {
-    expect(getSafeNextPath('//evil.example')).toBe('/groups/new');
+  test('rejects protocol-relative and missing next paths for login and signup redirects', () => {
+    expect(getSafeNextPath('//evil.example')).toBe('/groups');
+    expect(getSafeNextPath(null)).toBe('/groups');
     expect(getSafeNextPath('/invites/abc')).toBe('/invites/abc');
 
     const loginPage = readFileSync(new URL('../src/app/login/page.tsx', import.meta.url), 'utf8');

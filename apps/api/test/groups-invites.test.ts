@@ -62,6 +62,28 @@ describe('groups and invites', () => {
     await app.close();
   });
 
+  test('blocks case-insensitive duplicate group name per user but allows different users to share the name', async () => {
+    const ownerToken = await signup(app, 'duplicate-owner@example.com');
+    const otherToken = await signup(app, 'duplicate-other@example.com');
+    await createGroup(app, ownerToken, 'Family Wallet');
+
+    await request(app.getHttpServer())
+      .post('/groups')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'family wallet', currency: 'INR' })
+      .expect(400)
+      .expect(({ body }) => {
+        expect(body.code).toBe('INVALID_INPUT');
+        expect(body.message).toBe('You already have a group with this name');
+      });
+
+    await request(app.getHttpServer())
+      .post('/groups')
+      .set('Authorization', `Bearer ${otherToken}`)
+      .send({ name: 'Family Wallet', currency: 'INR' })
+      .expect(201);
+  });
+
   test('creator becomes group owner and sees only their groups', async () => {
     const ownerToken = await signup(app, 'owner@example.com');
     const otherToken = await signup(app, 'other-owner@example.com');

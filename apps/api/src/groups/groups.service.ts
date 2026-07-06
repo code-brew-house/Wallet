@@ -1,4 +1,5 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import type { ApiErrorBody } from '@wallet/shared';
 import type { ChangeRoleDto, CreateGroupDto } from './dto';
 import { MembershipService } from '../memberships/membership.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,8 +12,23 @@ export class GroupsService {
   ) {}
 
   async createGroup(userId: string, dto: CreateGroupDto) {
+    const name = dto.name.trim();
+    const existing = await this.prisma.group.findFirst({
+      where: {
+        name: { equals: name, mode: 'insensitive' },
+        memberships: { some: { userId } },
+      },
+      select: { id: true, name: true },
+    });
+    if (existing) {
+      throw new BadRequestException({
+        code: 'INVALID_INPUT',
+        message: 'You already have a group with this name',
+        details: { name: ['Open the existing group instead of creating a duplicate.'] },
+      } satisfies ApiErrorBody);
+    }
     const group = await this.prisma.$transaction(async (tx) => {
-      const createdGroup = await tx.group.create({ data: { name: dto.name, currency: dto.currency, createdById: userId } });
+      const createdGroup = await tx.group.create({ data: { name, currency: dto.currency, createdById: userId } });
       await tx.membership.create({ data: { groupId: createdGroup.id, userId, role: 'owner' } });
       return createdGroup;
     });
