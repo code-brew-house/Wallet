@@ -16,8 +16,30 @@ export class EnvelopeBalanceService {
 
   async getGroupEnvelopeSummaries(groupId: string, client: EnvelopeBalanceClient = this.prisma): Promise<EnvelopeSummary[]> {
     const envelopes = await client.envelope.findMany({ where: { groupId }, orderBy: { createdAt: 'asc' } });
-    const summaries = await Promise.all(envelopes.map((envelope) => this.getEnvelopeSummary(envelope.id, client)));
-    return summaries;
+    if (envelopes.length === 0) return [];
+
+    const [fundingRows, incomingRows, outgoingRows, expenseRows] = await Promise.all([
+      client.envelopeFunding.groupBy({ by: ['envelopeId'], where: { groupId, deletedAt: null }, _sum: { amountMinor: true } }),
+      client.envelopeTransfer.groupBy({ by: ['toEnvelopeId'], where: { groupId, deletedAt: null }, _sum: { amountMinor: true } }),
+      client.envelopeTransfer.groupBy({ by: ['fromEnvelopeId'], where: { groupId, deletedAt: null }, _sum: { amountMinor: true } }),
+      client.expense.groupBy({ by: ['envelopeId'], where: { groupId, deletedAt: null }, _sum: { amountMinor: true } }),
+    ]);
+
+    const fundingByEnvelopeId = new Map<string, number>(fundingRows.map((row) => [row.envelopeId, row._sum.amountMinor ?? 0]));
+    const incomingByEnvelopeId = new Map<string, number>(incomingRows.map((row) => [row.toEnvelopeId, row._sum.amountMinor ?? 0]));
+    const outgoingByEnvelopeId = new Map<string, number>(outgoingRows.map((row) => [row.fromEnvelopeId, row._sum.amountMinor ?? 0]));
+    const expensesByEnvelopeId = new Map<string, number>(expenseRows.map((row) => [row.envelopeId, row._sum.amountMinor ?? 0]));
+
+    return envelopes.map((envelope) => ({
+      id: envelope.id,
+      name: envelope.name,
+      archivedAt: envelope.archivedAt?.toISOString() ?? null,
+      balanceMinor:
+        (fundingByEnvelopeId.get(envelope.id) ?? 0) +
+        (incomingByEnvelopeId.get(envelope.id) ?? 0) -
+        (outgoingByEnvelopeId.get(envelope.id) ?? 0) -
+        (expensesByEnvelopeId.get(envelope.id) ?? 0),
+    }));
   }
 
   async getEnvelopeSummary(envelopeId: string, client: EnvelopeBalanceClient = this.prisma): Promise<EnvelopeSummary> {

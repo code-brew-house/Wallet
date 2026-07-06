@@ -158,4 +158,15 @@ describe('dashboard UI contract', () => {
     expect(readFileSync(new URL('../src/app/groups/[groupId]/settings/page.tsx', import.meta.url), 'utf8')).toContain('useGroupCurrency(params.groupId)');
   });
 
+  test('dashboard initial load failure renders a recovery card instead of a blank body', () => {
+    const source = readFileSync(new URL('../src/features/dashboard/dashboard-page.tsx', import.meta.url), 'utf8');
+    expect(source).toContain('<EmptyState title="Dashboard unavailable"');
+    expect(source).toContain("description={error ?? 'Refresh the page to try again.'}");
+
+    const start = source.indexOf('{isLoading ? (');
+    const firstStackClose = source.indexOf('</Stack>', start);
+    const branch = source.slice(start, source.indexOf('</Stack>', firstStackClose + 1));
+    expect(branch).not.toContain(') : null}');
+  });
+
 });

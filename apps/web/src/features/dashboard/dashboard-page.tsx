@@ -244,7 +244,7 @@ export function DashboardPage({ groupId }: DashboardPageProps) {
               )}
             </section>
           </Stack>
-        ) : null}
+        ) : <EmptyState title="Dashboard unavailable" description={error ?? 'Refresh the page to try again.'} />}
       </Stack>
     </AppShell>
   );
