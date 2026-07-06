@@ -49,6 +49,44 @@ describe('offline cache service worker', () => {
     expect(worker).toContain('return url.toString()');
   });
 
+  test('logs wallet runtime cache diagnostics across Workbox lifecycle callbacks', () => {
+    const worker = readFileSync(new URL('../public/sw.js', import.meta.url), 'utf8');
+    const missingDiagnostics = [
+      {
+        name: 'route match includes request metadata',
+        pattern: /console\.info\([^)]*wallet[\s\S]*route[\s\S]*match[\s\S]*request\.mode[\s\S]*request\.destination[\s\S]*request\.cache/,
+      },
+      {
+        name: 'cache key read/write normalization logging',
+        pattern: /cacheKeyWillBeUsed:\s*async\s*\(\s*\{[^}]*mode[\s\S]*console\.info\([^)]*wallet[\s\S]*cache[\s\S]*key[\s\S]*mode[\s\S]*url\.toString\(\)/,
+      },
+      {
+        name: 'fetch success status and content-type logging',
+        pattern: /fetchDidSucceed:\s*async\s*\([^)]*\)\s*=>\s*\{[\s\S]*console\.info\([^)]*wallet[\s\S]*fetch[\s\S]*response\.status[\s\S]*response\.headers\.get\((['"])content-type\1\)/,
+      },
+      {
+        name: 'cache update success logging',
+        pattern: /cacheDidUpdate:\s*async\s*\([^)]*\)\s*=>\s*\{[\s\S]*console\.info\([^)]*wallet[\s\S]*cache[\s\S]*update/,
+      },
+      {
+        name: 'fetch failure warning logging',
+        pattern: /fetchDidFail:\s*async\s*\([^)]*\)\s*=>\s*\{[\s\S]*console\.warn\([^)]*wallet[\s\S]*fetch[\s\S]*fail/,
+      },
+      {
+        name: 'handler completion logging',
+        pattern: /handlerDidComplete:\s*async\s*\([^)]*\)\s*=>\s*\{[\s\S]*console\.info\([^)]*wallet[\s\S]*handler[\s\S]*complete/,
+      },
+      {
+        name: 'handler error logging',
+        pattern: /handlerDidError:\s*async\s*\([^)]*\)\s*=>\s*\{[\s\S]*console\.error\([^)]*wallet[\s\S]*handler[\s\S]*error/,
+      },
+    ]
+      .filter(({ pattern }) => !pattern.test(worker))
+      .map(({ name }) => name);
+
+    expect(missingDiagnostics).toEqual([]);
+  });
+
   test('only describes write actions as connection-required while offline', () => {
     const banner = readFileSync(new URL('../src/components/stale-data-banner.tsx', import.meta.url), 'utf8');
 
